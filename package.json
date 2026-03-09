@@ -24,7 +24,7 @@
     "@cocos/dragonbones-js": "^1.0.2",
     "@esotericsoftware/spine-core": "^4.2.106",
     "box2d-wasm": "^7.0.0",
-    "safex-webgl": "1",
+    "safex-webgl": "workspace:*",
     "entityx-ts": "^2.3.1"
   },
   "author": "",
