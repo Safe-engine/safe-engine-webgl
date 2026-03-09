@@ -1,0 +1,32 @@
+{
+  "name": "@safe-engine/webgl",
+  "version": "1.0.1",
+  "description": "safe-engine with webgl renderer support",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "@types"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean:build": "rimraf ./dist",
+    "lint": "eslint . --ext .js,.ts  --fix",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@cocos/dragonbones-js": "^1.0.2",
+    "@esotericsoftware/spine-core": "^4.2.106",
+    "box2d-wasm": "^7.0.0",
+    "safex-webgl": "1",
+    "entityx-ts": "^2.3.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

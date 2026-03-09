@@ -1,0 +1,33 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "@safe-engine/cocos",
+      "dependencies": {
+        "@cocos/dragonbones-js": "^1.0.2",
+        "@esotericsoftware/spine-core": "^4.2.106",
+        "box2d-wasm": "^7.0.0",
+        "cocos-html5-ts": "^2.1.12",
+        "entityx-ts": "^2.3.1",
+      },
+      "devDependencies": {
+        "typescript": "^5.9.3",
+      },
+    },
+  },
+  "packages": {
+    "@cocos/dragonbones-js": ["@cocos/dragonbones-js@1.0.2", "", {}, "sha512-QeTxZwLr4OeOZDo7ENJfdmwmv9mb68iNNGXUSGqazy/kHTXpBwe2thWvYwxJyM+8+RTsVFkyEhxRkCIfulfN7g=="],
+
+    "@esotericsoftware/spine-core": ["@esotericsoftware/spine-core@4.2.106", "", {}, "sha512-qmiJ09Ny9agT/wtI9zaLVKI03jdpaCP35i7zHxbfGz7LZWMlXA77wI32pM+UgjLPQgE7JZc359IPcQtwvnjXHQ=="],
+
+    "@types/emscripten": ["@types/emscripten@1.41.5", "", {}, "sha512-cMQm7pxu6BxtHyqJ7mQZ2kXWV5SLmugybFdHCBbJ5eHzOo6VhBckEgAT3//rP5FwPHNPeEiq4SmQ5ucBwsOo4Q=="],
+
+    "box2d-wasm": ["box2d-wasm@7.0.0", "", { "dependencies": { "@types/emscripten": "^1.39.6" } }, "sha512-6KbPoYDjm259fTh/3dw/HgP0tbqIBtKTNy2shtphWjMYgHOlYpmygHSLl6qOT79ObSiscVdkL8bYuH95bbLSSw=="],
+
+    "cocos-html5-ts": ["cocos-html5-ts@2.1.12", "", {}, "sha512-DccWji1HJgLONsqNo6JO+WxPbdre4Tr6PYbOPGcyHSniYvMBggV0B37uE8vvwk6wTNrmYuAHPE1I9vFIpBySEw=="],
+
+    "entityx-ts": ["entityx-ts@2.3.1", "", {}, "sha512-y4wEkwO44+xwtFU1R2Nq4+xiUowp8TH91EFd2RXEDu4C11SXeU8L3x3S3ORZy7pSoIUdQ4TaxkgiRuitk/XFMQ=="],
+
+    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+  }
+}
