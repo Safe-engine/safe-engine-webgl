@@ -49,7 +49,7 @@ export class PhysicsSystem implements System {
   listRemoveBody: Box2D.b2Body[] = []
   // listRemoveShape: Box2D.b2Shape[] = []
   colliderMatrix = [[true]]
-  graphics: cc.DrawNode
+  graphics: DrawNode
 
   addDebug() {
     const debugDraw = makeDebugDraw(this.graphics, pixelsPerMeter, box2D)
@@ -61,10 +61,10 @@ export class PhysicsSystem implements System {
     const gravity = new b2Vec2(0, -10)
     this.world = new b2World(gravity)
     // console.log('configure PhysicsSystem world', this.world)
-    const graphics = new cc.DrawNode()
+    const graphics = new DrawNode()
     this.graphics = graphics
     graphics.zIndex = 1000
-    const scene = cc.director.getRunningScene()
+    const scene = director.getRunningScene()
     scene.addChild(graphics)
     event_manager.subscribe(EventTypes.ComponentAdded, PhysicsBoxCollider, ({ entity, component: box }) => {
       // console.log('ComponentAddedEvent PhysicsBoxCollider', box)

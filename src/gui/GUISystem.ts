@@ -17,14 +17,14 @@ export class GUISystem implements System {
 
   private onAddButtonComp: EventReceiveCallback<ButtonComp> = ({ entity, component: button }) => {
     const { zoomScale = 1.2, capInsets, spriteFrame, selectedImage, disableImage, onPress } = button.props
-    const frame = cc.spriteFrameCache.getSpriteFrame(spriteFrame)
+    const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
     const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
     // console.log('onAddButtonComp', spriteFrame, textureType, ccui.Widget.PLIST_TEXTURE)
     const node = new ccui.Button(spriteFrame, selectedImage, disableImage, textureType)
     node.setZoomScale(0)
     if (onPress) {
       let lastScale: number
-      let startPos: cc.Point
+      let startPos: Point
       node.addTouchEventListener((sender, type) => {
         // console.log('Button touch event', lastScale)
         if (type === ccui.Widget.TOUCH_BEGAN) {
@@ -33,7 +33,7 @@ export class GUISystem implements System {
           startPos = sender.getTouchBeganPosition()
         } else if (type === ccui.Widget.TOUCH_ENDED || type === ccui.Widget.TOUCH_CANCELED) {
           const endPos = sender.getTouchEndPosition()
-          const distance = cc.pDistance(startPos, endPos)
+          const distance = pDistance(startPos, endPos)
           sender.setScale(lastScale)
           if (distance < 10) {
             onPress(button)
@@ -43,20 +43,20 @@ export class GUISystem implements System {
     }
     if (capInsets) {
       node.setScale9Enabled(true)
-      node.setCapInsets(cc.rect(...capInsets))
+      node.setCapInsets(rect(...capInsets))
     }
     button.node = entity.assign(new NodeComp(node, entity))
   }
 
   private onAddProgressTimerComp: EventReceiveCallback<ProgressTimerComp> = ({ entity, component: bar }) => {
     const { spriteFrame, fillType = FillType.HORIZONTAL, fillRange = 1, fillCenter = Vec2(0, 0) } = bar.props
-    const frame = cc.spriteFrameCache.getSpriteFrame(spriteFrame)
-    const sprite = new cc.Sprite(frame || spriteFrame)
-    const pTimer = new cc.ProgressTimer(sprite) as cc.ProgressTimer & cc.Node
-    const ptt = fillType === FillType.RADIAL ? cc.ProgressTimer.TYPE_RADIAL : cc.ProgressTimer.TYPE_BAR
+    const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
+    const sprite = new Sprite(frame || spriteFrame)
+    const pTimer = new ProgressTimer(sprite) as ProgressTimer & Node
+    const ptt = fillType === FillType.RADIAL ? ProgressTimer.TYPE_RADIAL : ProgressTimer.TYPE_BAR
     pTimer.setType(ptt)
     if (fillType !== FillType.RADIAL) {
-      const rate = fillType === FillType.HORIZONTAL ? cc.p(1, 0) : cc.p(0, 1)
+      const rate = fillType === FillType.HORIZONTAL ? p(1, 0) : p(0, 1)
       pTimer.setBarChangeRate(rate)
     }
     pTimer.setPercentage(fillRange * 100)
@@ -66,9 +66,9 @@ export class GUISystem implements System {
 
   private onAddLabelComp: EventReceiveCallback<LabelComp> = ({ entity, component: label }) => {
     const { string = '', font = GUISystem.defaultFont, size = 64, outline, shadow, isAdaptWithSize } = label.props
-    const fontName = cc.path.basename(font, '.ttf')
+    const fontName = path.basename(font, '.ttf')
     const node = new ccui.Text(string, fontName, size)
-    node.setTextVerticalAlignment(cc.VERTICAL_TEXT_ALIGNMENT_BOTTOM)
+    node.setTextVerticalAlignment(VERTICAL_TEXT_ALIGNMENT_BOTTOM)
     if (outline) {
       const [color, width] = outline
       node.enableOutline(color, width)
@@ -82,7 +82,7 @@ export class GUISystem implements System {
   }
 
   private onAddScrollViewComp: EventReceiveCallback<ScrollViewComp> = ({ entity, component: scrollView }) => {
-    const { viewSize, contentSize, isScrollToTop, isBounced, direction = cc.SCROLLVIEW_DIRECTION_VERTICAL, onScroll } = scrollView.props
+    const { viewSize, contentSize, isScrollToTop, isBounced, direction = SCROLLVIEW_DIRECTION_VERTICAL, onScroll } = scrollView.props
     const node = new ccui.ScrollView()
     node.setContentSize(viewSize)
     node.setInnerContainerSize(contentSize)
@@ -108,7 +108,7 @@ export class GUISystem implements System {
     textField.setPlaceHolder(placeHolder)
     textField.setFontName(font)
     textField.setFontSize(size)
-    textField.setTextColor(cc.color(255, 255, 255))
+    textField.setTextColor(color(255, 255, 255))
     textField.setMaxLengthEnabled(true)
     textField.setMaxLength(maxLength)
     textField.setPasswordEnabled(isPassword)
@@ -119,10 +119,10 @@ export class GUISystem implements System {
     const { top, right, bottom, left } = component.props
     const nodeComp = entity.getComponent(NodeComp)
     if (top !== undefined) {
-      nodeComp.instance.y = cc.winSize.height - top - nodeComp.instance.height * (1 - nodeComp.instance.anchorY)
+      nodeComp.instance.y = winSize.height - top - nodeComp.instance.height * (1 - nodeComp.instance.anchorY)
     }
     if (right !== undefined) {
-      nodeComp.instance.x = cc.winSize.width - right - nodeComp.instance.width * (1 - nodeComp.instance.anchorX)
+      nodeComp.instance.x = winSize.width - right - nodeComp.instance.width * (1 - nodeComp.instance.anchorX)
     }
     if (bottom !== undefined) {
       nodeComp.instance.y = bottom + nodeComp.instance.height * nodeComp.instance.anchorY

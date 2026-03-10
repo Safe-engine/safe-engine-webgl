@@ -22,21 +22,21 @@
  */
 
 import {
-  Animation,
-  Armature,
-  BoundingBoxType,
-  DragonBones,
-  EventObject,
-  EventStringType,
-  IArmatureProxy,
-  PolygonBoundingBoxData,
+    Animation,
+    Armature,
+    BoundingBoxType,
+    DragonBones,
+    EventObject,
+    EventStringType,
+    IArmatureProxy,
+    PolygonBoundingBoxData,
 } from '@cocos/dragonbones-js'
 
 export type EventCallbackType = (...args) => void
 export interface EventMap {
   [key: string]: [EventCallbackType]
 }
-export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
+export class CocosArmatureDisplay extends Sprite implements IArmatureProxy {
   /**
    * @private
    */
@@ -44,8 +44,8 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
   private _debugDraw = false
   // private _disposeProxy: boolean = false;
   private _armature: Armature = null as any
-  private _debugDrawer: cc.Sprite | null = null
-  // eventDispatcher: cc.EventManager = null as any;
+  private _debugDrawer: Sprite | null = null
+  // eventDispatcher: EventManager = null as any;
   listenerCount = {}
   events: EventMap = {}
 
@@ -53,7 +53,7 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
     // 1. super init first
     super()
     super.ctor() // always call this for compatibility with cocos2dx JS Javascript class system
-    // this.eventDispatcher = cc.eventManager;
+    // this.eventDispatcher = eventManager;
   }
 
   hasEvent(type: EventStringType): boolean {
@@ -95,13 +95,13 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
       this._debugDraw = drawed
       if (this._debugDraw) {
         if (this._debugDrawer === null) {
-          this._debugDrawer = new cc.Sprite()
-          const boneDrawer = new cc.DrawNode()
+          this._debugDrawer = new Sprite()
+          const boneDrawer = new DrawNode()
           this._debugDrawer.addChild(boneDrawer)
         }
 
         this.addChild(this._debugDrawer)
-        const boneDrawer = this._debugDrawer.children[0] as cc.DrawNode
+        const boneDrawer = this._debugDrawer.children[0] as DrawNode
         boneDrawer.clear()
 
         const bones = this._armature.getBones()
@@ -114,11 +114,11 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
           const endY = startY + bone.globalTransformMatrix.b * boneLength
 
           boneDrawer.setLineWidth(2.0)
-          boneDrawer.setColor(cc.color('0x00FFFF'))
-          boneDrawer.drawSegment(cc.p(startX, startY), cc.p(endX, endY))
+          boneDrawer.setColor(color('0x00FFFF'))
+          boneDrawer.drawSegment(p(startX, startY), p(endX, endY))
           // boneDrawer.lineStyle(0.0, 0, 0.0);
           // boneDrawer.beginFill(0x00FFFF, 0.7);
-          boneDrawer.drawCircle(cc.p(startX, startY), 3.0, Math.PI * 2, 64)
+          boneDrawer.drawCircle(p(startX, startY), 3.0, Math.PI * 2, 64)
           // boneDrawer.endFill();
         }
 
@@ -128,29 +128,29 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
           const boundingBoxData = slot.boundingBoxData
 
           if (boundingBoxData) {
-            let child = this._debugDrawer.getChildByName(slot.name) as cc.DrawNode
+            let child = this._debugDrawer.getChildByName(slot.name) as DrawNode
             if (!child) {
-              child = new cc.DrawNode()
+              child = new DrawNode()
               child.setName(slot.name)
               this._debugDrawer.addChild(child)
             }
 
             child.clear()
             child.setLineWidth(2.0)
-            child.setColor(cc.color('0xFF00FF'))
+            child.setColor(color('0xFF00FF'))
             child.setOpacity(0.7)
             // child.lineStyle(2.0, 0xff00ff, 0.7);
 
             switch (boundingBoxData.type) {
               case BoundingBoxType.Rectangle:
                 child.drawRect(
-                  cc.p(-boundingBoxData.width * 0.5, -boundingBoxData.height * 0.5),
-                  cc.p(boundingBoxData.width * 0.5, boundingBoxData.height * 0.5),
+                  p(-boundingBoxData.width * 0.5, -boundingBoxData.height * 0.5),
+                  p(boundingBoxData.width * 0.5, boundingBoxData.height * 0.5),
                 )
                 break
 
               case BoundingBoxType.Ellipse:
-                child.drawCircle(cc.p(0.0, 0.0), boundingBoxData.width * 0.5, 0, 64)
+                child.drawCircle(p(0.0, 0.0), boundingBoxData.width * 0.5, 0, 64)
                 //   -boundingBoxData.width * 0.5,
                 //   -boundingBoxData.height * 0.5,
                 //   boundingBoxData.width,
@@ -170,8 +170,8 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
                   // } else {
                   //   child.lineTo(x, y);
                   // }
-                  // child.drawSegment(cc.p(x, y), cc.p(vertices[i + 2], vertices[i + 3]));
-                  points.push(cc.p(x, y))
+                  // child.drawSegment(p(x, y), p(vertices[i + 2], vertices[i + 3]));
+                  points.push(p(x, y))
                 }
 
                 // child.lineTo(vertices[0], vertices[1]);
@@ -233,7 +233,7 @@ export class CocosArmatureDisplay extends cc.Sprite implements IArmatureProxy {
     // console.log('dispatchDBEvent', type, eventObject);
     // this.eventDispatcher.dispatchCustomEvent(type, eventObject);
     if (this.events[type]) {
-      const ev = new cc.EventCustom(type)
+      const ev = new EventCustom(type)
       ev.setUserData(eventObject)
       this.events[type].forEach((fc) => fc(ev))
     }

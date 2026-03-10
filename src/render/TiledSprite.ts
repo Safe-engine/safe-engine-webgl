@@ -1,7 +1,7 @@
 import { tieldFsh, tiledVsh } from './shader'
 
-export class TiledSpriteNode extends cc.Sprite {
-  _program: cc.GLProgram
+export class TiledSpriteNode extends Sprite {
+  _program: GLProgram
   _tileScaleLoc: WebGLUniformLocation
   _texSizeLoc: WebGLUniformLocation
   _texLoc: WebGLUniformLocation
@@ -15,11 +15,11 @@ export class TiledSpriteNode extends cc.Sprite {
   }
 
   initShader() {
-    const program = new cc.GLProgram()
+    const program = new GLProgram()
     program.initWithVertexShaderByteArray(tiledVsh, tieldFsh)
-    program.addAttribute(cc.ATTRIBUTE_NAME_POSITION, cc.VERTEX_ATTRIB_POSITION)
-    program.addAttribute(cc.ATTRIBUTE_NAME_COLOR, cc.VERTEX_ATTRIB_COLOR)
-    program.addAttribute(cc.ATTRIBUTE_NAME_TEX_COORD, cc.VERTEX_ATTRIB_TEX_COORDS)
+    program.addAttribute(ATTRIBUTE_NAME_POSITION, VERTEX_ATTRIB_POSITION)
+    program.addAttribute(ATTRIBUTE_NAME_COLOR, VERTEX_ATTRIB_COLOR)
+    program.addAttribute(ATTRIBUTE_NAME_TEX_COORD, VERTEX_ATTRIB_TEX_COORDS)
     program.link()
     program.updateUniforms()
 
@@ -61,16 +61,16 @@ export class TiledSpriteNode extends cc.Sprite {
 }
 
 export function createTiledSprite(src: string, totalW: number, totalH: number) {
-  const tileSprite = new cc.Sprite(src)
+  const tileSprite = new Sprite(src)
   // lấy kích thước gốc của texture
   const tileW = tileSprite.texture.width
   const tileH = tileSprite.texture.height
-  const program = new cc.GLProgram()
+  const program = new GLProgram()
   program.initWithString(tiledVsh, tieldFsh)
   // program.initWithVertexShaderByteArray(vert, frag);
-  program.addAttribute(cc.ATTRIBUTE_NAME_POSITION, cc.VERTEX_ATTRIB_POSITION)
-  program.addAttribute(cc.ATTRIBUTE_NAME_COLOR, cc.VERTEX_ATTRIB_COLOR)
-  program.addAttribute(cc.ATTRIBUTE_NAME_TEX_COORD, cc.VERTEX_ATTRIB_TEX_COORDS)
+  program.addAttribute(ATTRIBUTE_NAME_POSITION, VERTEX_ATTRIB_POSITION)
+  program.addAttribute(ATTRIBUTE_NAME_COLOR, VERTEX_ATTRIB_COLOR)
+  program.addAttribute(ATTRIBUTE_NAME_TEX_COORD, VERTEX_ATTRIB_TEX_COORDS)
   if (!program.link()) {
     console.error('Failed to link shader program')
     return

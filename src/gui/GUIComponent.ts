@@ -26,7 +26,7 @@ export class ButtonComp extends ComponentX<ButtonCompProps & BaseComponentProps<
   set spriteFrame(spriteFrame) {
     this.props.spriteFrame = spriteFrame
     if (this.node && this.node.instance instanceof ccui.Button) {
-      const frame = cc.spriteFrameCache.getSpriteFrame(spriteFrame)
+      const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
       const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
       this.node.instance.loadTextureNormal(spriteFrame, textureType)
     }
@@ -41,21 +41,21 @@ interface ProgressTimerProps {
   isReverse?: boolean
 }
 
-export class ProgressTimerComp extends ComponentX<ProgressTimerProps & BaseComponentProps<ProgressTimerComp>, cc.ProgressTimer & cc.Node> {
+export class ProgressTimerComp extends ComponentX<ProgressTimerProps & BaseComponentProps<ProgressTimerComp>, ProgressTimer & Node> {
   get fillRange() {
-    if (this.node.instance instanceof cc.ProgressTimer) {
+    if (this.node.instance instanceof ProgressTimer) {
       return this.node.instance.getPercentage() * 0.01
     }
   }
 
   set fillStart(val: number) {
-    if (this.node.instance instanceof cc.ProgressTimer) {
+    if (this.node.instance instanceof ProgressTimer) {
       this.node.instance.setMidpoint(Vec2(val, val))
     }
   }
 
   set fillRange(val: number) {
-    if (this.node.instance instanceof cc.ProgressTimer) {
+    if (this.node.instance instanceof ProgressTimer) {
       this.node.instance.setPercentage(val * 100)
     }
   }
@@ -123,7 +123,7 @@ interface WidgetCompProps {
   bottom?: Integer
   left?: Integer
 }
-export class WidgetComp extends ComponentX<WidgetCompProps & BaseComponentProps<WidgetComp>, cc.Node> {}
+export class WidgetComp extends ComponentX<WidgetCompProps & BaseComponentProps<WidgetComp>, Node> {}
 
 interface GridLayoutCompProps {
   top?: Integer
@@ -132,7 +132,7 @@ interface GridLayoutCompProps {
   spaceY?: Integer
   columns?: Integer
 }
-export class GridLayoutComp extends ComponentX<GridLayoutCompProps & BaseComponentProps<GridLayoutComp>, cc.Node> {
+export class GridLayoutComp extends ComponentX<GridLayoutCompProps & BaseComponentProps<GridLayoutComp>, Node> {
   start() {
     this.doLayout()
   }

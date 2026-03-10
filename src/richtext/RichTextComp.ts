@@ -27,15 +27,15 @@ export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentPr
       const fontSize = this.props.size || 64
       for (let index = 0; index < newTextArray.length; index++) {
         const { style = {}, text } = newTextArray[index]
-        const fontName = cc.path.basename(this.props.font || GUISystem.defaultFont, '.ttf')
+        const fontName = path.basename(this.props.font || GUISystem.defaultFont, '.ttf')
         if (style.outline) {
           // console.log('richText', richText, (ccui as any).RichElementCustomNode)
           const label = new ccui.Text(text, fontName, fontSize)
-          label.enableOutline(cc.hexToColor(style.outline.color), style.outline.width || 3)
-          const customElem = ccui.RichElementCustomNode.create(1, cc.color(255, 0, 0), 255, label)
+          label.enableOutline(hexToColor(style.outline.color), style.outline.width || 3)
+          const customElem = ccui.RichElementCustomNode.create(1, color(255, 0, 0), 255, label)
           this.node.instance.pushBackElement(customElem)
         } else {
-          const color = style.color ? cc.hexToColor(style.color) : cc.Color.WHITE
+          const color = style.color ? hexToColor(style.color) : Color.WHITE
           const richText = ccui.RichElementText.create(index, color, 255, text, fontName, fontSize)
           this.node.instance.pushBackElement(richText)
         }

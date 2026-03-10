@@ -20,14 +20,14 @@ interface SpriteRenderProps {
   tiledSize?: Size
 }
 
-export class SpriteRender extends ComponentX<SpriteRenderProps & BaseComponentProps<SpriteRender>, cc.Sprite> {
+export class SpriteRender extends ComponentX<SpriteRenderProps & BaseComponentProps<SpriteRender>, Sprite> {
   get spriteFrame() {
     return this.props.spriteFrame
   }
 
   set spriteFrame(frame) {
     this.props.spriteFrame = frame
-    if (this.node && this.node.instance instanceof cc.Sprite) {
+    if (this.node && this.node.instance instanceof Sprite) {
       this.node.instance.setTexture(frame)
     }
   }
@@ -42,12 +42,12 @@ interface MaskRenderProps {
   alphaThreshold?: number
   inverted?: boolean
 }
-export class MaskRender extends ComponentX<MaskRenderProps, cc.ClippingNode> {}
+export class MaskRender extends ComponentX<MaskRenderProps, ClippingNode> {}
 
 interface ParticleCompProps {
   plistFile: string
 }
-export class ParticleComp extends ComponentX<ParticleCompProps, cc.ParticleSystem> {}
+export class ParticleComp extends ComponentX<ParticleCompProps, ParticleSystem> {}
 
 interface GraphicsRenderProps {
   lineWidth?: number
@@ -55,7 +55,7 @@ interface GraphicsRenderProps {
   fillColor?: ColorSource
 }
 
-export class GraphicsRender extends ComponentX<GraphicsRenderProps & BaseComponentProps<GraphicsRender>, cc.DrawNode> {
+export class GraphicsRender extends ComponentX<GraphicsRenderProps & BaseComponentProps<GraphicsRender>, DrawNode> {
   drawDot(center: Vec2, r: number) {
     this.node.instance.drawDot(center, r, this.props.fillColor)
   }
@@ -112,7 +112,7 @@ export class GraphicsRender extends ComponentX<GraphicsRenderProps & BaseCompone
   }
 
   clear() {
-    if (this.node.instance instanceof cc.DrawNode) {
+    if (this.node.instance instanceof DrawNode) {
       this.node.instance.clear()
     }
   }
@@ -125,7 +125,7 @@ interface MotionStreakProps {
   stroke?: number
   color?: Color4B
 }
-export class MotionStreakComp extends ComponentX<MotionStreakProps & { $ref?: MotionStreakComp }, cc.MotionStreak> {
+export class MotionStreakComp extends ComponentX<MotionStreakProps & { $ref?: MotionStreakComp }, MotionStreak> {
   reset() {
     this.node.instance.reset()
   }

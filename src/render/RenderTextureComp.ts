@@ -5,10 +5,10 @@ interface RenderTextureCompProps extends BaseComponentProps<RenderTextureComp> {
   height: number
 }
 
-export class RenderTextureComp extends ComponentX<RenderTextureCompProps, cc.RenderTexture> {
+export class RenderTextureComp extends ComponentX<RenderTextureCompProps, RenderTexture> {
   render() {
     const { width, height } = this.props
-    const rt = new cc.RenderTexture(width, height)
+    const rt = new RenderTexture(width, height)
 
     const world = GameWorld.Instance
     const entity = world.entities.create()

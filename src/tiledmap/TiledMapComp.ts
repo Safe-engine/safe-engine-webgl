@@ -4,7 +4,7 @@ interface TiledMapCompProps extends BaseComponentProps<TiledMapComp> {
   mapFile: string
 }
 
-export class TiledMapComp extends ComponentX<TiledMapCompProps, cc.TMXTiledMap> {
+export class TiledMapComp extends ComponentX<TiledMapCompProps, TMXTiledMap> {
   getLayer(layerName: string) {
     return this.node.instance.getLayer(layerName)
   }
@@ -13,7 +13,7 @@ export class TiledMapComp extends ComponentX<TiledMapCompProps, cc.TMXTiledMap> 
   }
 
   render() {
-    const tiledMap = new cc.TMXTiledMap(this.props.mapFile)
+    const tiledMap = new TMXTiledMap(this.props.mapFile)
     const world = GameWorld.Instance
     const entity = world.entities.create()
     entity.assign(new NodeComp(tiledMap, entity))

@@ -1,7 +1,8 @@
+import { pMult } from 'safex-webgl'
 import { Color4B, Vec2 } from '../polyfills'
 import { PTM_RATIO } from './PhysicsSystem'
 
-export const makeDebugDraw = (graphics: cc.DrawNode, pixelsPerMeter, box2D: typeof Box2D) => {
+export const makeDebugDraw = (graphics: DrawNode, pixelsPerMeter, box2D: typeof Box2D) => {
   const {
     b2Color,
     b2Draw: { e_shapeBit },
@@ -72,7 +73,7 @@ export const makeDebugDraw = (graphics: cc.DrawNode, pixelsPerMeter, box2D: type
    * @returns {void}
    */
   const drawCircle = (center, radius, axis, fill) => {
-    graphics.drawCircle(cc.pMult(center, PTM_RATIO), radius * PTM_RATIO, 0, 32, fill, 2, Color4B(255, 0, 0, 150))
+    graphics.drawCircle(pMult(center, PTM_RATIO), radius * PTM_RATIO, 0, 32, fill, 2, Color4B(255, 0, 0, 150))
   }
 
   /**

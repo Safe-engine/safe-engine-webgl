@@ -7,12 +7,12 @@ import { CollideSystem } from './CollideSystem'
 function getNodeToWorldTransformAR(node) {
   const t = node.instance.getNodeToWorldTransform()
   const anchorPointSize = node.instance.getAnchorPointInPoints()
-  const transform = cc.affineTransformTranslate(t, anchorPointSize.x, anchorPointSize.y)
+  const transform = affineTransformTranslate(t, anchorPointSize.x, anchorPointSize.y)
   return transform
 }
 
 function cloneRect(origin) {
-  return cc.rect(origin.x, origin.y, origin.width, origin.height)
+  return rect(origin.x, origin.y, origin.width, origin.height)
 }
 interface ColliderProps extends BaseComponentProps<Collider> {
   tag?: number
@@ -22,13 +22,13 @@ interface ColliderProps extends BaseComponentProps<Collider> {
   onCollisionStay?: (other: Collider) => void
 }
 export class Collider<T = ColliderProps> extends ComponentX<T> {
-  _worldPoints: Vec2[] | cc.Point[] = []
-  _worldPosition: Vec2 | cc.Point
+  _worldPoints: Vec2[] | Point[] = []
+  _worldPosition: Vec2 | Point
   _worldRadius
-  _AABB: cc.Rect = cc.rect(0, 0, 0, 0)
-  _preAabb: cc.Rect = cc.rect(0, 0, 0, 0)
+  _AABB: Rect = rect(0, 0, 0, 0)
+  _preAabb: Rect = rect(0, 0, 0, 0)
 
-  // update(dt: number, draw?: cc.DrawNode) {}
+  // update(dt: number, draw?: DrawNode) {}
   getAABB() {
     const collider = this.getComponent(Collider)
     if (collider) return collider._AABB
@@ -48,15 +48,15 @@ interface BoxColliderProps extends BaseComponentProps<BoxCollider> {
 }
 export class BoxCollider extends Collider<ColliderProps & BoxColliderProps> {
   get size() {
-    return cc.size(this.props.width, this.props.height)
+    return size(this.props.width, this.props.height)
   }
 
-  set size(s: cc.Size) {
+  set size(s: Size) {
     this.props.width = s.width
     this.props.height = s.height
   }
 
-  update(dt, draw: cc.DrawNode) {
+  update(dt, draw: DrawNode) {
     if (!this.node) {
       return
     }
@@ -66,14 +66,14 @@ export class BoxCollider extends Collider<ColliderProps & BoxColliderProps> {
     const hw = width * 0.5
     const hh = height * 0.5
     const transform = getNodeToWorldTransformAR(this.node)
-    const rect = cc.rect(x - hw, y - hh, width, height)
+    const rect = rect(x - hw, y - hh, width, height)
     const tempPoints = [
       Vec2(rect.x, rect.y),
       Vec2(rect.x, rect.y + rect.height),
       Vec2(rect.x + rect.width, rect.y + rect.height),
       Vec2(rect.x + rect.width, rect.y),
     ]
-    this._worldPoints = tempPoints.map((p) => cc.pointApplyAffineTransform(p, transform))
+    this._worldPoints = tempPoints.map((p) => pointApplyAffineTransform(p, transform))
 
     const listX = this._worldPoints.map(({ x }) => x)
     const listY = this._worldPoints.map(({ y }) => y)
@@ -92,7 +92,7 @@ interface CircleColliderProps extends BaseComponentProps<CircleCollider> {
   radius: number
 }
 export class CircleCollider extends Collider<ColliderProps & CircleColliderProps> {
-  update(dt, draw: cc.DrawNode) {
+  update(dt, draw: DrawNode) {
     if (!this.node) {
       return
     }
@@ -101,9 +101,9 @@ export class CircleCollider extends Collider<ColliderProps & CircleColliderProps
     const { radius, offset = [0, 0] } = this.props
     const [x, y] = offset
     this._worldRadius = radius * this.node.scale
-    this._worldPosition = cc.pointApplyAffineTransform(cc.p(x, y), transform)
+    this._worldPosition = pointApplyAffineTransform(p(x, y), transform)
     if (draw) {
-      draw.drawDot(this._worldPosition, this._worldRadius, cc.Color.DEBUG_FILL_COLOR)
+      draw.drawDot(this._worldPosition, this._worldRadius, Color.DEBUG_FILL_COLOR)
       draw.drawCircle(this._worldPosition, this._worldRadius, 0, 64, true, CollideSystem.debugWidth, CollideSystem.debugColor)
     }
     this._preAabb = cloneRect(this._AABB)
@@ -111,9 +111,9 @@ export class CircleCollider extends Collider<ColliderProps & CircleColliderProps
     this._AABB.y = this._worldPosition.y - this._worldRadius
     this._AABB.width = this._worldRadius * 2
     this._AABB.height = this._AABB.width
-    // draw.drawRect(cc.p(this._AABB.x, this._AABB.y),
-    //   cc.p(this._worldPosition.x + this._worldRadius, this._worldPosition.y + this._worldRadius),
-    //   cc.Color.WHITE, 3, cc.Color.DEBUG_BORDER_COLOR);
+    // draw.drawRect(p(this._AABB.x, this._AABB.y),
+    //   p(this._worldPosition.x + this._worldRadius, this._worldPosition.y + this._worldRadius),
+    //   Color.WHITE, 3, Color.DEBUG_BORDER_COLOR);
   }
 }
 
@@ -138,16 +138,16 @@ export class PolygonCollider extends Collider<ColliderProps & PolygonColliderPro
     this.props.points = points
   }
 
-  update(dt, draw: cc.DrawNode) {
+  update(dt, draw: DrawNode) {
     if (!this.node) {
       return
     }
     const transform = getNodeToWorldTransformAR(this.node)
     // const collider = this.getComponent(Collider)
-    this._worldPoints = this.points.map((p) => cc.pointApplyAffineTransform(p, transform))
-    // cc.log(polyPoints);
+    this._worldPoints = this.points.map((p) => pointApplyAffineTransform(p, transform))
+    // log(polyPoints);
     if (draw) {
-      draw.drawPoly(this._worldPoints, cc.Color.DEBUG_FILL_COLOR, CollideSystem.debugWidth, CollideSystem.debugColor)
+      draw.drawPoly(this._worldPoints, Color.DEBUG_FILL_COLOR, CollideSystem.debugWidth, CollideSystem.debugColor)
     }
     const listX = this._worldPoints.map(({ x }) => x)
     const listY = this._worldPoints.map(({ y }) => y)
@@ -156,7 +156,7 @@ export class PolygonCollider extends Collider<ColliderProps & PolygonColliderPro
     this._AABB.y = getMin(listY)
     this._AABB.width = getMax(listX) - this._AABB.x
     this._AABB.height = getMax(listY) - this._AABB.y
-    // draw.drawRect(cc.p(this._AABB.x, this._AABB.y), cc.p(max(listX), max(listY)),
+    // draw.drawRect(p(this._AABB.x, this._AABB.y), p(max(listX), max(listY)),
   }
 }
 
@@ -201,7 +201,7 @@ export class Contract {
       this._collider1 = collider2
       this._collider2 = collider1
     }
-    // cc.log(this._isPolygonPolygon);
+    // log(this._isPolygonPolygon);
   }
 
   updateState() {
@@ -223,23 +223,23 @@ export class Contract {
     // if (!shouldCollider(this._collider1, this._collider2)) {
     //   return false;
     // }
-    // cc.log(this._collider1.getAABB(), this._collider2.getAABB());
-    if (!cc.rectIntersectsRect(this._collider1.getAABB(), this._collider2.getAABB())) {
+    // log(this._collider1.getAABB(), this._collider2.getAABB());
+    if (!rectIntersectsRect(this._collider1.getAABB(), this._collider2.getAABB())) {
       return false
     }
 
     if (this._isPolygonPolygon) {
-      return cc.Intersection.polygonPolygon(this._collider1._worldPoints, this._collider2._worldPoints)
+      return Intersection.polygonPolygon(this._collider1._worldPoints, this._collider2._worldPoints)
     }
     if (this._isCircleCircle) {
       const p1 = this._collider1
       const p2 = this._collider2
-      return cc.Intersection.circleCircle(p1._worldPosition, p1._worldRadius, p2._worldPosition, p2._worldRadius)
+      return Intersection.circleCircle(p1._worldPosition, p1._worldRadius, p2._worldPosition, p2._worldRadius)
     }
 
     if (this._isPolygonCircle) {
       const p2 = this._collider2
-      return cc.Intersection.polygonCircle(this._collider1._worldPoints, p2._worldPosition, p2._worldRadius)
+      return Intersection.polygonCircle(this._collider1._worldPoints, p2._worldPosition, p2._worldRadius)
     }
 
     return false

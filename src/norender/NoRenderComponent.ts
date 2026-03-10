@@ -40,8 +40,8 @@ interface TouchEventProps {
   onTouchCancel?: TouchEVentCallback
 }
 export class TouchEventRegister extends ComponentX<TouchEventProps> {
-  listener: cc.EventListener
-  touch: cc.Touch
+  listener: EventListener
+  touch: Touch
   setEnabled(enabled: boolean) {
     this.listener.setEnabled(enabled)
   }

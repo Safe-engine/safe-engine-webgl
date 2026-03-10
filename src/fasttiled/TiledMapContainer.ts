@@ -1,7 +1,7 @@
 import { Vec2 } from '../polyfills'
 import { tileToPixel } from './tield'
 
-export class TiledMapContainer extends cc.Node {
+export class TiledMapContainer extends Node {
   layers: Map<string, TiledMapLayer> = new Map()
   objectGroups: Map<string, any> = new Map()
 
@@ -14,7 +14,7 @@ export class TiledMapContainer extends cc.Node {
   }
 }
 
-export class TiledMapLayer extends cc.Node {
+export class TiledMapLayer extends Node {
   mapData: any
   getPositionAt(tx: number, ty: number) {
     // Use zero-based tile coordinates (no +1) and convert local tile position to world space

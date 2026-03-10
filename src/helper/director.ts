@@ -1,7 +1,7 @@
 export function pauseAll() {
-  cc.director.pause()
+  director.pause()
 }
 
 export function resumeAll() {
-  cc.director.resume()
+  director.resume()
 }

@@ -27,15 +27,15 @@ import { BlendMode, MeshAttachment, RegionAttachment, Utils } from '@esotericsof
 export const WebGLRenderCmd = function (renderableObject) {
   this._rootCtor(renderableObject)
   this._needDraw = true
-  this._matrix = new cc.math.Matrix4()
+  this._matrix = new math.Matrix4()
   this._matrix.identity()
   this._currTexture = null
   this._currBlendFunc = {}
-  this.vertexType = cc.renderer.VertexType.CUSTOM
-  this.setShaderProgram(cc.shaderCache.programForKey(cc.SHADER_SPRITE_POSITION_TEXTURECOLOR))
+  this.vertexType = renderer.VertexType.CUSTOM
+  this.setShaderProgram(shaderCache.programForKey(SHADER_SPRITE_POSITION_TEXTURECOLOR))
 }
 
-const proto = (WebGLRenderCmd.prototype = Object.create(cc.Node.WebGLRenderCmd.prototype))
+const proto = (WebGLRenderCmd.prototype = Object.create(Node.WebGLRenderCmd.prototype))
 proto.constructor = WebGLRenderCmd
 
 proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
@@ -86,18 +86,18 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
     let batchBroken
     if (regionTextureAtlas.texture) {
       this._currTexture = regionTextureAtlas.texture.getRealTexture()
-      batchBroken = cc.renderer._updateBatchedInfo(
+      batchBroken = renderer._updateBatchedInfo(
         this._currTexture,
         this._getBlendFunc(slot.data.blendMode, premultiAlpha),
         this._glProgramState,
       )
     }
     // keep the same logic with RendererWebGL.js, avoid vertex data overflow
-    const uploadAll = vertexDataOffset / 6 + vertCount > (cc.BATCH_VERTEX_COUNT - 200) * 0.5
+    const uploadAll = vertexDataOffset / 6 + vertCount > (BATCH_VERTEX_COUNT - 200) * 0.5
     // Broken for vertex data overflow
     if (!batchBroken && uploadAll) {
       // render the cached data
-      cc.renderer._batchRendering()
+      renderer._batchRendering()
       batchBroken = true
     }
     if (batchBroken) {
@@ -120,9 +120,9 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
 
     // update the index buffer
     if (attachment instanceof RegionAttachment) {
-      cc.renderer._increaseBatchingSize(vertCount, cc.renderer.VertexType.TRIANGLE)
+      renderer._increaseBatchingSize(vertCount, renderer.VertexType.TRIANGLE)
     } else {
-      cc.renderer._increaseBatchingSize(vertCount, cc.renderer.VertexType.CUSTOM, attachment.triangles)
+      renderer._increaseBatchingSize(vertCount, renderer.VertexType.CUSTOM, attachment.triangles)
     }
 
     // update the index data
@@ -131,7 +131,7 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
 
   if (node._debugBones || node._debugSlots) {
     // flush previous vertices
-    cc.renderer._batchRendering()
+    renderer._batchRendering()
 
     const wt = this._worldTransform,
       mat = this._matrix.mat
@@ -141,10 +141,10 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
     mat[1] = wt.b
     mat[5] = wt.d
     mat[13] = wt.ty
-    cc.kmGLMatrixMode(cc.KM_GL_MODELVIEW)
-    cc.current_stack.stack.push(cc.current_stack.top)
-    cc.current_stack.top = this._matrix
-    const drawingUtil = cc._drawingUtil
+    kmGLMatrixMode(KM_GL_MODELVIEW)
+    current_stack.stack.push(current_stack.top)
+    current_stack.top = this._matrix
+    const drawingUtil = _drawingUtil
 
     if (node._debugSlots && debugSlotsInfo && debugSlotsInfo.length > 0) {
       // Slots.
@@ -169,7 +169,7 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
         bone = locSkeleton.bones[i]
         const x = bone.data.length * bone.a + bone.worldX
         const y = bone.data.length * bone.c + bone.worldY
-        drawingUtil.drawLine(cc.p(bone.worldX, bone.worldY), cc.p(x, y))
+        drawingUtil.drawLine(p(bone.worldX, bone.worldY), p(x, y))
       }
 
       // Bone origins.
@@ -178,13 +178,13 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
 
       for (i = 0, n = locSkeleton.bones.length; i < n; i++) {
         bone = locSkeleton.bones[i]
-        drawingUtil.drawPoint(cc.p(bone.worldX, bone.worldY))
+        drawingUtil.drawPoint(p(bone.worldX, bone.worldY))
         if (i == 0) {
           drawingUtil.setDrawColor(0, 255, 0, 255)
         }
       }
     }
-    cc.kmGLPopMatrix()
+    kmGLPopMatrix()
   }
 
   return 0
@@ -194,20 +194,20 @@ proto._getBlendFunc = function (blendMode, premultiAlpha) {
   let ret = this._currBlendFunc
   switch (blendMode) {
     case BlendMode.Normal:
-      ret.src = premultiAlpha ? cc.ONE : cc.SRC_ALPHA
-      ret.dst = cc.ONE_MINUS_SRC_ALPHA
+      ret.src = premultiAlpha ? ONE : SRC_ALPHA
+      ret.dst = ONE_MINUS_SRC_ALPHA
       break
     case BlendMode.Additive:
-      ret.src = premultiAlpha ? cc.ONE : cc.SRC_ALPHA
-      ret.dst = cc.ONE
+      ret.src = premultiAlpha ? ONE : SRC_ALPHA
+      ret.dst = ONE
       break
     case BlendMode.Multiply:
-      ret.src = cc.DST_COLOR
-      ret.dst = cc.ONE_MINUS_SRC_ALPHA
+      ret.src = DST_COLOR
+      ret.dst = ONE_MINUS_SRC_ALPHA
       break
     case BlendMode.Screen:
-      ret.src = cc.ONE
-      ret.dst = cc.ONE_MINUS_SRC_COLOR
+      ret.src = ONE
+      ret.dst = ONE_MINUS_SRC_COLOR
       break
     default:
       ret = this._node._blendFunc
@@ -292,10 +292,10 @@ proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlp
     // return the quad points info if debug slot enabled
     const VERTEX = RegionAttachment
     return [
-      cc.p(vertices[VERTEX.X1], vertices[VERTEX.Y1]),
-      cc.p(vertices[VERTEX.X2], vertices[VERTEX.Y2]),
-      cc.p(vertices[VERTEX.X3], vertices[VERTEX.Y3]),
-      cc.p(vertices[VERTEX.X4], vertices[VERTEX.Y4]),
+      p(vertices[VERTEX.X1], vertices[VERTEX.Y1]),
+      p(vertices[VERTEX.X2], vertices[VERTEX.Y2]),
+      p(vertices[VERTEX.X3], vertices[VERTEX.Y3]),
+      p(vertices[VERTEX.X4], vertices[VERTEX.Y4]),
     ]
   }
 }

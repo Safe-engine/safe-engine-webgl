@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import {
-  Animation,
-  AnimationState,
-  AnimationStateData,
-  AtlasAttachmentLoader,
-  Physics,
-  SkeletonBinary,
-  TextureAtlas,
+    Animation,
+    AnimationState,
+    AnimationStateData,
+    AtlasAttachmentLoader,
+    Physics,
+    SkeletonBinary,
+    TextureAtlas,
 } from '@esotericsoftware/spine-core'
 import { CCSkeleton } from './CCSkeleton'
 import { SkeletonTexture } from './CCSkeletonTexture'
@@ -42,8 +42,8 @@ export const _atlasLoader = {
     this.spAtlasFile = spAtlasFile
   },
   load: function (line) {
-    const texturePath = cc.path.join(cc.path.dirname(this.spAtlasFile), line)
-    const texture = cc.textureCache.addImage(texturePath)
+    const texturePath = path.join(path.dirname(this.spAtlasFile), line)
+    const texture = textureCache.addImage(texturePath)
     const tex = new SkeletonTexture({ width: texture.getPixelsWide(), height: texture.getPixelsHigh() })
     tex.setRealTexture(texture)
     return tex
@@ -184,7 +184,7 @@ export class SkeletonAnimation extends CCSkeleton {
   setAnimation(trackIndex: number, name: string, loop: boolean) {
     const animation = this._skeleton.data.findAnimation(name)
     if (!animation) {
-      cc.log(`Spine: Animation not found: ${name}/${this._skeleton.data.animations.map((a) => a.name)} `)
+      log(`Spine: Animation not found: ${name}/${this._skeleton.data.animations.map((a) => a.name)} `)
       return null
     }
     return this._state.setAnimationWith(trackIndex, animation, loop)
@@ -194,7 +194,7 @@ export class SkeletonAnimation extends CCSkeleton {
     delay = delay == null ? 0 : delay
     const animation = this._skeleton.data.findAnimation(name)
     if (!animation) {
-      cc.log(`Spine: Animation not found:${name}`)
+      log(`Spine: Animation not found:${name}`)
       return null
     }
     return this._state.addAnimationWith(trackIndex, animation, loop, delay)
@@ -220,7 +220,7 @@ export class SkeletonAnimation extends CCSkeleton {
     super.update(dt)
     dt *= this._timeScale
     if (this._renderCmd && typeof this._renderCmd.setDirtyFlag === 'function') {
-      this._renderCmd.setDirtyFlag(cc.Node._dirtyFlags.contentDirty)
+      this._renderCmd.setDirtyFlag(Node._dirtyFlags.contentDirty)
     }
     this._state.update(dt)
     this._state.apply(this._skeleton)
@@ -287,7 +287,7 @@ export class SkeletonAnimation extends CCSkeleton {
   }
 
   static createWithBinaryFile(skeletonDataFile: any, atlasFile: any, scale?: any) {
-    const dataTex = cc.loader.getRes(atlasFile)
+    const dataTex = loader.getRes(atlasFile)
     _atlasLoader.setAtlasFile(atlasFile)
     const atlas = new TextureAtlas(dataTex)
     for (const page of atlas.pages) {
@@ -296,7 +296,7 @@ export class SkeletonAnimation extends CCSkeleton {
     }
     const attachmentLoader = new AtlasAttachmentLoader(atlas)
     const skeletonBinaryReader = new SkeletonBinary(attachmentLoader)
-    const skeletonBinary = cc.loader.getRes(skeletonDataFile)
+    const skeletonBinary = loader.getRes(skeletonDataFile)
     const skeletonData = skeletonBinaryReader.readSkeletonData(skeletonBinary)
     return new SkeletonAnimation(skeletonData, true, scale)
   }

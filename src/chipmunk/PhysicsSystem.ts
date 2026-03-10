@@ -16,7 +16,7 @@ export function setColliderMatrix(colliderMatrix = [[true]]) {
 
 export class PhysicsSystem implements System {
   space: cp.Space
-  _debugNode: cc.PhysicsDebugNode
+  _debugNode: PhysicsDebugNode
   listRemoveBody: cp.Body[] = []
   listRemoveShape: cp.Shape[] = []
   colliderMatrix = [[true]]
@@ -193,7 +193,7 @@ export class PhysicsSystem implements System {
       this.space.step(dt)
     }
     // this.space.addPostStepCallback(() => {
-    // cc.log('addPostStepCallback');
+    // log('addPostStepCallback');
     this.listRemoveShape.forEach((shape) => {
       if (shape && this.space.containsShape(shape)) {
         this.space.removeShape(shape)
@@ -217,12 +217,12 @@ export class PhysicsSystem implements System {
 
   collisionBegin(arbiter: cp.Arbiter, space: cp.Space) {
     const shapes = arbiter.getShapes()
-    // cc.log(arbiter);
+    // log(arbiter);
     const node1: NodeComp = arbiter.body_a.data
     const node2: NodeComp = arbiter.body_b.data
     const groupA = shapes[0].group
     const groupB = shapes[1].group
-    // cc.log(groupA, groupB, this.colliderMatrix[groupA][groupB])
+    // log(groupA, groupB, this.colliderMatrix[groupA][groupB])
     if (!this.colliderMatrix[groupA][groupB]) {
       return false
     }
@@ -243,17 +243,17 @@ export class PhysicsSystem implements System {
   }
 
   collisionPre(arbiter: cp.Arbiter, space: cp.Space) {
-    // cc.log('collisionPre');
+    // log('collisionPre');
     return true
   }
 
   collisionPost(arbiter: cp.Arbiter, space: cp.Space) {
-    // cc.log('collisionPost');
+    // log('collisionPost');
     return true
   }
 
   collisionSeparate(arbiter: cp.Arbiter, space: cp.Space) {
-    // cc.log('collisionSeparate');
+    // log('collisionSeparate');
     const node1: NodeComp = arbiter.body_a.data
     const node2: NodeComp = arbiter.body_b.data
     const phys1 = node1.getComponent(RigidBody)
@@ -271,8 +271,8 @@ export class PhysicsSystem implements System {
     return true
   }
   addDebug() {
-    const currentScene = cc.director.getRunningScene()
-    this._debugNode = new cc.PhysicsDebugNode(this.space)
+    const currentScene = director.getRunningScene()
+    this._debugNode = new PhysicsDebugNode(this.space)
     this._debugNode.visible = true
     currentScene.addChild(this._debugNode, 100)
   }

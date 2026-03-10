@@ -1,3 +1,6 @@
+import { director, game, global, loader, ResolutionPolicy, Scene, SpriteFrame, spriteFrameCache, sys, Texture2D, view } from 'safex-webgl'
+import { path } from 'safex-webgl/helper'
+import { rect } from '../../safex-webgl/dist/core/cocoa/Geometry'
 import { GUISystem } from './gui'
 import { GameWorld } from './gworld'
 import { NoRenderSystem } from './norender'
@@ -21,10 +24,9 @@ interface RunOptions {
 }
 export async function startGame(defaultFont: string, { width, height }, option?: Partial<RunOptions>) {
   return new Promise<void>((resolve) => {
-    class BootScene extends cc.Scene {
+    class BootScene extends Scene {
       constructor() {
         super()
-        super.ctor() // always call this for compatibility with cocos2dx JS Javascript class system
         this.scheduleUpdate()
       }
       onEnter() {
@@ -38,8 +40,8 @@ export async function startGame(defaultFont: string, { width, height }, option?:
       }
     }
 
-    cc._isContextMenuEnable = true
-    cc.game.run(
+    global._isContextMenuEnable = true
+    game.run(
       {
         debugMode: 1,
         showFPS: false,
@@ -50,15 +52,15 @@ export async function startGame(defaultFont: string, { width, height }, option?:
       },
       function onStart() {
         // Pass true to enable retina display, disabled by default to improve performance
-        cc.view.enableRetina(cc.sys.os === cc.sys.OS_IOS)
+        view.enableRetina(sys.os === sys.OS_IOS)
         // Adjust viewport meta
-        cc.view.adjustViewPort(true)
+        view.adjustViewPort(true)
         // Setup the resolution policy and design resolution size
-        const policy = width > height ? cc.ResolutionPolicy.FIXED_HEIGHT : cc.ResolutionPolicy.FIXED_WIDTH
-        cc.view.setDesignResolutionSize(width, height, policy)
+        const policy = width > height ? ResolutionPolicy.FIXED_HEIGHT : ResolutionPolicy.FIXED_WIDTH
+        view.setDesignResolutionSize(width, height, policy)
         // The game will be resized when browser size change
-        cc.view.resizeWithBrowserSize(true)
-        cc.director.runScene(new BootScene())
+        view.resizeWithBrowserSize(true)
+        director.runScene(new BootScene())
       },
     )
   })
@@ -81,7 +83,7 @@ function getAllAssets(assets: any) {
     } else if (value.endsWith('.ttf')) {
       allAssets.push({
         type: 'font',
-        name: cc.path.basename(value, '.ttf'),
+        name: path.basename(value, '.ttf'),
         srcs: [value],
       })
     } else {
@@ -94,15 +96,15 @@ function getAllAssets(assets: any) {
 export function loadAll(assets: any, cb?: (progress: number) => void) {
   const allAssets = getAllAssets(assets)
   return new Promise((resolve: any) => {
-    cc.loader.load(
+    loader.load(
       allAssets,
       function (result, count, loadedCount) {
         // console.log(result)
-        if (result instanceof cc.Texture2D) {
-          // cc.textureCache.addImage(result.url)
-          const frame = new cc.SpriteFrame(result, cc.rect(0, 0, result.getPixelsWide(), result.getPixelsHigh()))
-          // console.log('cc.Texture2D', result, frame)
-          cc.spriteFrameCache.addSpriteFrame(frame, result.url)
+        if (result instanceof Texture2D) {
+          // textureCache.addImage(result.url)
+          const frame = new SpriteFrame(result, rect(0, 0, result.getPixelsWide(), result.getPixelsHigh()))
+          // console.log('Texture2D', result, frame)
+          spriteFrameCache.addSpriteFrame(frame, result.url)
         }
         let percent = loadedCount / count
         percent = Math.min(percent, 1)
@@ -116,14 +118,12 @@ export function loadAll(assets: any, cb?: (progress: number) => void) {
 export function unloadAll(assets: any) {
   const allAssets = getAllAssets(assets)
   allAssets.forEach((asset) => {
-    cc.loader.release(asset)
+    loader.release(asset)
   })
 }
 
 export function loadJsonFromCache<T>(filePath: string): T {
-  const res = cc.loader.getRes(filePath)
+  const res = loader.getRes(filePath)
   // console.log(filePath, res)
   return res
 }
-
-export const audioEngine = cc.audioEngine

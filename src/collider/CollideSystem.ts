@@ -17,11 +17,11 @@ export function shouldCollider(colA: Collider, colB: Collider) {
 
 export class CollideSystem implements System {
   static debugWidth = 3
-  static debugColor = cc.Color.DEBUG_BORDER_COLOR
+  static debugColor = Color.DEBUG_BORDER_COLOR
   listColliders: Collider[] = []
   _contracts: Contract[] = []
   removeColliders = []
-  debugGraphics: cc.DrawNode
+  debugGraphics: DrawNode
   enabledDebugDraw = false
   enabled = true
   colliderMatrix = [[true]]
@@ -55,23 +55,23 @@ export class CollideSystem implements System {
       return
     }
     this.listColliders.forEach((collider) => {
-      if (!cc.sys.isObjectValid(collider.node.instance)) {
+      if (!sys.isObjectValid(collider.node.instance)) {
         this.removeColliders.push(collider)
       }
     })
     // this.removeColliders.forEach(comp => {
     //   this.listColliders = this.listColliders.filter(col => !col.isEqual(comp)
-    //     && cc.sys.isObjectValid(col.node.instance));
+    //     && sys.isObjectValid(col.node.instance));
     //   this._contracts = this._contracts.filter(contract => {
     //     const col1 = contract._collider1;
     //     const col2 = contract._collider2;
-    //     if (col1.isEqual(comp) || !cc.sys.isObjectValid(col1.node.instance)) {
+    //     if (col1.isEqual(comp) || !sys.isObjectValid(col1.node.instance)) {
     //       if (contract._touching) {
     //         col2.node.emit('onCollisionExit', col1, col2);
     //       }
     //       return false;
     //     }
-    //     if (col2.isEqual(comp) || !cc.sys.isObjectValid(col2.node.instance)) {
+    //     if (col2.isEqual(comp) || !sys.isObjectValid(col2.node.instance)) {
     //       if (contract._touching) {
     //         col1.node.emit('onCollisionExit', col2, col1);
     //       }
@@ -115,8 +115,8 @@ export class CollideSystem implements System {
       const col1 = contract._collider1
       const col2 = contract._collider2
       if (
-        !cc.sys.isObjectValid(col1.node.instance) ||
-        !cc.sys.isObjectValid(col2.node.instance) ||
+        !sys.isObjectValid(col1.node.instance) ||
+        !sys.isObjectValid(col2.node.instance) ||
         !col1.node ||
         !col2.node ||
         !col1.node.active ||
@@ -170,12 +170,12 @@ export class CollideSystem implements System {
     this.removeColliders.push(collider)
   }
 
-  addDebugNode(root: cc.Scene) {
-    this.debugGraphics = new cc.DrawNode()
+  addDebugNode(root: Scene) {
+    this.debugGraphics = new DrawNode()
     root.addChild(this.debugGraphics, 1000)
   }
   toggleDebugDraw(enable = true) {
     this.enabledDebugDraw = enable
-    this.addDebugNode(cc.director.getRunningScene())
+    this.addDebugNode(director.getRunningScene())
   }
 }

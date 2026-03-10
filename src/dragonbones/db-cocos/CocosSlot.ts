@@ -35,7 +35,7 @@ export class CocosSlot extends Slot {
 
   private _ccMeshDirty = false
   private _textureScale: number
-  private _renderDisplay: cc.Node
+  private _renderDisplay: Node
   _geometryData
   _geometryBones
 
@@ -49,7 +49,7 @@ export class CocosSlot extends Slot {
 
   protected _initDisplay(): void {}
 
-  protected _disposeDisplay(value: cc.Node, isRelease: boolean): void {
+  protected _disposeDisplay(value: Node, isRelease: boolean): void {
     if (!isRelease) {
       value.release()
     }
@@ -63,8 +63,8 @@ export class CocosSlot extends Slot {
     const container = this._armature.display as CocosArmatureDisplay
     container.addChild(this._renderDisplay, this._zOrder)
   }
-  protected _replaceDisplay(value: cc.Node): void {
-    const container = this._armature.display as cc.Node
+  protected _replaceDisplay(value: Node): void {
+    const container = this._armature.display as Node
     const prevDisplay = value
 
     if (this._renderDisplay.parent !== container) {
@@ -108,7 +108,7 @@ export class CocosSlot extends Slot {
   }
 
   protected _updateColor(): void {
-    const color = cc.color(
+    const color = color(
       Math.round(this._colorTransform.redMultiplier * 255),
       Math.round(this._colorTransform.greenMultiplier * 255),
       Math.round(this._colorTransform.blueMultiplier * 255),
@@ -195,7 +195,7 @@ export class CocosSlot extends Slot {
         } else {
           // Normal texture.
           this._textureScale = currentTextureData.parent.scale * this._armature._armatureData.scale
-          const normalDisplay = this._renderDisplay as cc.Sprite
+          const normalDisplay = this._renderDisplay as Sprite
           // console.log(normalDisplay, renderTexture)
           normalDisplay.setSpriteFrame(renderTexture)
         }
@@ -213,7 +213,7 @@ export class CocosSlot extends Slot {
       meshDisplay.y = 0.0
       meshDisplay.visible = false
     } else {
-      const normalDisplay = this._renderDisplay as cc.Sprite
+      const normalDisplay = this._renderDisplay as Sprite
       normalDisplay.texture = null
       normalDisplay.x = 0.0
       normalDisplay.y = 0.0
@@ -231,14 +231,14 @@ export class CocosSlot extends Slot {
     const weightData = deformVertices.verticesData.weight
 
     const hasDeform = deformVertices.vertices.length > 0 && deformVertices.verticesData.inheritDeform
-    // const meshDisplay = (this._renderDisplay.getComponent(cc.Sprite) as any)._sgNode; // as cc.Scale9Sprite;
+    // const meshDisplay = (this._renderDisplay.getComponent(Sprite) as any)._sgNode; // as Scale9Sprite;
     const polygonInfo = this._meshDisplay._polygonInfo
     if (!polygonInfo) {
       return
     }
 
     const verticesAndUVs = polygonInfo.triangles.verts as { x: number; y: number; u: number; v: number }[]
-    const boundsRect = cc.rect(999999.0, 999999.0, -999999.0, -999999.0)
+    const boundsRect = rect(999999.0, 999999.0, -999999.0, -999999.0)
 
     if (weightData !== null) {
       const data = geometryData.data
@@ -358,7 +358,7 @@ export class CocosSlot extends Slot {
     boundsRect.height -= boundsRect.y
 
     polygonInfo.rect = boundsRect
-    this.meshDisplay.setContentSize(cc.size(boundsRect.width, boundsRect.height))
+    this.meshDisplay.setContentSize(size(boundsRect.width, boundsRect.height))
     this.meshDisplay.setMeshPolygonInfo(polygonInfo)
 
     if (weightData !== null) {
@@ -404,7 +404,7 @@ export class CocosSlot extends Slot {
     if (this._renderDisplay === this._rawDisplay || this._renderDisplay === this._meshDisplay) {
       const x = transform.x - (this.globalTransformMatrix.a * this._pivotX + this.globalTransformMatrix.c * this._pivotY)
       const y = transform.y - (this.globalTransformMatrix.b * this._pivotX + this.globalTransformMatrix.d * this._pivotY)
-      // this._renderDisplay.transform = new cc.AffineTransform(
+      // this._renderDisplay.transform = new AffineTransform(
       //   x, y,
       //   transform.scaleX * this._textureScale, transform.scaleY * this._textureScale,
       //   transform.rotation,

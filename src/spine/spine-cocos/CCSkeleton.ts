@@ -1,15 +1,15 @@
 import {
-  AnimationState,
-  AtlasAttachmentLoader,
-  Bone,
-  Physics,
-  RegionAttachment,
-  Skeleton,
-  SkeletonBinary,
-  SkeletonData,
-  SkeletonJson,
-  TextureAtlas,
-  Utils,
+    AnimationState,
+    AtlasAttachmentLoader,
+    Bone,
+    Physics,
+    RegionAttachment,
+    Skeleton,
+    SkeletonBinary,
+    SkeletonData,
+    SkeletonJson,
+    TextureAtlas,
+    Utils,
 } from '@esotericsoftware/spine-core'
 
 import { _atlasLoader } from './CCSkeletonAnimation'
@@ -54,9 +54,9 @@ import { WebGLRenderCmd } from './CCSkeletonWebGLRenderCmd'
  *     Multiple skeletons can use the same SkeletonData (which includes all animations, skins, and attachments).     <br/>
  * </p>
  * @class
- * @extends cc.Node
+ * @extends Node
  */
-export class CCSkeleton extends cc.Node {
+export class CCSkeleton extends Node {
   _skeleton: Skeleton = null
   _rootBone: Bone = null
   _timeScale = 1
@@ -80,13 +80,13 @@ export class CCSkeleton extends cc.Node {
   }
 
   _createRenderCmd() {
-    if (cc._renderType === cc.game.RENDER_TYPE_CANVAS) return new CanvasRenderCmd(this)
+    if (_renderType === game.RENDER_TYPE_CANVAS) return new CanvasRenderCmd(this)
     else return new WebGLRenderCmd(this)
   }
 
   init(): boolean {
     super.init()
-    this._premultipliedAlpha = !!(cc._renderType === cc.game.RENDER_TYPE_WEBGL && cc.OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA)
+    this._premultipliedAlpha = !!(_renderType === game.RENDER_TYPE_WEBGL && OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA)
     return true
   }
 
@@ -137,9 +137,9 @@ export class CCSkeleton extends cc.Node {
     const argAtlasFile = atlasFile
     let skeletonData, atlas, ownsSkeletonData
 
-    if (cc.isString(argSkeletonFile)) {
-      if (cc.isString(argAtlasFile)) {
-        const data = cc.loader.getRes(argAtlasFile)
+    if (isString(argSkeletonFile)) {
+      if (isString(argAtlasFile)) {
+        const data = loader.getRes(argAtlasFile)
         _atlasLoader.setAtlasFile(argAtlasFile)
         atlas = new TextureAtlas(data)
         for (const page of atlas.pages) {
@@ -147,10 +147,10 @@ export class CCSkeleton extends cc.Node {
           page.setTexture(texture)
         }
       }
-      scale = scale || 1 / cc.director.getContentScaleFactor()
+      scale = scale || 1 / director.getContentScaleFactor()
 
       const attachmentLoader = new AtlasAttachmentLoader(atlas)
-      const skeletonJson = cc.loader.getRes(argSkeletonFile)
+      const skeletonJson = loader.getRes(argSkeletonFile)
       if (argSkeletonFile.endsWith('.json')) {
         const skeletonJsonReader = new SkeletonJson(attachmentLoader)
         skeletonJsonReader.scale = scale
@@ -172,10 +172,10 @@ export class CCSkeleton extends cc.Node {
   }
 
   getBoundingBox() {
-    let minX = cc.FLT_MAX,
-      minY = cc.FLT_MAX,
-      maxX = cc.FLT_MIN,
-      maxY = cc.FLT_MIN
+    let minX = FLT_MAX,
+      minY = FLT_MAX,
+      maxX = FLT_MIN,
+      maxY = FLT_MIN
     const scaleX = this.getScaleX(),
       scaleY = this.getScaleY(),
       slots = this._skeleton.slots,
@@ -218,7 +218,7 @@ export class CCSkeleton extends cc.Node {
       )
     }
     const position = this.getPosition()
-    return cc.rect(position.x + minX, position.y + minY, maxX - minX, maxY - minY)
+    return rect(position.x + minX, position.y + minY, maxX - minX, maxY - minY)
   }
 
   updateWorldTransform() {
@@ -268,8 +268,8 @@ export class CCSkeleton extends cc.Node {
   setSkeletonData(skeletonData: SkeletonData, ownsSkeletonData: any) {
     if (skeletonData.width != null && skeletonData.height != null)
       this.setContentSize(
-        skeletonData.width / cc.director.getContentScaleFactor(),
-        skeletonData.height / cc.director.getContentScaleFactor(),
+        skeletonData.width / director.getContentScaleFactor(),
+        skeletonData.height / director.getContentScaleFactor(),
       )
 
     this._skeleton = new Skeleton(skeletonData)
@@ -308,10 +308,10 @@ export class CCSkeleton extends cc.Node {
   }
 }
 
-cc.defineGetterSetter(CCSkeleton.prototype, 'opacityModifyRGB', CCSkeleton.prototype.isOpacityModifyRGB)
+defineGetterSetter(CCSkeleton.prototype, 'opacityModifyRGB', CCSkeleton.prototype.isOpacityModifyRGB)
 
 // For renderer webgl to identify skeleton's default texture and blend function
-cc.defineGetterSetter(CCSkeleton.prototype, '_blendFunc', CCSkeleton.prototype.getBlendFunc)
-cc.defineGetterSetter(CCSkeleton.prototype, '_texture', function () {
+defineGetterSetter(CCSkeleton.prototype, '_blendFunc', CCSkeleton.prototype.getBlendFunc)
+defineGetterSetter(CCSkeleton.prototype, '_texture', function () {
   return this._renderCmd._currTexture
 })

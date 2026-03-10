@@ -40,8 +40,8 @@ export class SkeletonTexture extends Texture {
   }
 
   setFilters(minFilter, magFilter) {
-    if (cc._renderType === cc.game.RENDER_TYPE_WEBGL) {
-      const gl = cc._renderContext
+    if (_renderType === game.RENDER_TYPE_WEBGL) {
+      const gl = _renderContext
       this.bind()
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter)
@@ -49,8 +49,8 @@ export class SkeletonTexture extends Texture {
   }
 
   setWraps(uWrap, vWrap) {
-    if (cc._renderType === cc.game.RENDER_TYPE_WEBGL) {
-      const gl = cc._renderContext
+    if (_renderType === game.RENDER_TYPE_WEBGL) {
+      const gl = _renderContext
       this.bind()
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, uWrap)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, vWrap)
@@ -60,8 +60,8 @@ export class SkeletonTexture extends Texture {
   dispose() {}
 
   bind() {
-    if (cc._renderType === cc.game.RENDER_TYPE_WEBGL) {
-      cc.glBindTexture2D(this._texture)
+    if (_renderType === game.RENDER_TYPE_WEBGL) {
+      glBindTexture2D(this._texture)
     }
   }
 }

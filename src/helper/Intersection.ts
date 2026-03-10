@@ -1,4 +1,4 @@
-export function pointInPolygon(pos: cc.Point, polygon: cc.Point[]) {
+export function pointInPolygon(pos: Point, polygon: Point[]) {
   let inside = false
   const x = pos.x
   const y = pos.y
@@ -23,7 +23,7 @@ export function pointInPolygon(pos: cc.Point, polygon: cc.Point[]) {
   return inside
 }
 
-function lineLine(a1: cc.Point, a2: cc.Point, b1: cc.Point, b2: cc.Point): boolean {
+function lineLine(a1: Point, a2: Point, b1: Point, b2: Point): boolean {
   // jshint camel case:false
 
   const ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)
@@ -42,7 +42,7 @@ function lineLine(a1: cc.Point, a2: cc.Point, b1: cc.Point, b2: cc.Point): boole
   return false
 }
 
-function linePolygon(A: cc.Point, B: cc.Point, polygon: cc.Point[]) {
+function linePolygon(A: Point, B: Point, polygon: Point[]) {
   const length = polygon.length
   for (let i = 0; i < length; ++i) {
     const C = polygon[i]
@@ -56,7 +56,7 @@ function linePolygon(A: cc.Point, B: cc.Point, polygon: cc.Point[]) {
   return false
 }
 
-export function pointLineDistance(point: cc.Point, start: cc.Point, end: cc.Point, isSegment) {
+export function pointLineDistance(point: Point, start: Point, end: Point, isSegment) {
   let dx = end.x - start.x
   let dy = end.y - start.y
   const d = dx * dx + dy * dy
@@ -64,14 +64,14 @@ export function pointLineDistance(point: cc.Point, start: cc.Point, end: cc.Poin
   let p
 
   if (!isSegment) {
-    p = cc.p(start.x + t * dx, start.y + t * dy)
+    p = p(start.x + t * dx, start.y + t * dy)
   } else if (d) {
     if (t < 0) {
       p = start
     } else if (t > 1) {
       p = end
     } else {
-      p = cc.p(start.x + t * dx, start.y + t * dy)
+      p = p(start.x + t * dx, start.y + t * dy)
     }
   } else {
     p = start
@@ -82,7 +82,7 @@ export function pointLineDistance(point: cc.Point, start: cc.Point, end: cc.Poin
   return Math.sqrt(dx * dx + dy * dy)
 }
 
-export function polygonPolygon(pts1: cc.Point[], pts2: cc.Point[]) {
+export function polygonPolygon(pts1: Point[], pts2: Point[]) {
   let i = 0,
     l = 0
 
@@ -113,12 +113,12 @@ export function polygonPolygon(pts1: cc.Point[], pts2: cc.Point[]) {
   return false
 }
 
-export function circleCircle(p1: cc.Point, r1: number, p2: cc.Point, r2: number) {
-  const distance = cc.pDistance(p1, p2)
+export function circleCircle(p1: Point, r1: number, p2: Point, r2: number) {
+  const distance = pDistance(p1, p2)
   return distance < r1 + r2
 }
 
-export function polygonCircle(pts1: cc.Point[], p2: cc.Point, r2: number) {
+export function polygonCircle(pts1: Point[], p2: Point, r2: number) {
   if (pointInPolygon(p2, pts1)) {
     return true
   }

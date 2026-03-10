@@ -1,11 +1,11 @@
-// cc.SimpleMeshNode.ts
-// SimpleMesh as a cc.Node for Cocos2d-html5 (WebGL primary).
+// SimpleMeshNode.ts
+// SimpleMesh as a Node for Cocos2d-html5 (WebGL primary).
 // Converted to ES6/TypeScript class from legacy Cocos-style object literal.
 // Usage:
 //   const node = new SimpleMeshNode(texture, verts, uvs, inds);
 //   node.setPosition(x,y); node.setRotation(angleDeg); node.setScale(s);
 
-export class SimpleMeshNode extends cc.Sprite {
+export class SimpleMeshNode extends Sprite {
   // public mesh data (Float32Array / Uint16Array)
   _texture: any = null
   _vertices: Float32Array | null = null
@@ -22,10 +22,10 @@ export class SimpleMeshNode extends cc.Sprite {
   _alpha = 1.0
 
   // fallback drawnode for Canvas or debug
-  _fallbackDraw: cc.DrawNode = null
+  _fallbackDraw: DrawNode = null
   _useWebGL = true
 
-  constructor(texture?: cc.Texture2D, vertices?: Float32Array, uvs?: Float32Array, indices?: Uint16Array) {
+  constructor(texture?: Texture2D, vertices?: Float32Array, uvs?: Float32Array, indices?: Uint16Array) {
     super()
     super.ctor()
 
@@ -34,8 +34,8 @@ export class SimpleMeshNode extends cc.Sprite {
     this._uvs = uvs || new Float32Array(0)
     this._indices = indices || new Uint16Array(0)
 
-    this._fallbackDraw = new cc.DrawNode()
-    this._useWebGL = !!cc._renderContext
+    this._fallbackDraw = new DrawNode()
+    this._useWebGL = !!_renderContext
 
     // size/anchor auto-estimate from vertex bounds (optional)
     this._updateContentSizeFromVertices()
@@ -77,7 +77,7 @@ export class SimpleMeshNode extends cc.Sprite {
     this._needsUpload = true
   }
 
-  setTexture(tex: cc.Texture2D): void {
+  setTexture(tex: Texture2D): void {
     this._texture = tex
   }
   setSpriteFrame(renderTexture) {
@@ -85,7 +85,7 @@ export class SimpleMeshNode extends cc.Sprite {
   }
 
   // override visit to draw mesh at correct point in scene graph
-  visit(ctx?: cc.Node): void {
+  visit(ctx?: Node): void {
     // normal visit to draw children etc.
     super.visit(ctx)
 
@@ -96,7 +96,7 @@ export class SimpleMeshNode extends cc.Sprite {
 
   // core drawing function
   _drawMesh(): void {
-    if (this._useWebGL && cc._renderContext) {
+    if (this._useWebGL && _renderContext) {
       this._drawMeshWebGL()
     } else {
       this._drawMeshCanvasFallback()
@@ -105,7 +105,7 @@ export class SimpleMeshNode extends cc.Sprite {
 
   _ensureGL(): void {
     if (this._gl && this._program) return
-    const gl: WebGLRenderingContext | undefined = cc._renderContext
+    const gl: WebGLRenderingContext | undefined = _renderContext
     if (!gl) {
       this._useWebGL = false
       return
@@ -145,7 +145,7 @@ export class SimpleMeshNode extends cc.Sprite {
       gl.shaderSource(s, src)
       gl.compileShader(s)
       if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-        cc.log(`SimpleMesh shader compile error:\n${gl.getShaderInfoLog(s)}`)
+        log(`SimpleMesh shader compile error:\n${gl.getShaderInfoLog(s)}`)
         gl.deleteShader(s)
         return null
       }
@@ -161,7 +161,7 @@ export class SimpleMeshNode extends cc.Sprite {
     gl.attachShader(prog, fs)
     gl.linkProgram(prog)
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      cc.log(`SimpleMesh program link error:\n${gl.getProgramInfoLog(prog)}`)
+      log(`SimpleMesh program link error:\n${gl.getProgramInfoLog(prog)}`)
       gl.deleteProgram(prog)
       return
     }
@@ -207,7 +207,7 @@ export class SimpleMeshNode extends cc.Sprite {
       sx = worldRotation.sx
       sy = worldRotation.sy
     } else {
-      const worldPt = this.convertToWorldSpaceAR ? this.convertToWorldSpaceAR(cc.p(0, 0)) : { x: 0, y: 0 }
+      const worldPt = this.convertToWorldSpaceAR ? this.convertToWorldSpaceAR(p(0, 0)) : { x: 0, y: 0 }
       tx = worldPt.x
       ty = worldPt.y
       rotDeg = this.getRotation ? this.getRotation() : this.rotation || 0
@@ -233,7 +233,7 @@ export class SimpleMeshNode extends cc.Sprite {
   }
 
   _drawMeshWebGL(): void {
-    const gl: WebGLRenderingContext | undefined = cc._renderContext
+    const gl: WebGLRenderingContext | undefined = _renderContext
     if (!gl) {
       this._useWebGL = false
       return
@@ -301,10 +301,10 @@ export class SimpleMeshNode extends cc.Sprite {
 
     // resolution
     const uResLoc = gl.getUniformLocation(this._program, 'u_resolution')
-    const viewAny = cc.view
+    const viewAny = view
     const sz = viewAny.getFrameSize
       ? viewAny.getFrameSize()
-      : { width: cc.director.getWinSize().width, height: cc.director.getWinSize().height }
+      : { width: director.getWinSize().width, height: director.getWinSize().height }
     gl.uniform2f(uResLoc, sz.width, sz.height)
 
     // model matrix from node
@@ -348,8 +348,8 @@ export class SimpleMeshNode extends cc.Sprite {
       if (x > maxX) maxX = x
       if (y > maxY) maxY = y
     }
-    const rect = [cc.p(minX, minY), cc.p(maxX, minY), cc.p(maxX, maxY), cc.p(minX, maxY)]
-    this._fallbackDraw.drawPoly(rect, null, 1, cc.color(255, 0, 0, 255))
+    const rect = [p(minX, minY), p(maxX, minY), p(maxX, maxY), p(minX, maxY)]
+    this._fallbackDraw.drawPoly(rect, null, 1, color(255, 0, 0, 255))
   }
 
   // set alpha multiplier

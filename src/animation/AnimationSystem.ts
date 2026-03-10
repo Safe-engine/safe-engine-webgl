@@ -14,7 +14,7 @@ export class AnimationSystem implements System {
 
   update(entities: EntityManager, events: EventManager, dt: Float) {
     const animations = entities.entities_with_components(AnimationComp)
-    // cc.log(animations);
+    // log(animations);
     animations.forEach((ett) => {
       const animation = ett.getComponent(AnimationComp)
       if (animation.node && animation.node.active) {

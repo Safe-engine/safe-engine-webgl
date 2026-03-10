@@ -22,15 +22,15 @@
  */
 
 import {
-  Armature,
-  BaseFactory,
-  BaseObject,
-  BuildArmaturePackage,
-  DataParser,
-  DisplayData,
-  DragonBones,
-  Slot,
-  SlotData,
+    Armature,
+    BaseFactory,
+    BaseObject,
+    BuildArmaturePackage,
+    DataParser,
+    DisplayData,
+    DragonBones,
+    Slot,
+    SlotData,
 } from '@cocos/dragonbones-js'
 
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
@@ -108,11 +108,11 @@ export class CocosFactory extends BaseFactory {
 
   protected _buildTextureAtlasData(
     textureAtlasData: CocosTextureAtlasData | null,
-    textureAtlas: cc.Texture2D | null,
+    textureAtlas: Texture2D | null,
   ): CocosTextureAtlasData {
     if (textureAtlasData) {
       // console.log(textureAtlasData, 'textureAtlasData', textureAtlas)
-      const scale = cc.director.getContentScaleFactor()
+      const scale = director.getContentScaleFactor()
       textureAtlasData.scale = scale
       textureAtlasData.renderTexture = textureAtlas
     } else {
@@ -133,7 +133,7 @@ export class CocosFactory extends BaseFactory {
 
   protected _buildSlot(_dataPackage: BuildArmaturePackage, slotData: SlotData, armature: DisplayData[]): Slot {
     const slot = BaseObject.borrowObject(CocosSlot)
-    slot.init(slotData, armature, new cc.Sprite(), new SimpleMeshNode())
+    slot.init(slotData, armature, new Sprite(), new SimpleMeshNode())
 
     return slot
   }
@@ -198,10 +198,10 @@ export class CocosFactory extends BaseFactory {
    * @version DragonBones 3.0
    * @language zh_CN
    */
-  public getTextureDisplay(textureName: string, textureAtlasName: string | null = null): cc.Sprite | null {
+  public getTextureDisplay(textureName: string, textureAtlasName: string | null = null): Sprite | null {
     const textureData = this._getTextureData(textureAtlasName !== null ? textureAtlasName : '', textureName) as CocosTextureData
     if (textureData !== null && textureData.spriteFrame !== null) {
-      return new cc.Sprite(textureData.spriteFrame)
+      return new Sprite(textureData.spriteFrame)
     }
 
     return null

@@ -79,7 +79,7 @@ HtmlTextParser.prototype = {
         if (tagStr === '') newStr = htmlString.substring(startIndex, tagEndIndex + 1)
         this._processResult(newStr)
         if (tagEndIndex === -1) {
-          // cc.error('The HTML tag is invalid!');
+          // error('The HTML tag is invalid!');
           tagEndIndex = tagBeginIndex
         } else if (htmlString.charAt(tagBeginIndex + 1) === '/') {
           this._stack.pop()

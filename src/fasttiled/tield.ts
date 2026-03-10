@@ -52,11 +52,11 @@ export function tileToPixel(map, tx, ty) {
 }
 
 export function loadIsometricMap(mapUrl: string) {
-  const mapData = cc.loader.getRes(mapUrl)
+  const mapData = loader.getRes(mapUrl)
   const tileset = mapData.tilesets[0]
   const baseDir = mapUrl.split('/').slice(0, -1).join('/')
   const tilesetImageUrl = `${baseDir}/${tileset.image}`
-  const tilesetTexture = cc.loader.getRes(tilesetImageUrl)
+  const tilesetTexture = loader.getRes(tilesetImageUrl)
 
   const tileW = tileset.tilewidth
   const tileH = tileset.tileheight
@@ -83,8 +83,8 @@ export function loadIsometricMap(mapUrl: string) {
       const tx = i % mapData.width
       const ty = Math.floor(i / mapData.width)
       const { x, y } = tileToPixel(mapData, tx, ty)
-      const frame = new cc.SpriteFrame(tilesetTexture, cc.rect(frameX, frameY, tileW, tileH))
-      const sprite = new cc.Sprite(frame)
+      const frame = new SpriteFrame(tilesetTexture, rect(frameX, frameY, tileW, tileH))
+      const sprite = new Sprite(frame)
       sprite.x = x
       sprite.y = y
       // console.log('x,y', x, y)

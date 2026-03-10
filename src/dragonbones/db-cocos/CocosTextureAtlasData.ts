@@ -28,7 +28,7 @@ export class CocosTextureAtlasData extends TextureAtlasData {
     return '[class dragonBones.CocosTextureAtlasData]'
   }
 
-  private _renderTexture: cc.Texture2D | null = null // Initial value.
+  private _renderTexture: Texture2D | null = null // Initial value.
 
   protected _onClear(): void {
     super._onClear()
@@ -55,10 +55,10 @@ export class CocosTextureAtlasData extends TextureAtlasData {
    * @version DragonBones 3.0
    * @language zh_CN
    */
-  public get renderTexture(): cc.Texture2D | null {
+  public get renderTexture(): Texture2D | null {
     return this._renderTexture
   }
-  public set renderTexture(value: cc.Texture2D | null) {
+  public set renderTexture(value: Texture2D | null) {
     if (this._renderTexture === value) {
       return
     }
@@ -78,9 +78,9 @@ export class CocosTextureAtlasData extends TextureAtlasData {
         const rotated = textureData.rotated
         const width = rotated ? textureData.region.height : textureData.region.width
         const height = rotated ? textureData.region.width : textureData.region.height
-        const rect = cc.rect(x, y, width, height)
-        const offset = cc.p(0, 0)
-        const originSize = cc.size(width, height)
+        const rect = rect(x, y, width, height)
+        const offset = p(0, 0)
+        const originSize = size(width, height)
 
         if (textureData.frame) {
           const px = -textureData.frame.x
@@ -97,7 +97,7 @@ export class CocosTextureAtlasData extends TextureAtlasData {
         }
         // sprite
 
-        const spriteFrame = new cc.SpriteFrame(this._renderTexture, rect, textureData.rotated, offset, originSize)
+        const spriteFrame = new SpriteFrame(this._renderTexture, rect, textureData.rotated, offset, originSize)
         // console.log('sf', sf)
         textureData.spriteFrame = spriteFrame
       }
@@ -120,7 +120,7 @@ export class CocosTextureData extends TextureData {
     return '[class dragonBones.CocosTextureData]'
   }
 
-  public spriteFrame: cc.SpriteFrame | null = null // Initial value.
+  public spriteFrame: SpriteFrame | null = null // Initial value.
 
   protected _onClear(): void {
     super._onClear()

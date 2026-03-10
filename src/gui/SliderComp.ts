@@ -18,7 +18,7 @@ export class SliderComp extends ComponentX<SliderCompProps, ccui.Slider> {
   }
   render() {
     const { barBackground, normalBall, pressedBall, disabledBall, percent } = this.props
-    const frame = cc.spriteFrameCache.getSpriteFrame(normalBall)
+    const frame = spriteFrameCache.getSpriteFrame(normalBall)
     const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
     const slider = new ccui.Slider(barBackground, normalBall, textureType)
     slider.loadSlidBallTexturePressed(pressedBall || normalBall, textureType)

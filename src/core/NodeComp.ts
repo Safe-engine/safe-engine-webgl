@@ -6,7 +6,7 @@ import { Size, Vec2 } from '../polyfills'
 import { ComponentType, EnhancedComponent } from './EnhancedComponent'
 
 export type EventCallbackType<T = void> = (args?: T) => void
-export class NodeComp<C extends cc.Node = cc.Node> {
+export class NodeComp<C extends Node = Node> {
   entity: Entity
   instance: C
   parent: NodeComp
@@ -114,7 +114,7 @@ export class NodeComp<C extends cc.Node = cc.Node> {
     return this.instance.getColor()
   }
 
-  set color(val: cc.Color) {
+  set color(val: Color) {
     this.instance.setColor(val)
   }
 
@@ -127,7 +127,7 @@ export class NodeComp<C extends cc.Node = cc.Node> {
   }
 
   get active() {
-    if (!cc.sys.isObjectValid(this.instance) || !this._active) return false
+    if (!sys.isObjectValid(this.instance) || !this._active) return false
     let p = this.parent
     while (p) {
       if (!p.active) return false
@@ -137,7 +137,7 @@ export class NodeComp<C extends cc.Node = cc.Node> {
   }
 
   set active(val: boolean) {
-    if (!cc.sys.isObjectValid(this.instance)) {
+    if (!sys.isObjectValid(this.instance)) {
       return
     }
     this._active = val
@@ -192,7 +192,7 @@ export class NodeComp<C extends cc.Node = cc.Node> {
   }
 
   destroy() {
-    if (!cc.sys.isObjectValid(this.instance)) {
+    if (!sys.isObjectValid(this.instance)) {
       return
     }
     this.removeFromParent(true)
@@ -233,11 +233,11 @@ export class NodeComp<C extends cc.Node = cc.Node> {
     })
   }
 
-  convertToNodeSpace(point: cc.Point) {
+  convertToNodeSpace(point: Point) {
     return Vec2(this.instance.convertToNodeSpace(point))
   }
 
-  convertToNodeSpaceAR(point: cc.Point) {
+  convertToNodeSpaceAR(point: Point) {
     return Vec2(this.instance.convertToNodeSpaceAR(point))
   }
 
@@ -263,18 +263,18 @@ export class NodeComp<C extends cc.Node = cc.Node> {
 
   set contentSize(size: Size) {
     this.instance.setContentSize(size)
-    if (this.instance instanceof cc.ClippingNode) {
+    if (this.instance instanceof ClippingNode) {
       const hw = size.width * 0.5
       const hh = size.height * 0.5
-      const stencil = new cc.DrawNode()
-      const rectangle = [cc.p(-hw, -hh), cc.p(hw, -hh), cc.p(hw, hh), cc.p(-hw, hh)]
-      stencil.drawPoly(rectangle, cc.Color.WHITE, 0, cc.Color.WHITE)
-      // stencil.drawDot(cc.p(-height * 0.5, -height * 0.5), height, cc.Color.WHITE);
+      const stencil = new DrawNode()
+      const rectangle = [p(-hw, -hh), p(hw, -hh), p(hw, hh), p(-hw, hh)]
+      stencil.drawPoly(rectangle, Color.WHITE, 0, Color.WHITE)
+      // stencil.drawDot(p(-height * 0.5, -height * 0.5), height, Color.WHITE);
       this.instance.stencil = stencil
     }
   }
 
-  runAction(atc: cc.ActionInterval) {
+  runAction(atc: ActionInterval) {
     this.instance.runAction(atc)
   }
 

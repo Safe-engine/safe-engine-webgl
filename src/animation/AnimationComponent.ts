@@ -1,3 +1,4 @@
+import { clampf } from 'safex-webgl/core'
 import { EnhancedComponent } from '../core/EnhancedComponent'
 import { SpriteRender } from '../render'
 
@@ -44,7 +45,7 @@ export class AnimationClip {
   curveData: CurveData
 }
 
-// cc.AnimationClip = AnimationClip;
+// AnimationClip = AnimationClip;
 
 export class AnimationComp extends EnhancedComponent {
   defaultClip: AnimationClip
@@ -67,7 +68,7 @@ export class AnimationComp extends EnhancedComponent {
         this.play()
       }, 0)
     }
-    // cc.log(this.clips);
+    // log(this.clips);
   }
 
   update(dt: Float) {
@@ -90,9 +91,9 @@ export class AnimationComp extends EnhancedComponent {
       if (imageComp) {
         imageComp.spriteFrame = spriteFrame[nextFrame].value
       }
-      // cc.log(spriteFrame[nextFrame].value, nextFrameTime);
+      // log(spriteFrame[nextFrame].value, nextFrameTime);
       curveData.comps.nextFrame += 1
-      curveData.comps.nextFrame = cc.clampf(curveData.comps.nextFrame, 0, spriteFrame.length - 1)
+      curveData.comps.nextFrame = clampf(curveData.comps.nextFrame, 0, spriteFrame.length - 1)
       if (this.elapsed >= duration) {
         if (wrapMode === WrapMode.Loop) {
           curveData.comps.nextFrame = 0
@@ -115,7 +116,7 @@ export class AnimationComp extends EnhancedComponent {
 
   public play(name?: string) {
     this.elapsed = 0
-    // cc.log('play', name, this.defaultClip.name);
+    // log('play', name, this.defaultClip.name);
     if (!name) {
       if (!this.defaultClip) {
         return
@@ -126,7 +127,7 @@ export class AnimationComp extends EnhancedComponent {
     }
     this.currentClip = this.clips.find((clip) => clip.name === name)
     this.currentClip.curveData.comps.nextFrame = 0
-    // cc.log('name', name, this.currentClip);
+    // log('name', name, this.currentClip);
     this.currentClip.events.forEach((evt) => {
       evt.isCalled = false
     })

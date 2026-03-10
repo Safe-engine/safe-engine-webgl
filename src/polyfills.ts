@@ -1,4 +1,7 @@
-import { circleCircle, pointInPolygon, polygonCircle, polygonPolygon } from './helper/Intersection'
+import { Point } from '@cocos/dragonbones-js'
+import { clampf, director, pAdd, pDistance, pLength, pMult, pNormalize, pSub } from 'safex-webgl'
+import { p } from '../../safex-webgl/dist/core/cocoa/Geometry'
+import { color } from '../../safex-webgl/dist/core/platform/Color'
 
 function updatePoint(p) {
   const { x, y } = p
@@ -26,45 +29,45 @@ class _Vec2 {
     return this.x === other.x && this.y === other.y
   }
 
-  add(value: cc.Point | Vec2): _Vec2 {
-    return updatePoint(cc.pAdd(cc.p(this.x, this.y), value))
+  add(value: Point | Vec2): _Vec2 {
+    return updatePoint(pAdd(p(this.x, this.y), value))
   }
 
-  addSelf(value: cc.Point | Vec2): _Vec2 {
-    const nor = updatePoint(cc.pAdd(cc.p(this.x, this.y), value))
+  addSelf(value: Point | Vec2): _Vec2 {
+    const nor = updatePoint(pAdd(p(this.x, this.y), value))
     this.x = nor.x
     this.y = nor.y
     return nor
   }
 
-  sub(value: cc.Point | Vec2): _Vec2 {
-    return updatePoint(cc.pSub(cc.p(this.x, this.y), value))
+  sub(value: Point | Vec2): _Vec2 {
+    return updatePoint(pSub(p(this.x, this.y), value))
   }
 
   mul(multiply: number): _Vec2 {
-    return updatePoint(cc.pMult(cc.p(this.x, this.y), multiply))
+    return updatePoint(pMult(p(this.x, this.y), multiply))
   }
 
   mulSelf(multiply: number): _Vec2 {
-    const nor = updatePoint(cc.pMult(cc.p(this.x, this.y), multiply))
+    const nor = updatePoint(pMult(p(this.x, this.y), multiply))
     this.x = nor.x
     this.y = nor.y
     return nor
   }
 
   mag(): number {
-    return cc.pLength(cc.p(this.x, this.y))
+    return pLength(p(this.x, this.y))
   }
 
   normalizeSelf(): _Vec2 {
-    const nor = updatePoint(cc.pNormalize(cc.p(this.x, this.y)))
+    const nor = updatePoint(pNormalize(p(this.x, this.y)))
     this.x = nor.x
     this.y = nor.y
     return nor
   }
 
   normalize(): _Vec2 {
-    return updatePoint(cc.pNormalize(cc.p(this.x, this.y)))
+    return updatePoint(pNormalize(p(this.x, this.y)))
   }
 
   public cross(other: Vec2) {
@@ -91,11 +94,11 @@ class _Vec2 {
 
     const dot = this.dot(other)
     let theta = dot / Math.sqrt(magSqr1 * magSqr2)
-    theta = cc.clampf(theta, -1.0, 1.0)
+    theta = clampf(theta, -1.0, 1.0)
     return Math.acos(theta)
   }
   public distance(other: _Vec2) {
-    return cc.pDistance(this, other)
+    return pDistance(this, other)
   }
 }
 export type Vec2 = _Vec2
@@ -112,29 +115,29 @@ export enum SpriteType {
   MESH,
 }
 
-cc.Color.RED = Color4B(255, 0, 0, 255)
-cc.Color.BLACK = Color4B(0, 0, 0, 255)
-cc.Color.WHITE = Color4B(255, 255, 255, 255)
-cc.Color.GREEN = Color4B(0, 255, 0, 255)
-cc.Color.BLUE = Color4B(0, 0, 255, 255)
-cc.Color.DEBUG_FILL_COLOR = cc.color(255, 255, 0, 48)
-cc.Color.DEBUG_BORDER_COLOR = cc.Color.RED
-cc.Color.prototype.fromHEX = cc.hexToColor
+// Color.RED = Color4B(255, 0, 0, 255)
+// Color.BLACK = Color4B(0, 0, 0, 255)
+// Color.WHITE = Color4B(255, 255, 255, 255)
+// Color.GREEN = Color4B(0, 255, 0, 255)
+// Color.BLUE = Color4B(0, 0, 255, 255)
+// Color.DEBUG_FILL_COLOR = color(255, 255, 0, 48)
+// Color.DEBUG_BORDER_COLOR = Color.RED
+// Color.prototype.fromHEX = hexToColor
 
-cc.Intersection = {
-  polygonPolygon,
-  circleCircle,
-  polygonCircle,
-  pointInPolygon,
-}
+// Intersection = {
+//   polygonPolygon,
+//   circleCircle,
+//   polygonCircle,
+//   pointInPolygon,
+// }
 
 export function Color4B(r: number, g: number, b: number, a: number) {
-  return cc.color(r, g, b, a)
+  return color(r, g, b, a)
 }
 export type Color4B = ReturnType<typeof Color4B>
 
 export function Color4F(r: number, g: number, b: number, a: number) {
-  return cc.color(r * 255, g * 255, b * 255, a * 255)
+  return color(r * 255, g * 255, b * 255, a * 255)
 }
 export type Color4F = ReturnType<typeof Color4F>
 
@@ -160,21 +163,21 @@ export function Size(x?: number, y?: number): Size {
   return new _Size(x, y)
 }
 
-export class Touch extends cc.Touch {
-  declare getLocation: () => Vec2
-  declare getDelta: () => Vec2
-  declare getPreviousLocation: () => Vec2
-  declare getStartLocation: () => Vec2
-  declare getLocationInView: () => Vec2
-}
+// export class Touch extends Touch {
+//   declare getLocation: () => Vec2
+//   declare getDelta: () => Vec2
+//   declare getPreviousLocation: () => Vec2
+//   declare getStartLocation: () => Vec2
+//   declare getLocationInView: () => Vec2
+// }
 
 export function getWinSize(): Size {
-  return cc.director.getWinSize()
+  return director.getWinSize()
 }
 
-export class BlendFunc {
-  static ADDITIVE = { src: cc.SRC_ALPHA, dst: cc.ONE }
-  static DISABLE = { src: cc.ONE, dst: cc.ZERO }
-  static ALPHA_NON_PREMULTIPLIED = { src: cc.SRC_ALPHA, dst: cc.ONE_MINUS_SRC_ALPHA }
-  static ALPHA_PREMULTIPLIED = { src: cc.ONE, dst: cc.ONE_MINUS_SRC_ALPHA }
-}
+// export class BlendFunc {
+//   static ADDITIVE = { src: SRC_ALPHA, dst: ONE }
+//   static DISABLE = { src: ONE, dst: ZERO }
+//   static ALPHA_NON_PREMULTIPLIED = { src: SRC_ALPHA, dst: ONE_MINUS_SRC_ALPHA }
+//   static ALPHA_PREMULTIPLIED = { src: ONE, dst: ONE_MINUS_SRC_ALPHA }
+// }

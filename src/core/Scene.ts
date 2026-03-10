@@ -8,7 +8,7 @@ export class SceneComponent extends EnhancedComponent {
     const world = GameWorld.Instance
     world.entities.reset()
     const root = world.entities.create()
-    const scene = cc.director.getRunningScene()
+    const scene = director.getRunningScene()
     scene.unscheduleAllCallbacks()
     scene.stopAllActions()
     scene.scheduleUpdate()

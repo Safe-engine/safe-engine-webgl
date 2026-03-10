@@ -29,13 +29,13 @@ export const CanvasRenderCmd = function (renderableObject) {
   this._needDraw = true
 }
 
-const proto = (CanvasRenderCmd.prototype = Object.create(cc.Node.CanvasRenderCmd.prototype))
+const proto = (CanvasRenderCmd.prototype = Object.create(Node.CanvasRenderCmd.prototype))
 proto.constructor = CanvasRenderCmd
 
 proto.rendering = function (wrapper, scaleX, scaleY) {
   const node = this._node
   let i, n, slot, slotNode
-  wrapper = wrapper || cc._renderContext
+  wrapper = wrapper || _renderContext
 
   const locSkeleton = node._skeleton,
     drawOrder = locSkeleton.drawOrder
@@ -54,7 +54,7 @@ proto.rendering = function (wrapper, scaleX, scaleY) {
   wrapper.setTransform(this._worldTransform, scaleX, scaleY)
   wrapper.setGlobalAlpha(1)
   let attachment
-  const drawingUtil = cc._drawingUtil
+  const drawingUtil = _drawingUtil
   if (node._debugSlots) {
     // Slots.
     drawingUtil.setDrawColor(0, 0, 255, 255)
@@ -98,8 +98,8 @@ proto.rendering = function (wrapper, scaleX, scaleY) {
 proto.updateStatus = function () {
   this.originUpdateStatus()
   this._updateCurrentRegions()
-  this._regionFlag = cc.Node.CanvasRenderCmd.RegionStatus.DirtyDouble
-  this._dirtyFlag &= ~cc.Node._dirtyFlags.contentDirty
+  this._regionFlag = Node.CanvasRenderCmd.RegionStatus.DirtyDouble
+  this._dirtyFlag &= ~Node._dirtyFlags.contentDirty
 }
 
 proto.getLocalBB = function () {
@@ -113,10 +113,10 @@ proto._updateRegionAttachmentSlot = function (attachment, slot, points) {
   attachment.computeWorldVertices(slot, vertices, 0, 2)
   const VERTEX = RegionAttachment
   points.length = 0
-  points.push(cc.p(vertices[VERTEX.X1], vertices[VERTEX.Y1]))
-  points.push(cc.p(vertices[VERTEX.X4], vertices[VERTEX.Y4]))
-  points.push(cc.p(vertices[VERTEX.X3], vertices[VERTEX.Y3]))
-  points.push(cc.p(vertices[VERTEX.X2], vertices[VERTEX.Y2]))
+  points.push(p(vertices[VERTEX.X1], vertices[VERTEX.Y1]))
+  points.push(p(vertices[VERTEX.X4], vertices[VERTEX.Y4]))
+  points.push(p(vertices[VERTEX.X3], vertices[VERTEX.Y3]))
+  points.push(p(vertices[VERTEX.X2], vertices[VERTEX.Y2]))
 }
 
 proto._createChildFormSkeletonData = function () {
@@ -126,7 +126,7 @@ proto._createChildFormSkeletonData = function () {
   for (let i = 0, n = locSkeleton.slots.length; i < n; i++) {
     const slot = locSkeleton.slots[i],
       attachment = slot.attachment
-    const slotNode = new cc.Node()
+    const slotNode = new Node()
     slot._slotNode = slotNode
 
     if (attachment instanceof RegionAttachment) {
@@ -143,7 +143,7 @@ proto._createChildFormSkeletonData = function () {
 
 const loaded = function (sprite, texture, attachment) {
   const rendererObject = attachment.region
-  const rect = new cc.Rect(rendererObject.x, rendererObject.y, rendererObject.width, rendererObject.height)
+  const rect = new Rect(rendererObject.x, rendererObject.y, rendererObject.width, rendererObject.height)
   sprite.initWithTexture(texture, rect, rendererObject.rotate, false)
   sprite._rect.width = attachment.width
   sprite._rect.height = attachment.height
@@ -158,7 +158,7 @@ const loaded = function (sprite, texture, attachment) {
 proto._createSprite = function (slot, attachment) {
   const rendererObject = attachment.region
   const texture = rendererObject.texture.getRealTexture()
-  const sprite = new cc.Sprite()
+  const sprite = new Sprite()
   if (texture.isLoaded()) {
     loaded(sprite, texture, attachment)
   } else {
@@ -236,7 +236,7 @@ proto._updateChild = function () {
       const r = 0 | (color.r * slot.color.r),
         g = 0 | (color.g * slot.color.g),
         b = 0 | (color.b * slot.color.b)
-      selSprite.setColor(cc.color(r, g, b))
+      selSprite.setColor(color(r, g, b))
       selSprite._renderCmd._updateColor()
     } else if (attachment instanceof MeshAttachment) {
       // Can not render mesh

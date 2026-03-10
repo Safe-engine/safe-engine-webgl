@@ -14,11 +14,11 @@ export class DragonBonesSystem implements System {
       const { data, animation, playTimes = 0, timeScale = 1 } = dbComp.props
       // const texturePath = atlas.replace('.json', '.png')
       const { atlas, skeleton, texture } = data
-      // cc.textureCache.addImage(texture)
+      // textureCache.addImage(texture)
       const factory = CocosFactory.factory
-      const dataSkel = cc.loader.getRes(skeleton)
-      const dataAtlas = cc.loader.getRes(atlas)
-      const textureCache = cc.textureCache.getTextureForKey(texture)
+      const dataSkel = loader.getRes(skeleton)
+      const dataAtlas = loader.getRes(atlas)
+      const textureCache = textureCache.getTextureForKey(texture)
       // texture.initWithFile(texturePath)
       factory.parseDragonBonesData(dataSkel)
       factory.parseTextureAtlasData(dataAtlas, textureCache)

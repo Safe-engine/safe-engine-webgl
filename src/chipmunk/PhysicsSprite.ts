@@ -1,10 +1,10 @@
 import { Vec2 } from '../polyfills'
 
 export class PhysicsSprite {
-  node: cc.Node
+  node: Node
   physicsBody: cp.Body
 
-  constructor(node: cc.Node, body: cp.Body) {
+  constructor(node: Node, body: cp.Body) {
     this.node = node
     this.physicsBody = body
   }
@@ -14,12 +14,12 @@ export class PhysicsSprite {
       return
     }
     const { x, y } = this.physicsBody.getPos()
-    // use cc.lerp to smooth the position update
-    // const pos = Vec2(cc.lerp(this.node.x, x, dt * 10), cc.lerp(this.node.y, y, dt * 10))
+    // use lerp to smooth the position update
+    // const pos = Vec2(lerp(this.node.x, x, dt * 10), lerp(this.node.y, y, dt * 10))
     this.node.setPosition(x, y)
     // lerp the rotation
-    // this.node.setRotation(cc.lerp(this.node.rotation, -cc.radiansToDegrees(this.physicsBody.a), dt * 10))
-    this.node.setRotation(-cc.radiansToDegrees(this.physicsBody.a))
+    // this.node.setRotation(lerp(this.node.rotation, -radiansToDegrees(this.physicsBody.a), dt * 10))
+    this.node.setRotation(-radiansToDegrees(this.physicsBody.a))
     // this.node.setScale(1 / this.physicsBody.GetFixtureList().GetShape().GetRadius())
   }
 
@@ -47,14 +47,14 @@ export class PhysicsSprite {
   }
 
   set rotation(val: number) {
-    this.physicsBody.setAngle(-cc.degreesToRadians(val))
+    this.physicsBody.setAngle(-degreesToRadians(val))
   }
 
   get rotation() {
-    return -cc.radiansToDegrees(this.physicsBody.a)
+    return -radiansToDegrees(this.physicsBody.a)
   }
 
-  addChild(child: cc.Node) {
+  addChild(child: Node) {
     this.node.addChild(child)
   }
 }

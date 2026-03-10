@@ -14,9 +14,9 @@ export class NoRenderSystem implements System {
   onAddTouchEventRegister: EventReceiveCallback<TouchEventRegister> = ({ entity, component: touchComp }) => {
     const nodeComp = entity.getComponent(NodeComp)
     touchComp.node = nodeComp
-    touchComp.listener = cc.eventManager.addListener(
+    touchComp.listener = eventManager.addListener(
       {
-        event: cc.EventListener.TOUCH_ONE_BY_ONE,
+        event: EventListener.TOUCH_ONE_BY_ONE,
         swallowTouches: true,
         onTouchBegan: function (touch: Touch) {
           const { onTouchStart } = touchComp.props
@@ -70,7 +70,7 @@ export class NoRenderSystem implements System {
   onRemovedTouchEventRegister = ({ component }) => {
     const touchComp = component as TouchEventRegister
     if (touchComp.listener) {
-      cc.eventManager.removeListener(touchComp.listener)
+      eventManager.removeListener(touchComp.listener)
       touchComp.listener = null
     }
   }

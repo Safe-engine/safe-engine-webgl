@@ -25,7 +25,7 @@ export class EnhancedComponent<Props = object, N extends NodeComp<any> = NodeCom
   getComponent<T extends EnhancedComponent>(component: Constructor<T>): T {
     return this.node.getComponent(component)
   }
-  schedule(callback: (arg: any) => void, interval: number, repeat: number = cc.REPEAT_FOREVER, delay = 0) {
+  schedule(callback: (arg: any) => void, interval: number, repeat: number = REPEAT_FOREVER, delay = 0) {
     this.node.instance.schedule(callback.bind(this), interval, repeat, delay)
   }
   unschedule(callback: (arg: any) => void) {

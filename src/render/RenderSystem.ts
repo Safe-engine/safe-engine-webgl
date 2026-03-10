@@ -26,24 +26,24 @@ export class RenderSystem implements System {
 
   private onAddNodeRender: EventReceiveCallback<NodeRender> = ({ entity }) => {
     const nodeRenderComp = entity.getComponent(NodeRender)
-    const node = new cc.Node()
+    const node = new Node()
     const ett = entity
     nodeRenderComp.node = ett.assign(new NodeComp(node, ett))
   }
 
   private onAddSpriteRender: EventReceiveCallback<SpriteRender> = ({ entity, component: spriteComp }) => {
     const { spriteFrame, capInsets, tiledSize } = spriteComp.props
-    const frame = cc.spriteFrameCache.getSpriteFrame(spriteFrame)
+    const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
     // console.log('frame', spriteFrame, frame)
     let node
     if (tiledSize) {
       node = createTiledSprite(spriteFrame, tiledSize.width, tiledSize.height)
     } else if (capInsets) {
-      const rect = cc.rect(...capInsets)
+      const rect = rect(...capInsets)
       node = new ccui.Scale9Sprite(frame || spriteFrame, rect, rect)
       // console.log('Scale9Sprite', node)
     } else {
-      node = new cc.Sprite(frame || spriteFrame)
+      node = new Sprite(frame || spriteFrame)
     }
     const ett = entity
     spriteComp.node = ett.assign(new NodeComp(node, ett))
@@ -51,14 +51,14 @@ export class RenderSystem implements System {
 
   private onAddMaskRender: EventReceiveCallback<MaskRender> = ({ entity, component: maskComp }) => {
     const { inverted, spriteFrame, cropSize, alphaThreshold = 0.05 } = maskComp.props
-    let stencil: cc.Node
+    let stencil: Node
     if (cropSize) {
       const { width, height } = cropSize
-      stencil = new cc.LayerColor(cc.Color.WHITE, width, height)
+      stencil = new LayerColor(Color.WHITE, width, height)
     } else {
-      stencil = new cc.Sprite(spriteFrame)
+      stencil = new Sprite(spriteFrame)
     }
-    const clipper = new cc.ClippingNode(stencil)
+    const clipper = new ClippingNode(stencil)
     clipper.setAlphaThreshold(!spriteFrame ? 1 : alphaThreshold)
     clipper.setInverted(inverted)
     maskComp.node = entity.assign(new NodeComp(clipper, entity))
@@ -66,8 +66,8 @@ export class RenderSystem implements System {
 
   private onAddGraphicsRender = ({ entity }) => {
     const graphicsComp = entity.getComponent(GraphicsRender)
-    const { lineWidth = 5, strokeColor = cc.Color.RED, fillColor = cc.Color.BLUE } = graphicsComp.props
-    const node = new cc.DrawNode()
+    const { lineWidth = 5, strokeColor = Color.RED, fillColor = Color.BLUE } = graphicsComp.props
+    const node = new DrawNode()
     node.setColor(strokeColor)
     node.setDrawColor(fillColor)
     node.setLineWidth(lineWidth)
@@ -77,17 +77,17 @@ export class RenderSystem implements System {
   private onAddParticleComp = ({ entity }) => {
     const particleComp = entity.getComponent(ParticleComp)
     const { plistFile } = particleComp.props
-    const node = new cc.ParticleSystem(plistFile)
+    const node = new ParticleSystem(plistFile)
     particleComp.node = entity.assign(new NodeComp(node, entity))
   }
 
   private onAddMotionStreak: EventReceiveCallback<MotionStreakComp> = ({ entity, component }) => {
     const { spriteFrame, fade, minSeg, stroke, color } = component.props
-    const node = new cc.MotionStreak(
+    const node = new MotionStreak(
       fade || 0.4, // fade (vệt tồn tại 0.4s)
       minSeg || 1, // minSeg
       stroke || 20, // stroke (độ rộng vệt)
-      color || cc.Color.WHITE,
+      color || Color.WHITE,
       spriteFrame,
     )
     component.node = entity.assign(new NodeComp(node, entity))

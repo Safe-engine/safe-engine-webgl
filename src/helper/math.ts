@@ -5,8 +5,8 @@ export function randomRange(minInclude: Float, maxExclude: Float) {
   return Math.random() * (maxExclude - minInclude - 1) + minInclude
 }
 
-export const degreesToRadians = cc.degreesToRadians
-export const radiansToDegrees = cc.radiansToDegrees
+export const degreesToRadians = degreesToRadians
+export const radiansToDegrees = radiansToDegrees
 
 export function getMin(arr: number[]): number | null {
   if (arr.length === 0) return null
