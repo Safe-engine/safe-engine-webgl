@@ -1,6 +1,5 @@
-import { director, game, global, loader, ResolutionPolicy, Scene, SpriteFrame, spriteFrameCache, sys, Texture2D, view } from 'safex-webgl'
+import { ResolutionPolicy, Scene, SpriteFrame, Texture2D, director, game, global, loader, rect, spriteFrameCache, sys, view } from 'safex-webgl'
 import { path } from 'safex-webgl/helper'
-import { rect } from '../../safex-webgl/dist/core/cocoa/Geometry'
 import { GUISystem } from './gui'
 import { GameWorld } from './gworld'
 import { NoRenderSystem } from './norender'

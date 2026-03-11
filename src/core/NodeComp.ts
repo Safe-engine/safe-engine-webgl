@@ -1,7 +1,6 @@
 import { Constructor, Entity } from 'entityx-ts'
-
 import { ClippingNode, Color, DrawNode, Node, p, Point, Size, sys, Vec2 } from 'safex-webgl'
-import { ActionInterval } from '../../../safex-webgl/dist/actions/ActionInterval'
+import { ActionInterval } from 'safex-webgl/actions'
 import { instantiate } from '../helper/utils'
 import { EventRegister, ExtraDataComp } from '../norender'
 import { ComponentType, EnhancedComponent } from './EnhancedComponent'
