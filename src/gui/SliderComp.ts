@@ -1,3 +1,5 @@
+import { spriteFrameCache } from 'safex-webgl'
+import { Slider, Widget } from 'safex-webgl/ui'
 import { BaseComponentProps, ComponentX, GameWorld, NodeComp, registerSystem } from '..'
 
 interface SliderCompProps extends BaseComponentProps<SliderComp> {
@@ -9,7 +11,7 @@ interface SliderCompProps extends BaseComponentProps<SliderComp> {
   onChange: (percent: number) => void
 }
 
-export class SliderComp extends ComponentX<SliderCompProps, ccui.Slider> {
+export class SliderComp extends ComponentX<SliderCompProps, Slider> {
   set percent(val: number) {
     this.node.instance.setPercent(val)
   }
@@ -19,14 +21,14 @@ export class SliderComp extends ComponentX<SliderCompProps, ccui.Slider> {
   render() {
     const { barBackground, normalBall, pressedBall, disabledBall, percent } = this.props
     const frame = spriteFrameCache.getSpriteFrame(normalBall)
-    const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
-    const slider = new ccui.Slider(barBackground, normalBall, textureType)
+    const textureType = !frame ? Widget.LOCAL_TEXTURE : Widget.PLIST_TEXTURE
+    const slider = new Slider(barBackground, normalBall, textureType)
     slider.loadSlidBallTexturePressed(pressedBall || normalBall, textureType)
     slider.loadSlidBallTextureDisabled(disabledBall || normalBall, textureType)
     if (percent !== undefined) slider.setPercent(percent)
     slider.addEventListener((sender, type) => {
       // console.log('SliderComp onChange', type, sender)
-      if (type === ccui.Slider.EVENT_PERCENT_CHANGED) {
+      if (type === Slider.EVENT_PERCENT_CHANGED) {
         const percent = sender.getPercent()
         this.props.onChange(percent)
       }

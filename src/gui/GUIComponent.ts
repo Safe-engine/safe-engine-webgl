@@ -1,6 +1,8 @@
-import { BaseComponentProps, ColorSource } from '..'
+import { Node, Size, spriteFrameCache } from 'safex-webgl'
+import { ProgressTimer } from 'safex-webgl/progress-timer'
+import { Button, ScrollView, Text, Widget } from 'safex-webgl/ui'
+import { BaseComponentProps, ColorSource, Vec2 } from '..'
 import { ComponentX, render } from '../core/decorator'
-import { Size, Vec2 } from '../polyfills'
 
 export const FillType = {
   HORIZONTAL: 0,
@@ -18,16 +20,16 @@ interface ButtonCompProps {
   capInsets?: [number, number, number, number]
   onPress?: (target: ButtonComp) => void
 }
-export class ButtonComp extends ComponentX<ButtonCompProps & BaseComponentProps<ButtonComp>, ccui.Button> {
+export class ButtonComp extends ComponentX<ButtonCompProps & BaseComponentProps<ButtonComp>, Button> {
   get spriteFrame() {
     return this.props.spriteFrame
   }
 
   set spriteFrame(spriteFrame) {
     this.props.spriteFrame = spriteFrame
-    if (this.node && this.node.instance instanceof ccui.Button) {
+    if (this.node && this.node.instance instanceof Button) {
       const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
-      const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
+      const textureType = !frame ? Widget.LOCAL_TEXTURE : Widget.PLIST_TEXTURE
       this.node.instance.loadTextureNormal(spriteFrame, textureType)
     }
   }
@@ -70,24 +72,24 @@ interface LabelCompProps {
   isAdaptWithSize?: boolean
 }
 
-export class LabelComp extends ComponentX<LabelCompProps & BaseComponentProps<LabelComp>, ccui.Text> {
+export class LabelComp extends ComponentX<LabelCompProps & BaseComponentProps<LabelComp>, Text> {
   get string() {
     return this.props.string
   }
 
   set string(val: string) {
     this.props.string = val
-    if (this.node.instance instanceof ccui.Text) {
+    if (this.node.instance instanceof Text) {
       this.node.instance.setString(val)
     }
   }
 }
 
 export enum ScrollViewDirection {
-  NONE = ccui.ScrollView.DIR_NONE,
-  HORIZONTAL = ccui.ScrollView.DIR_HORIZONTAL,
-  VERTICAL = ccui.ScrollView.DIR_VERTICAL,
-  BOTH = ccui.ScrollView.DIR_BOTH,
+  NONE = ScrollView.DIR_NONE,
+  HORIZONTAL = ScrollView.DIR_HORIZONTAL,
+  VERTICAL = ScrollView.DIR_VERTICAL,
+  BOTH = ScrollView.DIR_BOTH,
 }
 interface ScrollViewProps {
   viewSize: Size
@@ -97,26 +99,26 @@ interface ScrollViewProps {
   isBounced?: boolean
   onScroll?: (offset: Vec2) => void
 }
-export class ScrollViewComp extends ComponentX<ScrollViewProps & BaseComponentProps<ScrollViewComp>, ccui.ScrollView> {
+export class ScrollViewComp extends ComponentX<ScrollViewProps & BaseComponentProps<ScrollViewComp>, ScrollView> {
   zoom(scale: number) {
-    if (this.node.instance instanceof ccui.ScrollView) {
+    if (this.node.instance instanceof ScrollView) {
       ;(this.node.instance as any)._innerContainer.setScale(scale)
     }
   }
 }
 
-interface InputCompProps {
-  placeHolder?: string
-  font?: string
-  size?: Integer
-  maxLength?: Integer
-  isPassword?: boolean
-}
-export class InputComp extends ComponentX<InputCompProps & BaseComponentProps<InputComp>, ccui.TextField> {
-  get string() {
-    return this.node.instance.getString()
-  }
-}
+// interface InputCompProps {
+//   placeHolder?: string
+//   font?: string
+//   size?: Integer
+//   maxLength?: Integer
+//   isPassword?: boolean
+// }
+// export class InputComp extends ComponentX<InputCompProps & BaseComponentProps<InputComp>, TextField> {
+//   get string() {
+//     return this.node.instance.getString()
+//   }
+// }
 interface WidgetCompProps {
   top?: Integer
   right?: Integer
@@ -139,7 +141,7 @@ export class GridLayoutComp extends ComponentX<GridLayoutCompProps & BaseCompone
 
   doLayout() {
     const { columns = 5, spaceX = 0, spaceY = 0, left = 0, top = 0 } = this.props
-    const children = this.node.instance.children
+    const children = this.node.instance.getChildren()
     children.forEach((child, index) => {
       const row = Math.floor(index / columns)
       const column = index % columns
@@ -153,5 +155,5 @@ export class GridLayoutComp extends ComponentX<GridLayoutCompProps & BaseCompone
 Object.defineProperty(ProgressTimerComp.prototype, 'render', { value: render })
 Object.defineProperty(LabelComp.prototype, 'render', { value: render })
 Object.defineProperty(ScrollViewComp.prototype, 'render', { value: render })
-Object.defineProperty(InputComp.prototype, 'render', { value: render })
+// Object.defineProperty(InputComp.prototype, 'render', { value: render })
 Object.defineProperty(ButtonComp.prototype, 'render', { value: render })

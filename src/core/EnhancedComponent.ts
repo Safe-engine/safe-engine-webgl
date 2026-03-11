@@ -1,5 +1,6 @@
 import { Constructor } from 'entityx-ts'
 
+import { REPEAT_FOREVER } from 'safex-webgl'
 import { BaseComponentProps } from '..'
 import { NodeComp } from './NodeComp'
 

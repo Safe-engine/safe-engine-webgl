@@ -1,5 +1,5 @@
-import { pMult } from 'safex-webgl'
-import { Color4B, Vec2 } from '../polyfills'
+import { DrawNode, pMult } from 'safex-webgl'
+import { Color4B, Vec2 } from '../../../safex-webgl/src/polyfills'
 import { PTM_RATIO } from './PhysicsSystem'
 
 export const makeDebugDraw = (graphics: DrawNode, pixelsPerMeter, box2D: typeof Box2D) => {
@@ -44,7 +44,7 @@ export const makeDebugDraw = (graphics: DrawNode, pixelsPerMeter, box2D: typeof 
    */
   const setCtxColor = (rgbStr: Color4B) => {
     // console.log('setCtxColor', rgbStr)
-    graphics.color = rgbStr
+    graphics.setColor(rgbStr)
     // graphics.strokeStyle = { color: rgbStr }
   }
 

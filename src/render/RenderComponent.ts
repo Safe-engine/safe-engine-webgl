@@ -1,6 +1,7 @@
-import { BaseComponentProps, ColorSource } from '..'
+import { ClippingNode, DrawNode, Size, Sprite } from 'safex-webgl'
+import { MotionStreak } from 'safex-webgl/motion-streak'
+import { BaseComponentProps, Color4B, ColorSource, Vec2 } from '..'
 import { ComponentX, render } from '../core/decorator'
-import { Color4B, Size, Vec2 } from '../polyfills'
 
 export class NodeRender extends ComponentX {
   nodeName: string
@@ -44,10 +45,10 @@ interface MaskRenderProps {
 }
 export class MaskRender extends ComponentX<MaskRenderProps, ClippingNode> {}
 
-interface ParticleCompProps {
-  plistFile: string
-}
-export class ParticleComp extends ComponentX<ParticleCompProps, ParticleSystem> {}
+// interface ParticleCompProps {
+//   plistFile: string
+// }
+// export class ParticleComp extends ComponentX<ParticleCompProps, ParticleSystem> {}
 
 interface GraphicsRenderProps {
   lineWidth?: number
@@ -134,6 +135,6 @@ export class MotionStreakComp extends ComponentX<MotionStreakProps & { $ref?: Mo
 Object.defineProperty(NodeRender.prototype, 'render', { value: render })
 Object.defineProperty(SpriteRender.prototype, 'render', { value: render })
 Object.defineProperty(MaskRender.prototype, 'render', { value: render })
-Object.defineProperty(ParticleComp.prototype, 'render', { value: render })
+// Object.defineProperty(ParticleComp.prototype, 'render', { value: render })
 Object.defineProperty(GraphicsRender.prototype, 'render', { value: render })
 Object.defineProperty(MotionStreakComp.prototype, 'render', { value: render })

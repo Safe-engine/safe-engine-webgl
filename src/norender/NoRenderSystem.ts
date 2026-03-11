@@ -1,7 +1,9 @@
 import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
 
+import { Touch } from 'safex-webgl'
+import { EventListener } from 'safex-webgl/core/event-manager'
+import { eventManager } from '../../../safex-webgl/src/core/event-manager/EventManager'
 import { NodeComp } from '../core/NodeComp'
-import { Touch } from '../polyfills'
 import { ExtraDataComp, TouchEventRegister } from './NoRenderComponent'
 
 export class NoRenderSystem implements System {

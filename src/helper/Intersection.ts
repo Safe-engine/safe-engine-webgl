@@ -1,3 +1,5 @@
+import { Point, pDistance } from "safex-webgl"
+
 export function pointInPolygon(pos: Point, polygon: Point[]) {
   let inside = false
   const x = pos.x

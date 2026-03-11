@@ -1,8 +1,9 @@
 import { Constructor, Entity } from 'entityx-ts'
 
+import { ClippingNode, Color, DrawNode, Node, p, Point, Size, sys, Vec2 } from 'safex-webgl'
+import { ActionInterval } from '../../../safex-webgl/dist/actions/ActionInterval'
 import { instantiate } from '../helper/utils'
 import { EventRegister, ExtraDataComp } from '../norender'
-import { Size, Vec2 } from '../polyfills'
 import { ComponentType, EnhancedComponent } from './EnhancedComponent'
 
 export type EventCallbackType<T = void> = (args?: T) => void
@@ -75,19 +76,19 @@ export class NodeComp<C extends Node = Node> {
   }
 
   get anchorX() {
-    return this.instance.anchorX
+    return this.instance._getAnchorX()
   }
 
   set anchorX(val: number) {
-    this.instance.anchorX = val
+    this.instance._setAnchorX(val)
   }
 
   get anchorY() {
-    return this.instance.anchorY
+    return this.instance._getAnchorY()
   }
 
   set anchorY(val: number) {
-    this.instance.anchorY = val
+    this.instance._setAnchorY(val)
   }
   /**
    * Returns the angle of the node in degrees. 0 is the default rotation angle. Positive values rotate node clockwise.

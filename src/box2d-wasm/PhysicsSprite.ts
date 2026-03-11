@@ -1,5 +1,6 @@
+import { lerp, Node } from 'safex-webgl'
+import { Vec2 } from '../../../safex-webgl/src/polyfills'
 import { radiansToDegrees } from '../helper'
-import { Vec2 } from '../polyfills'
 import { PTM_RATIO } from './PhysicsSystem'
 
 export class PhysicsSprite {
@@ -18,12 +19,12 @@ export class PhysicsSprite {
     // const pos = this.physicsBody.GetPosition()
     // use lerp to smooth the position update
     const pos = Vec2(
-      lerp(this.node.x, this.physicsBody.GetPosition().x * PTM_RATIO, dt * 10),
-      lerp(this.node.y, this.physicsBody.GetPosition().y * PTM_RATIO, dt * 10),
+      lerp(this.node.getPositionX(), this.physicsBody.GetPosition().x * PTM_RATIO, dt * 10),
+      lerp(this.node.getPositionY(), this.physicsBody.GetPosition().y * PTM_RATIO, dt * 10),
     )
     this.node.setPosition(pos.x, pos.y)
     // lerp the rotation
-    this.node.setRotation(lerp(this.node.rotation, radiansToDegrees(-this.physicsBody.GetAngle()), dt * 10))
+    this.node.setRotation(lerp(this.node.getRotation(), radiansToDegrees(-this.physicsBody.GetAngle()), dt * 10))
     // this.node.setRotation(radiansToDegrees(this.physicsBody.GetAngle()))
     // this.node.setScale(1 / pixelsPerMeter)
     // this.node.setScale(1 / this.physicsBody.GetFixtureList().GetShape().GetRadius())
@@ -34,7 +35,7 @@ export class PhysicsSprite {
   }
 
   set position(val: Box2D.b2Vec2) {
-    this.physicsBody.SetTransform(val, this.node.rotation)
+    this.physicsBody.SetTransform(val, this.node.getRotation())
   }
 
   // set x(val) {

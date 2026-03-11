@@ -1,3 +1,4 @@
+import { RenderTexture } from 'safex-webgl/render-texture'
 import { BaseComponentProps, ComponentX, GameWorld, NodeComp, registerSystem } from '..'
 
 interface RenderTextureCompProps extends BaseComponentProps<RenderTextureComp> {

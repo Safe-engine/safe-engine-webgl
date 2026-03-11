@@ -1,6 +1,7 @@
+import { Touch } from 'safex-webgl'
+import { EventListener } from 'safex-webgl/core/event-manager'
 import { ComponentX } from '../core/decorator'
 import { EventCallbackType, NodeComp } from '../core/NodeComp'
-import { Touch } from '../polyfills'
 
 type TouchEVentCallback = (touch?: Touch, node?: NodeComp) => void
 

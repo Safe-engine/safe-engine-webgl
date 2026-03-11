@@ -1,7 +1,12 @@
+import { Point } from '@cocos/dragonbones-js'
 import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
+import { Node, p, pDistance, rect, Sprite, spriteFrameCache, Vec2, winSize } from 'safex-webgl'
+import { VERTICAL_TEXT_ALIGNMENT_BOTTOM } from 'safex-webgl/core/platform'
+import { path } from 'safex-webgl/helper'
+import { ProgressTimer } from 'safex-webgl/progress-timer'
+import { Button, ScrollView, Text, Widget } from 'safex-webgl/ui'
 import { NodeComp } from '../core/NodeComp'
-import { Vec2 } from '../polyfills'
-import { ButtonComp, FillType, GridLayoutComp, InputComp, LabelComp, ProgressTimerComp, ScrollViewComp, WidgetComp } from './GUIComponent'
+import { ButtonComp, FillType, GridLayoutComp, LabelComp, ProgressTimerComp, ScrollViewComp, ScrollViewDirection, WidgetComp } from './GUIComponent'
 
 export class GUISystem implements System {
   static defaultFont: string
@@ -10,7 +15,7 @@ export class GUISystem implements System {
     event_manager.subscribe(EventTypes.ComponentAdded, ProgressTimerComp, this.onAddProgressTimerComp)
     event_manager.subscribe(EventTypes.ComponentAdded, LabelComp, this.onAddLabelComp)
     event_manager.subscribe(EventTypes.ComponentAdded, ScrollViewComp, this.onAddScrollViewComp)
-    event_manager.subscribe(EventTypes.ComponentAdded, InputComp, this.onAddInputComp)
+    // event_manager.subscribe(EventTypes.ComponentAdded, InputComp, this.onAddInputComp)
     event_manager.subscribe(EventTypes.ComponentAdded, WidgetComp, this.onAddWidgetComp)
     event_manager.subscribe(EventTypes.ComponentAdded, GridLayoutComp, this.onAddGridLayoutComp)
   }
@@ -18,20 +23,20 @@ export class GUISystem implements System {
   private onAddButtonComp: EventReceiveCallback<ButtonComp> = ({ entity, component: button }) => {
     const { zoomScale = 1.2, capInsets, spriteFrame, selectedImage, disableImage, onPress } = button.props
     const frame = spriteFrameCache.getSpriteFrame(spriteFrame)
-    const textureType = !frame ? ccui.Widget.LOCAL_TEXTURE : ccui.Widget.PLIST_TEXTURE
-    // console.log('onAddButtonComp', spriteFrame, textureType, ccui.Widget.PLIST_TEXTURE)
-    const node = new ccui.Button(spriteFrame, selectedImage, disableImage, textureType)
+    const textureType = !frame ? Widget.LOCAL_TEXTURE : Widget.PLIST_TEXTURE
+    // console.log('onAddButtonComp', spriteFrame, textureType, Widget.PLIST_TEXTURE)
+    const node = new Button(spriteFrame, selectedImage, disableImage, textureType)
     node.setZoomScale(0)
     if (onPress) {
       let lastScale: number
       let startPos: Point
       node.addTouchEventListener((sender, type) => {
         // console.log('Button touch event', lastScale)
-        if (type === ccui.Widget.TOUCH_BEGAN) {
-          lastScale = node.scale
+        if (type === Widget.TOUCH_BEGAN) {
+          lastScale = node.getScale()
           sender.setScale(zoomScale)
           startPos = sender.getTouchBeganPosition()
-        } else if (type === ccui.Widget.TOUCH_ENDED || type === ccui.Widget.TOUCH_CANCELED) {
+        } else if (type === Widget.TOUCH_ENDED || type === Widget.TOUCH_CANCELED) {
           const endPos = sender.getTouchEndPosition()
           const distance = pDistance(startPos, endPos)
           sender.setScale(lastScale)
@@ -67,7 +72,7 @@ export class GUISystem implements System {
   private onAddLabelComp: EventReceiveCallback<LabelComp> = ({ entity, component: label }) => {
     const { string = '', font = GUISystem.defaultFont, size = 64, outline, shadow, isAdaptWithSize } = label.props
     const fontName = path.basename(font, '.ttf')
-    const node = new ccui.Text(string, fontName, size)
+    const node = new Text(string, fontName, size)
     node.setTextVerticalAlignment(VERTICAL_TEXT_ALIGNMENT_BOTTOM)
     if (outline) {
       const [color, width] = outline
@@ -82,8 +87,8 @@ export class GUISystem implements System {
   }
 
   private onAddScrollViewComp: EventReceiveCallback<ScrollViewComp> = ({ entity, component: scrollView }) => {
-    const { viewSize, contentSize, isScrollToTop, isBounced, direction = SCROLLVIEW_DIRECTION_VERTICAL, onScroll } = scrollView.props
-    const node = new ccui.ScrollView()
+    const { viewSize, contentSize, isScrollToTop, isBounced, direction = ScrollViewDirection.VERTICAL, onScroll } = scrollView.props
+    const node = new ScrollView()
     node.setContentSize(viewSize)
     node.setInnerContainerSize(contentSize)
     node.setDirection(direction as number)
@@ -91,9 +96,9 @@ export class GUISystem implements System {
     // node.setTouchEnabled(false)
     node.setBounceEnabled(isBounced !== undefined)
     if (onScroll) {
-      node.addEventListener((target: ccui.ScrollView, event: number) => {
+      node.addEventListener((target: ScrollView, event: number) => {
         // console.log('ScrollView event', event, target)
-        if (ccui.ScrollView.EVENT_CONTAINER_MOVED === event) {
+        if (ScrollView.EVENT_CONTAINER_MOVED === event) {
           const offset = Vec2(target.getInnerContainerPosition())
           onScroll(offset)
         }
@@ -102,18 +107,18 @@ export class GUISystem implements System {
     scrollView.node = entity.assign(new NodeComp(node, entity))
   }
 
-  private onAddInputComp: EventReceiveCallback<InputComp> = ({ entity, component: textInput }) => {
-    const { placeHolder = '', font = GUISystem.defaultFont, size = 64, maxLength = 20, isPassword = false } = textInput.props
-    const textField = new ccui.TextField()
-    textField.setPlaceHolder(placeHolder)
-    textField.setFontName(font)
-    textField.setFontSize(size)
-    textField.setTextColor(color(255, 255, 255))
-    textField.setMaxLengthEnabled(true)
-    textField.setMaxLength(maxLength)
-    textField.setPasswordEnabled(isPassword)
-    textInput.node = entity.assign(new NodeComp(textField, entity))
-  }
+  // private onAddInputComp: EventReceiveCallback<InputComp> = ({ entity, component: textInput }) => {
+  //   const { placeHolder = '', font = GUISystem.defaultFont, size = 64, maxLength = 20, isPassword = false } = textInput.props
+  //   const textField = new TextField()
+  //   textField.setPlaceHolder(placeHolder)
+  //   textField.setFontName(font)
+  //   textField.setFontSize(size)
+  //   textField.setTextColor(color(255, 255, 255))
+  //   textField.setMaxLengthEnabled(true)
+  //   textField.setMaxLength(maxLength)
+  //   textField.setPasswordEnabled(isPassword)
+  //   textInput.node = entity.assign(new NodeComp(textField, entity))
+  // }
 
   private onAddWidgetComp: EventReceiveCallback<WidgetComp> = ({ entity, component }) => {
     const { top, right, bottom, left } = component.props

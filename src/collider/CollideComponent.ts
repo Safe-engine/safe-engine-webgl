@@ -1,7 +1,9 @@
+import { Point } from '@cocos/dragonbones-js'
+import { size } from 'lodash-es'
+import { affineTransformTranslate, Color, DrawNode, p, pointApplyAffineTransform, rect, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
 import { BaseComponentProps } from '..'
 import { ComponentX } from '../core/decorator'
 import { getMax, getMin } from '../helper/math'
-import { Vec2 } from '../polyfills'
 import { CollideSystem } from './CollideSystem'
 
 function getNodeToWorldTransformAR(node) {

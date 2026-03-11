@@ -1,6 +1,6 @@
 import { BaseComponentProps } from '..'
+import { Vec2 } from '../../../safex-webgl/src/polyfills'
 import { ComponentX } from '../core/decorator'
-import { Vec2 } from '../polyfills'
 import { PhysicsSprite } from './PhysicsSprite'
 import { box2D } from './PhysicsSystem'
 
