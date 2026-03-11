@@ -1,7 +1,5 @@
-import { Point } from '@cocos/dragonbones-js'
-import { size } from 'lodash-es'
-import { affineTransformTranslate, Color, DrawNode, p, pointApplyAffineTransform, rect, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
-import { BaseComponentProps } from '..'
+import { affineTransformTranslate, Color, DrawNode, p, Point, pointApplyAffineTransform, rect, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
+import { BaseComponentProps, circleCircle, polygonCircle, polygonPolygon } from '..'
 import { ComponentX } from '../core/decorator'
 import { getMax, getMin } from '../helper/math'
 import { CollideSystem } from './CollideSystem'
@@ -50,7 +48,7 @@ interface BoxColliderProps extends BaseComponentProps<BoxCollider> {
 }
 export class BoxCollider extends Collider<ColliderProps & BoxColliderProps> {
   get size() {
-    return size(this.props.width, this.props.height)
+    return Size(this.props.width, this.props.height)
   }
 
   set size(s: Size) {
@@ -68,12 +66,12 @@ export class BoxCollider extends Collider<ColliderProps & BoxColliderProps> {
     const hw = width * 0.5
     const hh = height * 0.5
     const transform = getNodeToWorldTransformAR(this.node)
-    const rect = rect(x - hw, y - hh, width, height)
+    const rc = rect(x - hw, y - hh, width, height)
     const tempPoints = [
-      Vec2(rect.x, rect.y),
-      Vec2(rect.x, rect.y + rect.height),
-      Vec2(rect.x + rect.width, rect.y + rect.height),
-      Vec2(rect.x + rect.width, rect.y),
+      Vec2(rc.x, rc.y),
+      Vec2(rc.x, rc.y + rc.height),
+      Vec2(rc.x + rc.width, rc.y + rc.height),
+      Vec2(rc.x + rc.width, rc.y),
     ]
     this._worldPoints = tempPoints.map((p) => pointApplyAffineTransform(p, transform))
 
@@ -105,7 +103,7 @@ export class CircleCollider extends Collider<ColliderProps & CircleColliderProps
     this._worldRadius = radius * this.node.scale
     this._worldPosition = pointApplyAffineTransform(p(x, y), transform)
     if (draw) {
-      draw.drawDot(this._worldPosition, this._worldRadius, Color.DEBUG_FILL_COLOR)
+      draw.drawDot(this._worldPosition, this._worldRadius, Color.RED)
       draw.drawCircle(this._worldPosition, this._worldRadius, 0, 64, true, CollideSystem.debugWidth, CollideSystem.debugColor)
     }
     this._preAabb = cloneRect(this._AABB)
@@ -149,7 +147,7 @@ export class PolygonCollider extends Collider<ColliderProps & PolygonColliderPro
     this._worldPoints = this.points.map((p) => pointApplyAffineTransform(p, transform))
     // log(polyPoints);
     if (draw) {
-      draw.drawPoly(this._worldPoints, Color.DEBUG_FILL_COLOR, CollideSystem.debugWidth, CollideSystem.debugColor)
+      draw.drawPoly(this._worldPoints, Color.WHITE, CollideSystem.debugWidth, CollideSystem.debugColor)
     }
     const listX = this._worldPoints.map(({ x }) => x)
     const listY = this._worldPoints.map(({ y }) => y)
@@ -231,17 +229,17 @@ export class Contract {
     }
 
     if (this._isPolygonPolygon) {
-      return Intersection.polygonPolygon(this._collider1._worldPoints, this._collider2._worldPoints)
+      return polygonPolygon(this._collider1._worldPoints, this._collider2._worldPoints)
     }
     if (this._isCircleCircle) {
       const p1 = this._collider1
       const p2 = this._collider2
-      return Intersection.circleCircle(p1._worldPosition, p1._worldRadius, p2._worldPosition, p2._worldRadius)
+      return circleCircle(p1._worldPosition, p1._worldRadius, p2._worldPosition, p2._worldRadius)
     }
 
     if (this._isPolygonCircle) {
       const p2 = this._collider2
-      return Intersection.polygonCircle(this._collider1._worldPoints, p2._worldPosition, p2._worldRadius)
+      return polygonCircle(this._collider1._worldPoints, p2._worldPosition, p2._worldRadius)
     }
 
     return false

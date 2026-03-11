@@ -1,3 +1,4 @@
+import { ATTRIBUTE_NAME_COLOR, ATTRIBUTE_NAME_POSITION, ATTRIBUTE_NAME_TEX_COORD, Sprite, VERTEX_ATTRIB_COLOR, VERTEX_ATTRIB_POSITION, VERTEX_ATTRIB_TEX_COORDS } from 'safex-webgl'
 import { tieldFsh, tiledVsh } from './shader'
 
 export class TiledSpriteNode extends Sprite {
@@ -9,8 +10,7 @@ export class TiledSpriteNode extends Sprite {
   _sizeLoc: WebGLUniformLocation
 
   constructor(file) {
-    super()
-    ;(super.ctor as any)(file)
+    super(file)
     this.initShader()
   }
 

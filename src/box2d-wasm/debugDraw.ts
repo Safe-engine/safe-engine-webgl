@@ -1,5 +1,4 @@
-import { DrawNode, pMult } from 'safex-webgl'
-import { Color4B, Vec2 } from '../../../safex-webgl/src/polyfills'
+import { Color4B, DrawNode, pMult, Vec2 } from 'safex-webgl'
 import { PTM_RATIO } from './PhysicsSystem'
 
 export const makeDebugDraw = (graphics: DrawNode, pixelsPerMeter, box2D: typeof Box2D) => {

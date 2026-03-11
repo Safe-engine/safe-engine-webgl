@@ -1,5 +1,6 @@
 import { EntityManager, EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
 
+import { RichText } from 'safex-webgl/ui'
 import { NodeComp } from '..'
 import { RichTextComp } from './RichTextComp'
 
@@ -10,7 +11,7 @@ export class RichTextSystem implements System {
 
   private onAddRichTextComp: EventReceiveCallback<RichTextComp> = ({ entity, component: rich }) => {
     const { string = '', isAdaptWithSize } = rich.props
-    const node = new ccui.RichText()
+    const node = new RichText()
     // node.width = 500
     // node.height = 300
     node.ignoreContentAdaptWithSize(!isAdaptWithSize)

@@ -1,5 +1,6 @@
 import { EntityManager, EventManager, EventTypes, System } from 'entityx-ts'
 
+import { Color, DrawNode, Scene, director, sys } from 'safex-webgl'
 import { NodeComp } from '../core/NodeComp'
 import { GameWorld } from '../gworld'
 import { instantiate } from '../helper'
@@ -17,7 +18,7 @@ export function shouldCollider(colA: Collider, colB: Collider) {
 
 export class CollideSystem implements System {
   static debugWidth = 3
-  static debugColor = Color.DEBUG_BORDER_COLOR
+  static debugColor = Color.YELLOW
   listColliders: Collider[] = []
   _contracts: Contract[] = []
   removeColliders = []

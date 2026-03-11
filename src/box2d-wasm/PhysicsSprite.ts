@@ -1,5 +1,4 @@
-import { lerp, Node } from 'safex-webgl'
-import { Vec2 } from '../../../safex-webgl/src/polyfills'
+import { lerp, Node, Vec2 } from 'safex-webgl'
 import { radiansToDegrees } from '../helper'
 import { PTM_RATIO } from './PhysicsSystem'
 

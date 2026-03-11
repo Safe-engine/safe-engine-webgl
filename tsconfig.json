@@ -21,10 +21,20 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "typeRoots": [
-      "./node_modules/cocos-html5-ts/@types",
       "./node_modules/@types",
       "./@types",
     ],
     "noEmit": false
-  }
+  },
+  "include": [
+    "./@types",
+    "./src"
+  ],
+  "exclude": [
+    "./src/dragonbones",
+    "./src/tiledmap",
+    "./src/fasttiled",
+    "./src/box2d-wasm",
+    "./src/spine"
+  ]
 }

@@ -1,4 +1,6 @@
-import { BaseComponentProps, GUISystem } from '..'
+import { path } from 'safex-webgl/helper'
+import { RichElementCustomNode, RichElementText, RichText, Text } from 'safex-webgl/ui'
+import { BaseComponentProps, color, Color, GUISystem, hexToColor } from '..'
 import { ComponentX, render } from '../core/decorator'
 import { HtmlTextParser } from './html-text-parser'
 
@@ -11,14 +13,14 @@ interface RichTextCompProps {
   isAdaptWithSize?: boolean
 }
 
-export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentProps<RichTextComp>, ccui.RichText> {
+export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentProps<RichTextComp>, RichText> {
   get string() {
     return this.props.string
   }
 
   set string(val: string) {
     this.props.string = val
-    if (this.node.instance instanceof ccui.RichText) {
+    if (this.node.instance instanceof RichText) {
       const newTextArray = _htmlTextParser.parse(val)
       // console.log(newTextArray)
       this.node.instance._richElements = []
@@ -30,13 +32,13 @@ export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentPr
         const fontName = path.basename(this.props.font || GUISystem.defaultFont, '.ttf')
         if (style.outline) {
           // console.log('richText', richText, (ccui as any).RichElementCustomNode)
-          const label = new ccui.Text(text, fontName, fontSize)
+          const label = new Text(text, fontName, fontSize)
           label.enableOutline(hexToColor(style.outline.color), style.outline.width || 3)
-          const customElem = ccui.RichElementCustomNode.create(1, color(255, 0, 0), 255, label)
+          const customElem = RichElementCustomNode.create(1, color(255, 0, 0), 255, label)
           this.node.instance.pushBackElement(customElem)
         } else {
           const color = style.color ? hexToColor(style.color) : Color.WHITE
-          const richText = ccui.RichElementText.create(index, color, 255, text, fontName, fontSize)
+          const richText = RichElementText.create(index, color, 255, text, fontName, fontSize)
           this.node.instance.pushBackElement(richText)
         }
       }

@@ -1,4 +1,4 @@
-import { Vec2 } from '../../../safex-webgl/src/polyfills'
+import { Vec2 } from 'safex-webgl'
 import { tileToPixel } from './tield'
 
 export class TiledMapContainer extends Node {
