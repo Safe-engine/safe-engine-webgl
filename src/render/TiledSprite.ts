@@ -1,4 +1,5 @@
 import { ATTRIBUTE_NAME_COLOR, ATTRIBUTE_NAME_POSITION, ATTRIBUTE_NAME_TEX_COORD, Sprite, VERTEX_ATTRIB_COLOR, VERTEX_ATTRIB_POSITION, VERTEX_ATTRIB_TEX_COORDS } from 'safex-webgl'
+import { GLProgram } from 'safex-webgl/shaders'
 import { tieldFsh, tiledVsh } from './shader'
 
 export class TiledSpriteNode extends Sprite {
@@ -39,8 +40,8 @@ export class TiledSpriteNode extends Sprite {
   updateShaderUniforms() {
     if (!this._program || !this.texture || !this.texture.isLoaded()) return
 
-    const texW = this.texture.width
-    const texH = this.texture.height
+    const texW = this.texture._getWidth()
+    const texH = this.texture._getHeight()
     const { height, width } = this.getContentSize()
     // console.log('TiledSprite updateShaderUniforms', { height, width }, texW, texH)
     const scaleX = width / texW
@@ -63,8 +64,8 @@ export class TiledSpriteNode extends Sprite {
 export function createTiledSprite(src: string, totalW: number, totalH: number) {
   const tileSprite = new Sprite(src)
   // lấy kích thước gốc của texture
-  const tileW = tileSprite.texture.width
-  const tileH = tileSprite.texture.height
+  const tileW = tileSprite.texture._getWidth()
+  const tileH = tileSprite.texture._getHeight()
   const program = new GLProgram()
   program.initWithString(tiledVsh, tieldFsh)
   // program.initWithVertexShaderByteArray(vert, frag);
