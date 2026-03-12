@@ -98,7 +98,7 @@ export function loadAll(assets: any, cb?: (progress: number) => void) {
     loader.load(
       allAssets,
       function (result, count, loadedCount) {
-        // console.log(result)
+        // console.log('loadAll', result, count, loadedCount)
         if (result instanceof Texture2D) {
           // textureCache.addImage(result.url)
           const frame = new SpriteFrame(result, rect(0, 0, result.getPixelsWide(), result.getPixelsHigh()))

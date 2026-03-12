@@ -1,6 +1,5 @@
-import { Point } from '@cocos/dragonbones-js'
 import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
-import { Node, p, pDistance, rect, Sprite, spriteFrameCache, Vec2, winSize } from 'safex-webgl'
+import { Node, p, pDistance, Point, rect, Sprite, spriteFrameCache, Vec2, winSize } from 'safex-webgl'
 import { VERTICAL_TEXT_ALIGNMENT_BOTTOM } from 'safex-webgl/core/platform'
 import { path } from 'safex-webgl/helper'
 import { ProgressTimer } from 'safex-webgl/progress-timer'
