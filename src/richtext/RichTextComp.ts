@@ -1,5 +1,5 @@
 import { path } from 'safex-webgl/helper'
-import { RichElementCustomNode, RichElementText, RichText, Text } from 'safex-webgl/ui'
+import { RichElementText, RichText } from 'safex-webgl/ui'
 import { BaseComponentProps, color, Color, GUISystem, hexToColor } from '..'
 import { ComponentX, render } from '../core/decorator'
 import { HtmlTextParser } from './html-text-parser'
@@ -32,13 +32,16 @@ export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentPr
         const fontName = path.basename(this.props.font || GUISystem.defaultFont, '.ttf')
         if (style.outline) {
           // console.log('richText', richText, (ccui as any).RichElementCustomNode)
-          const label = new Text(text, fontName, fontSize)
-          label.enableOutline(hexToColor(style.outline.color), style.outline.width || 3)
-          const customElem = RichElementCustomNode.create(1, color(255, 0, 0), 255, label)
-          this.node.instance.pushBackElement(customElem)
+          // label.enableOutline(hexToColor(style.outline.color), style.outline.width || 3)
+          // const label = new Text(text, fontName, fontSize)
+          const label = new RichElementText(index, color(255, 0, 0), 255, text, fontName, fontSize)
+          label._fontDefinition.strokeEnabled = true
+          label._fontDefinition.strokeStyle = hexToColor(style.outline.color)
+          label._fontDefinition.lineWidth = style.outline.width || 3
+          this.node.instance.pushBackElement(label)
         } else {
           const color = style.color ? hexToColor(style.color) : Color.WHITE
-          const richText = RichElementText.create(index, color, 255, text, fontName, fontSize)
+          const richText = new RichElementText(index, color, 255, text, fontName, fontSize)
           this.node.instance.pushBackElement(richText)
         }
       }
