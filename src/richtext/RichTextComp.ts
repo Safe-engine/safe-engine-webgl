@@ -1,6 +1,6 @@
 import { path } from 'safex-webgl/helper'
 import { RichElementText, RichText } from 'safex-webgl/ui'
-import { BaseComponentProps, color, Color, GUISystem, hexToColor } from '..'
+import { BaseComponentProps, Color, FontDefinition, GUISystem, hexToColor } from '..'
 import { ComponentX, render } from '../core/decorator'
 import { HtmlTextParser } from './html-text-parser'
 
@@ -22,7 +22,7 @@ export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentPr
     this.props.string = val
     if (this.node.instance instanceof RichText) {
       const newTextArray = _htmlTextParser.parse(val)
-      // console.log(newTextArray)
+      // console.log('RichText set string ',newTextArray)
       this.node.instance._richElements = []
       this.node.instance._formatTextDirty = true
       this.node.instance.formatText()
@@ -34,10 +34,14 @@ export class RichTextComp extends ComponentX<RichTextCompProps & BaseComponentPr
           // console.log('richText', richText, (ccui as any).RichElementCustomNode)
           // label.enableOutline(hexToColor(style.outline.color), style.outline.width || 3)
           // const label = new Text(text, fontName, fontSize)
-          const label = new RichElementText(index, color(255, 0, 0), 255, text, fontName, fontSize)
-          label._fontDefinition.strokeEnabled = true
-          label._fontDefinition.strokeStyle = hexToColor(style.outline.color)
-          label._fontDefinition.lineWidth = style.outline.width || 3
+          const fontDefinition = new FontDefinition({
+            fontName, fontSize
+          })
+          fontDefinition.strokeEnabled = true
+          fontDefinition.strokeStyle = hexToColor(style.outline.color)
+          fontDefinition.lineWidth = style.outline.width || 3
+          fontDefinition.fontStyle = style.color ?? Color.WHITE
+          const label = new RichElementText(index, fontDefinition, 255, text)
           this.node.instance.pushBackElement(label)
         } else {
           const color = style.color ? hexToColor(style.color) : Color.WHITE

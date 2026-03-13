@@ -1,4 +1,4 @@
-import { EntityManager, EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
+import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
 
 import { RichText } from 'safex-webgl/ui'
 import { NodeComp } from '..'
@@ -19,8 +19,8 @@ export class RichTextSystem implements System {
     rich.string = string
   }
 
-  update(entities: EntityManager, events: EventManager, dt: number)
-  update() {
-    // throw new Error('Method not implemented.');
-  }
+  // update(entities: EntityManager, events: EventManager, dt: number)
+  // update() {
+  // throw new Error('Method not implemented.');
+  // }
 }
