@@ -38,10 +38,10 @@ export class TiledSpriteNode extends Sprite {
   }
 
   updateShaderUniforms() {
-    if (!this._program || !this.texture || !this.texture.isLoaded()) return
+    if (!this._program || !this.getTexture() || !this.getTexture().isLoaded()) return
 
-    const texW = this.texture._getWidth()
-    const texH = this.texture._getHeight()
+    const texW = this.getTexture()._getWidth()
+    const texH = this.getTexture()._getHeight()
     const { height, width } = this.getContentSize()
     // console.log('TiledSprite updateShaderUniforms', { height, width }, texW, texH)
     const scaleX = width / texW
@@ -64,8 +64,8 @@ export class TiledSpriteNode extends Sprite {
 export function createTiledSprite(src: string, totalW: number, totalH: number) {
   const tileSprite = new Sprite(src)
   // lấy kích thước gốc của texture
-  const tileW = tileSprite.texture._getWidth()
-  const tileH = tileSprite.texture._getHeight()
+  const tileW = tileSprite.getTexture()._getWidth()
+  const tileH = tileSprite.getTexture()._getHeight()
   const program = new GLProgram()
   program.initWithString(tiledVsh, tieldFsh)
   // program.initWithVertexShaderByteArray(vert, frag);
@@ -82,8 +82,8 @@ export function createTiledSprite(src: string, totalW: number, totalH: number) {
   const texSizeLoc = program.getUniformLocationForName('u_texSize')
   const scaleX = totalW / tileW
   const scaleY = totalH / tileH
-  if (tileSprite.texture._textureLoaded) afterLoaded()
-  else tileSprite.texture.addLoadedEventListener(afterLoaded)
+  if (tileSprite.getTexture().isLoaded()) afterLoaded()
+  else tileSprite.getTexture().addLoadedEventListener(afterLoaded)
 
   function afterLoaded() {
     // program.use()

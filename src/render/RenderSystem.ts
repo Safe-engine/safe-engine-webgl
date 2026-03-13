@@ -1,6 +1,6 @@
 import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
 
-import { Color, DrawNode, Node, rect, Sprite, spriteFrameCache } from 'safex-webgl'
+import { Color, DrawNode, Node, Rect, Sprite, spriteFrameCache } from 'safex-webgl'
 import { MotionStreak } from 'safex-webgl/motion-streak'
 import { Scale9Sprite } from 'safex-webgl/ui'
 import { NodeComp } from '../core/NodeComp'
@@ -42,7 +42,7 @@ export class RenderSystem implements System {
     if (tiledSize) {
       node = createTiledSprite(spriteFrame, tiledSize.width, tiledSize.height)
     } else if (capInsets) {
-      const rc = rect(...capInsets)
+      const rc = Rect(...capInsets)
       node = new Scale9Sprite(frame || spriteFrame, rc, rc)
       // console.log('Scale9Sprite', node)
     } else {

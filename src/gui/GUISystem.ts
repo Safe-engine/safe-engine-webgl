@@ -1,5 +1,5 @@
 import { EventManager, EventReceiveCallback, EventTypes, System } from 'entityx-ts'
-import { Node, p, pDistance, Point, rect, Sprite, spriteFrameCache, Vec2, winSize } from 'safex-webgl'
+import { Node, p, pDistance, Point, Rect, Sprite, spriteFrameCache, Vec2, winSize } from 'safex-webgl'
 import { VERTICAL_TEXT_ALIGNMENT_BOTTOM } from 'safex-webgl/core/platform'
 import { path } from 'safex-webgl/helper'
 import { ProgressTimer } from 'safex-webgl/progress-timer'
@@ -47,7 +47,7 @@ export class GUISystem implements System {
     }
     if (capInsets) {
       node.setScale9Enabled(true)
-      node.setCapInsets(rect(...capInsets))
+      node.setCapInsets(Rect(...capInsets))
     }
     button.node = entity.assign(new NodeComp(node, entity))
   }

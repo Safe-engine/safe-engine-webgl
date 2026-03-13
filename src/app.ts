@@ -1,4 +1,4 @@
-import { ResolutionPolicy, Scene, SpriteFrame, Texture2D, director, game, global, loader, rect, spriteFrameCache, sys, view } from 'safex-webgl'
+import { Rect, ResolutionPolicy, Scene, SpriteFrame, Texture2D, director, game, global, loader, spriteFrameCache, sys, view } from 'safex-webgl'
 import { path } from 'safex-webgl/helper'
 import { GUISystem } from './gui'
 import { GameWorld } from './gworld'
@@ -101,7 +101,7 @@ export function loadAll(assets: any, cb?: (progress: number) => void) {
         // console.log('loadAll', result, count, loadedCount)
         if (result instanceof Texture2D) {
           // textureCache.addImage(result.url)
-          const frame = new SpriteFrame(result, rect(0, 0, result.getPixelsWide(), result.getPixelsHigh()))
+          const frame = new SpriteFrame(result, Rect(0, 0, result.getPixelsWide(), result.getPixelsHigh()))
           // console.log('Texture2D', result, frame)
           spriteFrameCache.addSpriteFrame(frame, result.url)
         }

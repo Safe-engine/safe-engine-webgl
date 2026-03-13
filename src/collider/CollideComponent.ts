@@ -1,5 +1,6 @@
-import { affineTransformTranslate, Color, DrawNode, p, Point, pointApplyAffineTransform, rect, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
+import { affineTransformTranslate, Color, DrawNode, p, Point, pointApplyAffineTransform, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
 import { BaseComponentProps, circleCircle, polygonCircle, polygonPolygon } from '..'
+import { rect } from '../../../safex-webgl/dist/src/core/cocoa/Geometry'
 import { ComponentX } from '../core/decorator'
 import { getMax, getMin } from '../helper/math'
 import { CollideSystem } from './CollideSystem'
@@ -12,7 +13,7 @@ function getNodeToWorldTransformAR(node) {
 }
 
 function cloneRect(origin) {
-  return rect(origin.x, origin.y, origin.width, origin.height)
+  return Rect(origin.x, origin.y, origin.width, origin.height)
 }
 interface ColliderProps extends BaseComponentProps<Collider> {
   tag?: number
@@ -25,8 +26,8 @@ export class Collider<T = ColliderProps> extends ComponentX<T> {
   _worldPoints: Vec2[] | Point[] = []
   _worldPosition: Vec2 | Point
   _worldRadius
-  _AABB: Rect = rect(0, 0, 0, 0)
-  _preAabb: Rect = rect(0, 0, 0, 0)
+  _AABB = Rect(0, 0, 0, 0)
+  _preAabb = Rect(0, 0, 0, 0)
 
   // update(dt: number, draw?: DrawNode) {}
   getAABB() {
