@@ -1,6 +1,5 @@
 import { affineTransformTranslate, Color, DrawNode, p, Point, pointApplyAffineTransform, Rect, rectIntersectsRect, Size, Vec2 } from 'safex-webgl'
 import { BaseComponentProps, circleCircle, polygonCircle, polygonPolygon } from '..'
-import { rect } from '../../../safex-webgl/dist/src/core/cocoa/Geometry'
 import { ComponentX } from '../core/decorator'
 import { getMax, getMin } from '../helper/math'
 import { CollideSystem } from './CollideSystem'
@@ -67,7 +66,7 @@ export class BoxCollider extends Collider<ColliderProps & BoxColliderProps> {
     const hw = width * 0.5
     const hh = height * 0.5
     const transform = getNodeToWorldTransformAR(this.node)
-    const rc = rect(x - hw, y - hh, width, height)
+    const rc = Rect(x - hw, y - hh, width, height)
     const tempPoints = [
       Vec2(rc.x, rc.y),
       Vec2(rc.x, rc.y + rc.height),

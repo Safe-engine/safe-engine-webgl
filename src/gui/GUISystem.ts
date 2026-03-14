@@ -14,7 +14,6 @@ export class GUISystem implements System {
     event_manager.subscribe(EventTypes.ComponentAdded, ProgressTimerComp, this.onAddProgressTimerComp)
     event_manager.subscribe(EventTypes.ComponentAdded, LabelComp, this.onAddLabelComp)
     event_manager.subscribe(EventTypes.ComponentAdded, ScrollViewComp, this.onAddScrollViewComp)
-    // event_manager.subscribe(EventTypes.ComponentAdded, InputComp, this.onAddInputComp)
     event_manager.subscribe(EventTypes.ComponentAdded, WidgetComp, this.onAddWidgetComp)
     event_manager.subscribe(EventTypes.ComponentAdded, GridLayoutComp, this.onAddGridLayoutComp)
   }
@@ -105,19 +104,6 @@ export class GUISystem implements System {
     }
     scrollView.node = entity.assign(new NodeComp(node, entity))
   }
-
-  // private onAddInputComp: EventReceiveCallback<InputComp> = ({ entity, component: textInput }) => {
-  //   const { placeHolder = '', font = GUISystem.defaultFont, size = 64, maxLength = 20, isPassword = false } = textInput.props
-  //   const textField = new TextField()
-  //   textField.setPlaceHolder(placeHolder)
-  //   textField.setFontName(font)
-  //   textField.setFontSize(size)
-  //   textField.setTextColor(color(255, 255, 255))
-  //   textField.setMaxLengthEnabled(true)
-  //   textField.setMaxLength(maxLength)
-  //   textField.setPasswordEnabled(isPassword)
-  //   textInput.node = entity.assign(new NodeComp(textField, entity))
-  // }
 
   private onAddWidgetComp: EventReceiveCallback<WidgetComp> = ({ entity, component }) => {
     const { top, right, bottom, left } = component.props

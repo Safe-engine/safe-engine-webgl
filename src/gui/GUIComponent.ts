@@ -107,18 +107,6 @@ export class ScrollViewComp extends ComponentX<ScrollViewProps & BaseComponentPr
   }
 }
 
-// interface InputCompProps {
-//   placeHolder?: string
-//   font?: string
-//   size?: Integer
-//   maxLength?: Integer
-//   isPassword?: boolean
-// }
-// export class InputComp extends ComponentX<InputCompProps & BaseComponentProps<InputComp>, TextField> {
-//   get string() {
-//     return this.node.instance.getString()
-//   }
-// }
 interface WidgetCompProps {
   top?: Integer
   right?: Integer
