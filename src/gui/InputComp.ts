@@ -1,3 +1,4 @@
+import { TextField } from "safex-webgl/ui"
 import { BaseComponentProps, color, GameWorld, GUISystem, NodeComp } from ".."
 import { ComponentX } from "../core/decorator"
 

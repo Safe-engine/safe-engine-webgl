@@ -16,6 +16,6 @@ export class SceneComponent extends EnhancedComponent {
     const node = root.assign(new NodeComp(scene, root))
     const sceneComponent = root.assign(this)
     sceneComponent.node = node
-    return sceneComponent
+    return sceneComponent as any
   }
 }

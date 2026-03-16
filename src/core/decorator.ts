@@ -8,7 +8,7 @@ export class ComponentX<Props = object, C extends Node = Node> extends EnhancedC
     return this.node.instance
   }
 
-  render?(): this
+  render?()
 }
 
 export function render() {
