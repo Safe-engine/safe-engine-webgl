@@ -13,8 +13,7 @@ import {
 } from '@esotericsoftware/spine-core'
 
 import { isString } from 'lodash-es'
-import { director, FLT_MAX, FLT_MIN, loader, Node, OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA } from 'safex-webgl'
-import { rect } from '../../../../safex-webgl/dist/src/core/cocoa/Geometry'
+import { director, FLT_MAX, FLT_MIN, loader, Node, OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA, Rect } from 'safex-webgl'
 import { _atlasLoader } from './CCSkeletonAnimation'
 import { WebGLRenderCmd } from './CCSkeletonWebGLRenderCmd'
 
@@ -44,7 +43,7 @@ export class CCSkeleton extends Node {
   _state: AnimationState
   _ownsAnimationStateData = false
   _listener: any
- declare _renderCmd: WebGLRenderCmd
+  declare _renderCmd: WebGLRenderCmd
 
   constructor(skeletonDataFile?: any, atlasFile?: any, scale?: any) {
     super()
@@ -57,7 +56,7 @@ export class CCSkeleton extends Node {
   }
 
   _createRenderCmd() {
-     return new WebGLRenderCmd(this)
+    return new WebGLRenderCmd(this)
   }
 
   init(): boolean {
@@ -194,7 +193,7 @@ export class CCSkeleton extends Node {
       )
     }
     const position = this.getPosition()
-    return rect(position.x + minX, position.y + minY, maxX - minX, maxY - minY)
+    return Rect(position.x + minX, position.y + minY, maxX - minX, maxY - minY)
   }
 
   updateWorldTransform() {
@@ -281,6 +280,16 @@ export class CCSkeleton extends Node {
 
   update(dt: any) {
     this._skeleton.update(dt)
+  }
+
+  get _blendFunc() {
+    return this.getBlendFunc()
+  }
+  get _texture() {
+    return this._renderCmd._currTexture
+  }
+  get opacityModifyRGB() {
+    return this.isOpacityModifyRGB()
   }
 }
 

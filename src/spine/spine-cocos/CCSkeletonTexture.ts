@@ -3,9 +3,9 @@ import { _renderContext } from 'safex-webgl'
 import { glBindTexture2D } from 'safex-webgl/shaders'
 
 export class SkeletonTexture extends Texture {
-  constructor(image) {
-    super(image)
-  }
+  // constructor(image) {
+  //   super(image)
+  // }
   name = 'SkeletonTexture'
   _texture = null
 
