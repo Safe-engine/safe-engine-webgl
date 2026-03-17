@@ -1,4 +1,4 @@
-import { Vec2 } from 'safex-webgl'
+import { Node, Vec2 } from 'safex-webgl'
 import { tileToPixel } from './tield'
 
 export class TiledMapContainer extends Node {
@@ -24,6 +24,6 @@ export class TiledMapLayer extends Node {
 
   getTileAt(tx: number, ty: number) {
     const idx = 0 | (tx + ty * this.mapData.width)
-    return this.children[idx]
+    return this.getChildren()[idx]
   }
 }

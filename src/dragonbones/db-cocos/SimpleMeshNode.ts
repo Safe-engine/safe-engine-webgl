@@ -5,6 +5,9 @@
 //   const node = new SimpleMeshNode(texture, verts, uvs, inds);
 //   node.setPosition(x,y); node.setRotation(angleDeg); node.setScale(s);
 
+import { DrawNode, Sprite, Texture2D, _renderContext, color, director, p, view } from "safex-webgl"
+import { log } from "safex-webgl/helper"
+
 export class SimpleMeshNode extends Sprite {
   // public mesh data (Float32Array / Uint16Array)
   _texture: any = null
@@ -27,7 +30,6 @@ export class SimpleMeshNode extends Sprite {
 
   constructor(texture?: Texture2D, vertices?: Float32Array, uvs?: Float32Array, indices?: Uint16Array) {
     super()
-    super.ctor()
 
     this._texture = texture || null
     this._vertices = vertices || new Float32Array(0)
@@ -181,22 +183,22 @@ export class SimpleMeshNode extends Sprite {
 
     const worldRotation = this.getNodeToWorldTransform
       ? (function () {
-          try {
-            const t = this.getNodeToWorldTransform()
-            const a = t.a,
-              b = t.b,
-              c = t.c,
-              d = t.d,
-              tx = t.tx,
-              ty = t.ty
-            const rot = (Math.atan2(b, a) * 180) / Math.PI
-            const sx = Math.sqrt(a * a + b * b)
-            const sy = Math.sqrt(c * c + d * d)
-            return { rot: rot, sx: sx, sy: sy, tx: tx, ty: ty }
-          } catch {
-            return null
-          }
-        })()
+        try {
+          const t = this.getNodeToWorldTransform()
+          const a = t.a,
+            b = t.b,
+            c = t.c,
+            d = t.d,
+            tx = t.tx,
+            ty = t.ty
+          const rot = (Math.atan2(b, a) * 180) / Math.PI
+          const sx = Math.sqrt(a * a + b * b)
+          const sy = Math.sqrt(c * c + d * d)
+          return { rot: rot, sx: sx, sy: sy, tx: tx, ty: ty }
+        } catch {
+          return null
+        }
+      })()
       : null
 
     let tx: number, ty: number, rotDeg: number, sx: number, sy: number
@@ -210,9 +212,9 @@ export class SimpleMeshNode extends Sprite {
       const worldPt = this.convertToWorldSpaceAR ? this.convertToWorldSpaceAR(p(0, 0)) : { x: 0, y: 0 }
       tx = worldPt.x
       ty = worldPt.y
-      rotDeg = this.getRotation ? this.getRotation() : this.rotation || 0
-      sx = this.getScaleX ? this.getScaleX() : this.scaleX || 1
-      sy = this.getScaleY ? this.getScaleY() : this.scaleY || 1
+      rotDeg = this.getRotation() ?? 0
+      sx = this.getScaleX() ?? 1
+      sy = this.getScaleY() ?? 1
     }
 
     const rad = ((rotDeg || 0) * Math.PI) / 180.0
@@ -331,7 +333,7 @@ export class SimpleMeshNode extends Sprite {
 
   // simple canvas fallback: just draw bounding box for visibility
   _drawMeshCanvasFallback(): void {
-    if (!this._fallbackDraw.parent) {
+    if (!this._fallbackDraw.getParent()) {
       this.addChild(this._fallbackDraw)
     }
     this._fallbackDraw.clear()

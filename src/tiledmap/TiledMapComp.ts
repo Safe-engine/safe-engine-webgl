@@ -1,3 +1,4 @@
+import { TMXTiledMap } from 'safex-webgl/tilemap'
 import { BaseComponentProps, ComponentX, GameWorld, NodeComp } from '..'
 
 interface TiledMapCompProps extends BaseComponentProps<TiledMapComp> {

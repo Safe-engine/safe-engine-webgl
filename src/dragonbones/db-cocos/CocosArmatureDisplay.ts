@@ -1,36 +1,15 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2018 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 import {
-    Animation,
-    Armature,
-    BoundingBoxType,
-    DragonBones,
-    EventObject,
-    EventStringType,
-    IArmatureProxy,
-    PolygonBoundingBoxData,
+  Animation,
+  Armature,
+  BoundingBoxType,
+  DragonBones,
+  EventObject,
+  EventStringType,
+  IArmatureProxy,
+  PolygonBoundingBoxData,
 } from '@cocos/dragonbones-js'
+import { DrawNode, Sprite, color, p } from 'safex-webgl'
+import { EventCustom } from 'safex-webgl/core/event-manager'
 
 export type EventCallbackType = (...args) => void
 export interface EventMap {
@@ -50,9 +29,7 @@ export class CocosArmatureDisplay extends Sprite implements IArmatureProxy {
   events: EventMap = {}
 
   constructor() {
-    // 1. super init first
     super()
-    super.ctor() // always call this for compatibility with cocos2dx JS Javascript class system
     // this.eventDispatcher = eventManager;
   }
 
@@ -101,7 +78,7 @@ export class CocosArmatureDisplay extends Sprite implements IArmatureProxy {
         }
 
         this.addChild(this._debugDrawer)
-        const boneDrawer = this._debugDrawer.children[0] as DrawNode
+        const boneDrawer = this._debugDrawer.getChildren()[0] as DrawNode
         boneDrawer.clear()
 
         const bones = this._armature.getBones()
@@ -187,17 +164,17 @@ export class CocosArmatureDisplay extends Sprite implements IArmatureProxy {
             slot.updateGlobalTransform()
 
             const transform = slot.global
-            child.setTransform(
-              transform.x,
-              transform.y,
-              transform.scaleX,
-              transform.scaleY,
-              transform.rotation,
-              transform.skew,
-              0.0,
-              slot._pivotX,
-              slot._pivotY,
-            )
+            // child.setTransform(
+            //   transform.x,
+            //   transform.y,
+            //   transform.scaleX,
+            //   transform.scaleY,
+            //   transform.rotation,
+            //   transform.skew,
+            //   0.0,
+            //   slot._pivotX,
+            //   slot._pivotY,
+            // )
           } else {
             const child = this._debugDrawer.getChildByName(slot.name)
             if (child) {
@@ -205,7 +182,7 @@ export class CocosArmatureDisplay extends Sprite implements IArmatureProxy {
             }
           }
         }
-      } else if (this._debugDrawer !== null && this._debugDrawer.parent === this) {
+      } else if (this._debugDrawer !== null && this._debugDrawer.getParent() === this) {
         this.removeChild(this._debugDrawer)
       }
     }

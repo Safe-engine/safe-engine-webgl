@@ -1,5 +1,4 @@
-import { lerp, Node, Vec2 } from 'safex-webgl'
-import { radiansToDegrees } from '../helper'
+import { lerp, Node, radiansToDegrees, Vec2 } from 'safex-webgl'
 import { PTM_RATIO } from './PhysicsSystem'
 
 export class PhysicsSprite {

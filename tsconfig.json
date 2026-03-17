@@ -29,12 +29,5 @@
   "include": [
     "./@types",
     "./src"
-  ],
-  "exclude": [
-    "./src/dragonbones",
-    "./src/tiledmap",
-    "./src/fasttiled",
-    "./src/box2d-wasm",
-    "./src/spine"
   ]
 }

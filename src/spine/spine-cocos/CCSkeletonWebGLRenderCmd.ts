@@ -1,47 +1,31 @@
-/****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
-
- http://www.cocos2d-x.org
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
 import { BlendMode, MeshAttachment, RegionAttachment, Utils } from '@esotericsoftware/spine-core'
+import { _drawingUtil, BATCH_VERTEX_COUNT, DST_COLOR, NodeWebGLRenderCmd, ONE, ONE_MINUS_SRC_ALPHA, ONE_MINUS_SRC_COLOR, p, renderer, SHADER_SPRITE_POSITION_TEXTURECOLOR, SRC_ALPHA } from 'safex-webgl'
+import { current_stack, KM_GL_MODELVIEW, kmGLMatrixMode, kmGLPopMatrix, Matrix4 } from 'safex-webgl/core/kazmath'
+import { shaderCache } from 'safex-webgl/shaders'
+import { CCSkeleton } from './CCSkeleton'
 
-export const WebGLRenderCmd = function (renderableObject) {
-  this._rootCtor(renderableObject)
-  this._needDraw = true
-  this._matrix = new math.Matrix4()
-  this._matrix.identity()
-  this._currTexture = null
-  this._currBlendFunc = {}
-  this.vertexType = renderer.VertexType.CUSTOM
-  this.setShaderProgram(shaderCache.programForKey(SHADER_SPRITE_POSITION_TEXTURECOLOR))
-}
+export class WebGLRenderCmd extends NodeWebGLRenderCmd {
+  _matrix: any
+  _currTexture: any
+  _currBlendFunc: any
+  vertexType: any
+ declare _node: CCSkeleton
 
-const proto = (WebGLRenderCmd.prototype = Object.create(Node.WebGLRenderCmd.prototype))
-proto.constructor = WebGLRenderCmd
+  constructor(renderableObject) {
+    super(renderableObject)
+    this._needDraw = true
+    this._matrix = new Matrix4()
+    this._matrix.identity()
+    this._currTexture = null
+    this._currBlendFunc = {}
+    this.vertexType = renderer.VertexType.CUSTOM
+    this.setShaderProgram(shaderCache.programForKey(SHADER_SPRITE_POSITION_TEXTURECOLOR))
+  }
 
-proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
+  uploadData(f32buffer, ui32buffer, vertexDataOffset) {
   const node = this._node
   const color = this._displayedColor,
-    locSkeleton = node._skeleton
+    locSkeleton: any = node._skeleton
 
   let attachment, slot, i, n
   const premultiAlpha = node._premultipliedAlpha
@@ -57,7 +41,7 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
   }
 
   let debugSlotsInfo = null
-  if (this._node._debugSlots) {
+  if (node._debugSlots) {
     debugSlotsInfo = []
   }
 
@@ -114,7 +98,7 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
       continue
     }
 
-    if (this._node._debugSlots) {
+    if (node._debugSlots) {
       debugSlotsInfo[i] = slotDebugPoints
     }
 
@@ -188,40 +172,41 @@ proto.uploadData = function (f32buffer, ui32buffer, vertexDataOffset) {
   }
 
   return 0
-}
-
-proto._getBlendFunc = function (blendMode, premultiAlpha) {
-  let ret = this._currBlendFunc
-  switch (blendMode) {
-    case BlendMode.Normal:
-      ret.src = premultiAlpha ? ONE : SRC_ALPHA
-      ret.dst = ONE_MINUS_SRC_ALPHA
-      break
-    case BlendMode.Additive:
-      ret.src = premultiAlpha ? ONE : SRC_ALPHA
-      ret.dst = ONE
-      break
-    case BlendMode.Multiply:
-      ret.src = DST_COLOR
-      ret.dst = ONE_MINUS_SRC_ALPHA
-      break
-    case BlendMode.Screen:
-      ret.src = ONE
-      ret.dst = ONE_MINUS_SRC_COLOR
-      break
-    default:
-      ret = this._node._blendFunc
-      break
   }
 
-  return ret
-}
+  _getBlendFunc(blendMode, premultiAlpha) {
+    const node = this._node
+    let ret = this._currBlendFunc
+    switch (blendMode) {
+      case BlendMode.Normal:
+        ret.src = premultiAlpha ? ONE : SRC_ALPHA
+        ret.dst = ONE_MINUS_SRC_ALPHA
+        break
+      case BlendMode.Additive:
+        ret.src = premultiAlpha ? ONE : SRC_ALPHA
+        ret.dst = ONE
+        break
+      case BlendMode.Multiply:
+        ret.src = DST_COLOR
+        ret.dst = ONE_MINUS_SRC_ALPHA
+        break
+      case BlendMode.Screen:
+        ret.src = ONE
+        ret.dst = ONE_MINUS_SRC_COLOR
+        break
+      default:
+        ret = node._blendFunc
+        break
+    }
 
-proto._createChildFormSkeletonData = function () {}
+    return ret
+  }
 
-proto._updateChild = function () {}
+  _createChildFormSkeletonData() {}
 
-proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlpha, f32buffer, ui32buffer, vertexDataOffset) {
+  _updateChild() {}
+
+  _uploadRegionAttachmentData(attachment, slot, premultipliedAlpha, f32buffer, ui32buffer, vertexDataOffset) {
   // the vertices in format:
   // [
   //   X1, Y1, C1R, C1G, C1B, C1A, U1, V1,    // bottom left
@@ -256,6 +241,7 @@ proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlp
     alpha,
   )
 
+  const node = this._node
   const wt = this._worldTransform,
     wa = wt.a,
     wb = wt.b,
@@ -263,7 +249,7 @@ proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlp
     wd = wt.d,
     wx = wt.tx,
     wy = wt.ty,
-    z = this._node.vertexZ
+    z = node.getVertexZ()
 
   let offset = vertexDataOffset
   // generate 6 vertices data (two triangles) from the quad vertices
@@ -288,7 +274,7 @@ proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlp
     offset += 6
   }
 
-  if (this._node._debugSlots) {
+  if (node._debugSlots) {
     // return the quad points info if debug slot enabled
     const VERTEX = RegionAttachment
     return [
@@ -298,9 +284,10 @@ proto._uploadRegionAttachmentData = function (attachment, slot, premultipliedAlp
       p(vertices[VERTEX.X4], vertices[VERTEX.Y4]),
     ]
   }
-}
+  }
 
-proto._uploadMeshAttachmentData = function (attachment, slot, premultipliedAlpha, f32buffer, ui32buffer, vertexDataOffset) {
+  _uploadMeshAttachmentData(attachment, slot, premultipliedAlpha, f32buffer, ui32buffer, vertexDataOffset) {
+  const node = this._node
   const wt = this._worldTransform,
     wa = wt.a,
     wb = wt.b,
@@ -308,7 +295,7 @@ proto._uploadMeshAttachmentData = function (attachment, slot, premultipliedAlpha
     wd = wt.d,
     wx = wt.tx,
     wy = wt.ty,
-    z = this._node.vertexZ
+    z = node.getVertexZ()
   // get the vertex data
   const verticesLength = attachment.worldVerticesLength
   const vertices = Utils.setArraySize([], verticesLength, 0)
@@ -357,3 +344,6 @@ proto._uploadMeshAttachmentData = function (attachment, slot, premultipliedAlpha
     offset += 6
   }
 }
+}
+
+

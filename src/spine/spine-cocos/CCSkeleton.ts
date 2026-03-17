@@ -1,45 +1,22 @@
 import {
-    AnimationState,
-    AtlasAttachmentLoader,
-    Bone,
-    Physics,
-    RegionAttachment,
-    Skeleton,
-    SkeletonBinary,
-    SkeletonData,
-    SkeletonJson,
-    TextureAtlas,
-    Utils,
+  AnimationState,
+  AtlasAttachmentLoader,
+  Bone,
+  Physics,
+  RegionAttachment,
+  Skeleton,
+  SkeletonBinary,
+  SkeletonData,
+  SkeletonJson,
+  TextureAtlas,
+  Utils,
 } from '@esotericsoftware/spine-core'
 
+import { isString } from 'lodash-es'
+import { director, FLT_MAX, FLT_MIN, loader, Node, OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA } from 'safex-webgl'
+import { rect } from '../../../../safex-webgl/dist/src/core/cocoa/Geometry'
 import { _atlasLoader } from './CCSkeletonAnimation'
-import { CanvasRenderCmd } from './CCSkeletonCanvasRenderCmd'
 import { WebGLRenderCmd } from './CCSkeletonWebGLRenderCmd'
-/****************************************************************************
- Copyright (c) 2011-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
- Copyright (c) 2014 Shengxiang Chen (Nero Chan)
-
- http://www.cocos2d-x.org
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
 
 /**
  * The main namespace of Spine, all classes, functions, properties and constants of Spine are defined in this namespace
@@ -57,20 +34,20 @@ import { WebGLRenderCmd } from './CCSkeletonWebGLRenderCmd'
  * @extends Node
  */
 export class CCSkeleton extends Node {
-  _skeleton: Skeleton = null
-  _rootBone: Bone = null
+  _skeleton: Skeleton
+  _rootBone: Bone
   _timeScale = 1
   _debugSlots = false
   _debugBones = false
   _premultipliedAlpha = false
-  _ownsSkeletonData: any = null
+  _ownsSkeletonData: any
   _state: AnimationState
   _ownsAnimationStateData = false
   _listener: any
+ declare _renderCmd: WebGLRenderCmd
 
   constructor(skeletonDataFile?: any, atlasFile?: any, scale?: any) {
     super()
-    super.ctor()
     this._renderCmd = this._createRenderCmd()
     if (arguments.length === 0) {
       this.init()
@@ -80,13 +57,12 @@ export class CCSkeleton extends Node {
   }
 
   _createRenderCmd() {
-    if (_renderType === game.RENDER_TYPE_CANVAS) return new CanvasRenderCmd(this)
-    else return new WebGLRenderCmd(this)
+     return new WebGLRenderCmd(this)
   }
 
   init(): boolean {
     super.init()
-    this._premultipliedAlpha = !!(_renderType === game.RENDER_TYPE_WEBGL && OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA)
+    this._premultipliedAlpha = !!(OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA)
     return true
   }
 
@@ -308,10 +284,9 @@ export class CCSkeleton extends Node {
   }
 }
 
-defineGetterSetter(CCSkeleton.prototype, 'opacityModifyRGB', CCSkeleton.prototype.isOpacityModifyRGB)
-
-// For renderer webgl to identify skeleton's default texture and blend function
-defineGetterSetter(CCSkeleton.prototype, '_blendFunc', CCSkeleton.prototype.getBlendFunc)
-defineGetterSetter(CCSkeleton.prototype, '_texture', function () {
-  return this._renderCmd._currTexture
-})
+// defineGetterSetter(CCSkeleton.prototype, 'opacityModifyRGB', CCSkeleton.prototype.isOpacityModifyRGB)
+// // For renderer webgl to identify skeleton's default texture and blend function
+// defineGetterSetter(CCSkeleton.prototype, '_blendFunc', CCSkeleton.prototype.getBlendFunc)
+// defineGetterSetter(CCSkeleton.prototype, '_texture', function () {
+//   return this._renderCmd._currTexture
+// })

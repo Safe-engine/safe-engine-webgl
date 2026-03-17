@@ -1,6 +1,7 @@
 import { EntityManager, EventManager, EventTypes, System } from 'entityx-ts'
 
 import { EventObject } from '@cocos/dragonbones-js'
+import { loader, textureCache } from 'safex-webgl'
 import { NodeComp } from '../core/NodeComp'
 import { DragonBonesComp } from './DragonBonesComp'
 import { CocosFactory } from './db-cocos/CocosFactory'
@@ -18,10 +19,10 @@ export class DragonBonesSystem implements System {
       const factory = CocosFactory.factory
       const dataSkel = loader.getRes(skeleton)
       const dataAtlas = loader.getRes(atlas)
-      const textureCache = textureCache.getTextureForKey(texture)
+      const tcache = textureCache.getTextureForKey(texture)
       // texture.initWithFile(texturePath)
       factory.parseDragonBonesData(dataSkel)
-      factory.parseTextureAtlasData(dataAtlas, textureCache)
+      factory.parseTextureAtlasData(dataAtlas, tcache)
       // factory.loadDragonBonesData(skel)
       // console.log(skeleton, dataSkel)
       const node = factory.buildArmatureDisplay(dataSkel.armature[0].name, dataSkel.name)

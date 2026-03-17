@@ -1,28 +1,5 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2018 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 import { BaseObject, BinaryOffset, BoneType, Slot, Transform } from '@cocos/dragonbones-js'
-
+import { color, Node, Rect, Size, Sprite } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
 import { CocosTextureAtlasData, CocosTextureData } from './CocosTextureAtlasData'
 import { SimpleMeshNode } from './SimpleMeshNode'
@@ -67,7 +44,7 @@ export class CocosSlot extends Slot {
     const container = this._armature.display as Node
     const prevDisplay = value
 
-    if (this._renderDisplay.parent !== container) {
+    if (this._renderDisplay.getParent() !== container) {
       container.addChild(this._renderDisplay, prevDisplay.getLocalZOrder())
     }
 
@@ -79,7 +56,7 @@ export class CocosSlot extends Slot {
   }
 
   protected _removeDisplay(): void {
-    this._renderDisplay.parent.removeChild(this._renderDisplay, false)
+    this._renderDisplay.getParent().removeChild(this._renderDisplay, false)
   }
 
   protected _updateZOrder(): void {
@@ -93,7 +70,7 @@ export class CocosSlot extends Slot {
    * @internal
    */
   public _updateVisible(): void {
-    this._renderDisplay.visible = this._parent.visible && this._visible
+    this._renderDisplay.setVisible(this._parent.visible && this._visible)
   }
 
   protected _updateBlendMode(): void {
@@ -108,13 +85,13 @@ export class CocosSlot extends Slot {
   }
 
   protected _updateColor(): void {
-    const color = color(
+    const c = color(
       Math.round(this._colorTransform.redMultiplier * 255),
       Math.round(this._colorTransform.greenMultiplier * 255),
       Math.round(this._colorTransform.blueMultiplier * 255),
       Math.round(this._colorTransform.alphaMultiplier * 255),
     )
-    this._renderDisplay.color = color
+    this._renderDisplay.setColor(c)
   }
 
   protected _updateFrame(): void {
@@ -206,20 +183,20 @@ export class CocosSlot extends Slot {
       }
     }
 
-    if (this._geometryData) {
-      const meshDisplay = this._renderDisplay as SimpleMeshNode
-      meshDisplay.setTexture(null)
-      meshDisplay.x = 0.0
-      meshDisplay.y = 0.0
-      meshDisplay.visible = false
-    } else {
+    // if (this._geometryData) {
+    //   const meshDisplay = this._renderDisplay as SimpleMeshNode
+    //   meshDisplay.setTexture(null)
+    //   meshDisplay.setPositionX(0)
+    //   meshDisplay.setPositionY(0)
+    //   meshDisplay.setVisible(false)
+    // } else {
       const normalDisplay = this._renderDisplay as Sprite
-      normalDisplay.texture = null
-      normalDisplay.x = 0.0
-      normalDisplay.y = 0.0
-      normalDisplay.visible = false
-    }
-    this._renderDisplay.setPosition(0.0, 0.0)
+      normalDisplay.setTexture(null)
+      normalDisplay.setPositionX(0)
+      normalDisplay.setPositionY(0)
+      normalDisplay.setVisible(false)
+    // }
+    // this._renderDisplay.setPosition(0.0, 0.0)
   }
 
   protected _updateMesh(): void {
@@ -238,7 +215,7 @@ export class CocosSlot extends Slot {
     }
 
     const verticesAndUVs = polygonInfo.triangles.verts as { x: number; y: number; u: number; v: number }[]
-    const boundsRect = rect(999999.0, 999999.0, -999999.0, -999999.0)
+    const boundsRect = Rect(999999.0, 999999.0, -999999.0, -999999.0)
 
     if (weightData !== null) {
       const data = geometryData.data
@@ -358,7 +335,7 @@ export class CocosSlot extends Slot {
     boundsRect.height -= boundsRect.y
 
     polygonInfo.rect = boundsRect
-    this.meshDisplay.setContentSize(size(boundsRect.width, boundsRect.height))
+    this.meshDisplay.setContentSize(Size(boundsRect.width, boundsRect.height))
     this.meshDisplay.setMeshPolygonInfo(polygonInfo)
 
     if (weightData !== null) {
@@ -366,12 +343,13 @@ export class CocosSlot extends Slot {
     } else {
       const transform = this.global
       const globalTransformMatrix = this.globalTransformMatrix
-      this._renderDisplay.x = transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY)
-      this._renderDisplay.y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY)
-      this._renderDisplay.rotationX = -(transform.rotation + transform.skew) * Transform.RAD_DEG
-      this._renderDisplay.rotationY = -transform.rotation * Transform.RAD_DEG
-      this._renderDisplay.scaleX = transform.scaleX * this._textureScale
-      this._renderDisplay.scaleY = -transform.scaleY * this._textureScale
+     const x = transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY)
+     const y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY)
+     this._renderDisplay.setPosition(x,y)
+      this._renderDisplay.setRotationX(-(transform.rotation + transform.skew) * Transform.RAD_DEG)
+      this._renderDisplay.setRotationY(-transform.rotation * Transform.RAD_DEG)
+      this._renderDisplay.setScaleX(transform.scaleX * this._textureScale)
+      this._renderDisplay.setScaleY(-transform.scaleY * this._textureScale)
     }
   }
 
@@ -386,14 +364,13 @@ export class CocosSlot extends Slot {
     //   this._renderDisplay.y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY);
     // }
     // else {
-    this._renderDisplay.x = transform.x
-    this._renderDisplay.y = transform.y
+    this._renderDisplay.setPosition(transform.x, transform.y)
     // }
 
-    this._renderDisplay.rotationX = -(transform.rotation + transform.skew) * Transform.RAD_DEG
-    this._renderDisplay.rotationY = -transform.rotation * Transform.RAD_DEG
-    this._renderDisplay.scaleX = transform.scaleX * this._textureScale
-    this._renderDisplay.scaleY = -transform.scaleY * this._textureScale
+    this._renderDisplay.setRotationX(-(transform.rotation + transform.skew) * Transform.RAD_DEG)
+    this._renderDisplay.setRotationY(-transform.rotation * Transform.RAD_DEG)
+    this._renderDisplay.setScaleX(transform.scaleX * this._textureScale)
+    this._renderDisplay.setScaleY(-transform.scaleY * this._textureScale)
   }
 
   protected _updateTransformV3(): void {
@@ -413,8 +390,8 @@ export class CocosSlot extends Slot {
       this._renderDisplay.setPosition(x, y)
     } else {
       this._renderDisplay.setPosition(transform.x, transform.y)
-      this._renderDisplay.rotation = transform.rotation
-      this._renderDisplay.skewX = transform.skew
+      this._renderDisplay.setRotation(transform.rotation)
+      this._renderDisplay.setSkewX(transform.skew)
       this._renderDisplay.setScale(transform.scaleX, transform.scaleY)
     }
   }
@@ -429,11 +406,10 @@ export class CocosSlot extends Slot {
     // helpMatrix.ty = 0.0;
     // (this._renderDisplay as any)._renderCmd.setNodeToParentTransform(helpMatrix);
 
-    this._renderDisplay.x = 0.0
-    this._renderDisplay.y = 0.0
-    this._renderDisplay.rotationX = 0.0
-    this._renderDisplay.rotationY = 0.0
-    this._renderDisplay.scaleX = 1.0
-    this._renderDisplay.scaleY = 1.0
+    this._renderDisplay.setPosition(0,0)
+    this._renderDisplay.setRotationX(0)
+    this._renderDisplay.setRotationY(0)
+    this._renderDisplay.setScaleX(1)
+    this._renderDisplay.setScaleY(1)
   }
 }
