@@ -1,5 +1,4 @@
-import { ClippingNode, DrawNode, Size, Sprite } from 'safex-webgl'
-import { MotionStreak } from 'safex-webgl/motion-streak'
+import { DrawNode, Size, Sprite } from 'safex-webgl'
 import { BaseComponentProps, Color4B, ColorSource, Vec2 } from '..'
 import { ComponentX, render } from '../core/decorator'
 
@@ -37,18 +36,6 @@ export class SpriteRender extends ComponentX<SpriteRenderProps & BaseComponentPr
     // createTiledSprite()
   }
 }
-interface MaskRenderProps {
-  spriteFrame?: string
-  cropSize?: Size
-  alphaThreshold?: number
-  inverted?: boolean
-}
-export class MaskRender extends ComponentX<MaskRenderProps, ClippingNode> {}
-
-// interface ParticleCompProps {
-//   plistFile: string
-// }
-// export class ParticleComp extends ComponentX<ParticleCompProps, ParticleSystem> {}
 
 interface GraphicsRenderProps {
   lineWidth?: number
@@ -119,22 +106,6 @@ export class GraphicsRender extends ComponentX<GraphicsRenderProps & BaseCompone
   }
 }
 
-interface MotionStreakProps {
-  spriteFrame: string
-  fade?: number
-  minSeg?: number
-  stroke?: number
-  color?: Color4B
-}
-export class MotionStreakComp extends ComponentX<MotionStreakProps & { $ref?: MotionStreakComp }, MotionStreak> {
-  reset() {
-    this.node.instance.reset()
-  }
-}
-
 Object.defineProperty(NodeRender.prototype, 'render', { value: render })
 Object.defineProperty(SpriteRender.prototype, 'render', { value: render })
-Object.defineProperty(MaskRender.prototype, 'render', { value: render })
-// Object.defineProperty(ParticleComp.prototype, 'render', { value: render })
 Object.defineProperty(GraphicsRender.prototype, 'render', { value: render })
-Object.defineProperty(MotionStreakComp.prototype, 'render', { value: render })
