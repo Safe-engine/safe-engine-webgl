@@ -1,5 +1,4 @@
-import { loader, Sprite, SpriteFrame } from 'safex-webgl'
-import { rect } from '../../../safex-webgl/dist/src/core/cocoa/Geometry'
+import { loader, Rect, Sprite, SpriteFrame } from 'safex-webgl'
 import { TiledMapContainer, TiledMapLayer } from './TiledMapContainer'
 
 export function tileToPixel(map, tx, ty) {
@@ -85,7 +84,7 @@ export function loadIsometricMap(mapUrl: string) {
       const tx = i % mapData.width
       const ty = Math.floor(i / mapData.width)
       const { x, y } = tileToPixel(mapData, tx, ty)
-      const frame = new SpriteFrame(tilesetTexture, rect(frameX, frameY, tileW, tileH))
+      const frame = new SpriteFrame(tilesetTexture, Rect(frameX, frameY, tileW, tileH))
       const sprite = new Sprite(frame)
       sprite.setPosition(x,y)
       // console.log('x,y', x, y)
