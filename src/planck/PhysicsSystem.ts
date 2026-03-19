@@ -48,7 +48,7 @@ export class PhysicsSystem implements System {
     // console.log('configure PhysicsSystem world', this.world)
     const graphics = new DrawNode()
     this.graphics = graphics
-    graphics.zIndex = 1000
+    graphics.setLocalZOrder(1000)
     const scene = director.getRunningScene()
     scene.addChild(graphics)
     event_manager.subscribe(EventTypes.ComponentAdded, PhysicsBoxCollider, ({ entity, component: box }) => {

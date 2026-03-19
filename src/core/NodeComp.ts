@@ -148,7 +148,7 @@ export class NodeComp<C extends Node = Node> {
   }
 
   get w() {
-    return this.instance.width
+    return this.instance._getWidth()
   }
 
   set w(val) {
@@ -156,7 +156,7 @@ export class NodeComp<C extends Node = Node> {
   }
 
   get h() {
-    return this.instance.height
+    return this.instance._getHeight()
   }
 
   set h(val) {
@@ -164,11 +164,11 @@ export class NodeComp<C extends Node = Node> {
   }
 
   get zIndex() {
-    return this.instance.zIndex
+    return this.instance.getLocalZOrder()
   }
 
   set zIndex(val) {
-    this.instance.zIndex = val
+    this.instance.setLocalZOrder(val)
   }
 
   get name() {

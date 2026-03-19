@@ -133,8 +133,8 @@ export class GridLayoutComp extends ComponentX<GridLayoutCompProps & BaseCompone
     children.forEach((child, index) => {
       const row = Math.floor(index / columns)
       const column = index % columns
-      const x = left + column * (child.width + spaceX) + child.width / 2
-      const y = -top - row * (child.height + spaceY) - child.height / 2
+      const x = left + column * (child._getWidth() + spaceX) + child._getWidth() / 2
+      const y = -top - row * (child._getHeight() + spaceY) - child._getHeight() / 2
       child.setPosition(x, y)
     })
   }

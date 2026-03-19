@@ -226,8 +226,8 @@ export class SimpleMeshNode extends Sprite {
     const d = cos * sy
 
     const anchor = this.getAnchorPoint ? this.getAnchorPoint() : { x: 0, y: 0 }
-    const aw = anchor.x * this.width
-    const ah = anchor.y * this.height
+    const aw = anchor.x * this._getWidth()
+    const ah = anchor.y * this._getHeight()
     const e = tx - (a * aw + c * ah)
     const f = ty - (b * aw + d * ah)
 
