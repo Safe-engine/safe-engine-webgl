@@ -251,9 +251,6 @@ export class NodeComp<C extends Node = Node> {
 
   getBoundingBox() {
     const box = this.instance.getBoundingBox()
-    box.contains = function (point) {
-      return this.x <= point.x && this.x + this.width >= point.x && this.y <= point.y && this.y + this.height >= point.y
-    }
     return box
   }
 

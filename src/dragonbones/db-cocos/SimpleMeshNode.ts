@@ -5,8 +5,8 @@
 //   const node = new SimpleMeshNode(texture, verts, uvs, inds);
 //   node.setPosition(x,y); node.setRotation(angleDeg); node.setScale(s);
 
-import { DrawNode, Sprite, Texture2D, _renderContext, color, director, p, view } from "safex-webgl"
-import { log } from "safex-webgl/helper"
+import { DrawNode, Node, Sprite, Texture2D, _renderContext, color, director, p, view } from 'safex-webgl'
+import { log } from 'safex-webgl/helper'
 
 export class SimpleMeshNode extends Sprite {
   // public mesh data (Float32Array / Uint16Array)
@@ -183,22 +183,22 @@ export class SimpleMeshNode extends Sprite {
 
     const worldRotation = this.getNodeToWorldTransform
       ? (function () {
-        try {
-          const t = this.getNodeToWorldTransform()
-          const a = t.a,
-            b = t.b,
-            c = t.c,
-            d = t.d,
-            tx = t.tx,
-            ty = t.ty
-          const rot = (Math.atan2(b, a) * 180) / Math.PI
-          const sx = Math.sqrt(a * a + b * b)
-          const sy = Math.sqrt(c * c + d * d)
-          return { rot: rot, sx: sx, sy: sy, tx: tx, ty: ty }
-        } catch {
-          return null
-        }
-      })()
+          try {
+            const t = this.getNodeToWorldTransform()
+            const a = t.a,
+              b = t.b,
+              c = t.c,
+              d = t.d,
+              tx = t.tx,
+              ty = t.ty
+            const rot = (Math.atan2(b, a) * 180) / Math.PI
+            const sx = Math.sqrt(a * a + b * b)
+            const sy = Math.sqrt(c * c + d * d)
+            return { rot: rot, sx: sx, sy: sy, tx: tx, ty: ty }
+          } catch {
+            return null
+          }
+        })()
       : null
 
     let tx: number, ty: number, rotDeg: number, sx: number, sy: number
@@ -304,9 +304,7 @@ export class SimpleMeshNode extends Sprite {
     // resolution
     const uResLoc = gl.getUniformLocation(this._program, 'u_resolution')
     const viewAny = view
-    const sz = viewAny.getFrameSize
-      ? viewAny.getFrameSize()
-      : { width: director.getWinSize().width, height: director.getWinSize().height }
+    const sz = viewAny.getFrameSize ? viewAny.getFrameSize() : { width: director.getWinSize().width, height: director.getWinSize().height }
     gl.uniform2f(uResLoc, sz.width, sz.height)
 
     // model matrix from node
