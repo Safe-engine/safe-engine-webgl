@@ -15,15 +15,14 @@ export class PhysicsSprite {
     if (!this.physicsBody) {
       return
     }
-    // const pos = this.physicsBody.GetPosition()
-    // use lerp to smooth the position update
+    const pPos = this.physicsBody.getPosition()
     const pos = Vec2(
-      (this.node.getPositionX(), this.physicsBody.getPosition().x * PTM_RATIO, dt * 10),
-      (this.node.getPositionY(), this.physicsBody.getPosition().y * PTM_RATIO, dt * 10),
+      pPos.x * PTM_RATIO,
+      pPos.y * PTM_RATIO,
     )
     this.node.setPosition(pos.x, pos.y)
     //  the rotation
-    this.node.setRotation((this.node.getRotation(), radiansToDegrees(-this.physicsBody.getAngle()), dt * 10))
+    this.node.setRotation(radiansToDegrees(-this.physicsBody.getAngle()))
     // this.node.setRotation(radiansToDegrees(this.physicsBody.GetAngle()))
     // this.node.setScale(1 / pixelsPerMeter)
     // this.node.setScale(1 / this.physicsBody.GetFixtureList().GetShape().GetRadius())
