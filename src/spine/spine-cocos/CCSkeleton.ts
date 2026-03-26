@@ -289,7 +289,7 @@ export class CCSkeleton extends Node {
     return this._renderCmd._currTexture
   }
   get opacityModifyRGB() {
-    return this.isOpacityModifyRGB()
+    return this._opacityModifyRGB
   }
 }
 
