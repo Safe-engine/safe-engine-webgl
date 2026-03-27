@@ -1,6 +1,6 @@
 {
   "name": "@safe-engine/webgl",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "safe-engine with webgl renderer support",
   "type": "module",
   "main": "dist/index.js",

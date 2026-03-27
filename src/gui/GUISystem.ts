@@ -107,18 +107,18 @@ export class GUISystem implements System {
 
   private onAddWidgetComp: EventReceiveCallback<WidgetComp> = ({ entity, component }) => {
     const { top, right, bottom, left } = component.props
-    const nodeComp = entity.getComponent(NodeComp)
+    const nodeComp = entity.getComponent(NodeComp<Node>)
     if (top !== undefined) {
-      nodeComp.instance.y = winSize.height - top - nodeComp.instance.height * (1 - nodeComp.instance.anchorY)
+      nodeComp.posY = winSize.height - top - nodeComp.h * (1 - nodeComp.anchorY)
     }
     if (right !== undefined) {
-      nodeComp.instance.x = winSize.width - right - nodeComp.instance.width * (1 - nodeComp.instance.anchorX)
+      nodeComp.posX = winSize.width - right - nodeComp.w * (1 - nodeComp.anchorX)
     }
     if (bottom !== undefined) {
-      nodeComp.instance.y = bottom + nodeComp.instance.height * nodeComp.instance.anchorY
+      nodeComp.posY = bottom + nodeComp.h * nodeComp.anchorY
     }
     if (left !== undefined) {
-      nodeComp.instance.x = left + nodeComp.instance.width * nodeComp.instance.anchorX
+      nodeComp.posX = left + nodeComp.w * nodeComp.anchorX
     }
   }
 
