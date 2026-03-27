@@ -1,4 +1,4 @@
-import { Rect, ResolutionPolicy, Scene, SpriteFrame, Texture2D, director, game, global, loader, spriteFrameCache, sys, view } from 'safex-webgl'
+import { Rect, ResolutionPolicy, Scene, SpriteFrame, Texture2D, director, game, global, loader, spriteFrameCache, view } from 'safex-webgl'
 import { path } from 'safex-webgl/helper'
 import { GUISystem } from './gui'
 import { GameWorld } from './gworld'
@@ -51,14 +51,14 @@ export async function startGame(defaultFont: string, { width, height }, option?:
       },
       function onStart() {
         // Pass true to enable retina display, disabled by default to improve performance
-        view.enableRetina(sys.os === sys.OS_IOS)
+        view.enableRetina(true)
         // Adjust viewport meta
         view.adjustViewPort(true)
+        // The game will be resized when browser size change
+        view.resizeWithBrowserSize(true)
         // Setup the resolution policy and design resolution size
         const policy = width > height ? ResolutionPolicy.FIXED_HEIGHT : ResolutionPolicy.FIXED_WIDTH
         view.setDesignResolutionSize(width, height, policy)
-        // The game will be resized when browser size change
-        view.resizeWithBrowserSize(true)
         director.runScene(new BootScene())
       },
     )
