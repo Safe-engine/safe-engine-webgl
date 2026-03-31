@@ -152,7 +152,7 @@ export class NodeComp<C extends Node = Node> {
   }
 
   set w(val) {
-    this.instance.setContentSize(val, this.h)
+    this.instance._setWidth(val)
   }
 
   get h() {
@@ -160,7 +160,7 @@ export class NodeComp<C extends Node = Node> {
   }
 
   set h(val) {
-    this.instance.setContentSize(this.w, val)
+    this.instance._setHeight(val)
   }
 
   get zIndex() {
@@ -269,6 +269,21 @@ export class NodeComp<C extends Node = Node> {
       // stencil.drawDot(p(-height * 0.5, -height * 0.5), height, Color.WHITE);
       this.instance.stencil = stencil
     }
+  }
+
+  getChildByTag(aTag: number) {
+    const __children = this.children
+    if (__children !== null) {
+      for (let i = 0; i < __children.length; i++) {
+        const node = __children[i]
+        if (node && node.tag === aTag) return node
+      }
+    }
+  }
+
+  getChildByName(name: string) {
+    const locChildren = this.children
+    for (let i = 0, len = locChildren.length; i < len; i++) if (locChildren[i].name === name) return locChildren[i]
   }
 
   runAction(atc: ActionInterval) {
