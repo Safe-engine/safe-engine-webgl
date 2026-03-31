@@ -1,4 +1,4 @@
-import { DrawNode, Size, Sprite } from 'safex-webgl'
+import { DrawNode, Size, Sprite, spriteFrameCache } from 'safex-webgl'
 import { BaseComponentProps, Color4B, ColorSource, Vec2 } from '..'
 import { ComponentX, render } from '../core/decorator'
 
@@ -25,12 +25,18 @@ export class SpriteRender extends ComponentX<SpriteRenderProps & BaseComponentPr
     return this.props.spriteFrame
   }
 
-  set spriteFrame(frame) {
-    this.props.spriteFrame = frame
+  set spriteFrame(frameString: string) {
+    this.props.spriteFrame = frameString
     if (this.node && this.node.instance instanceof Sprite) {
-      this.node.instance.setTexture(frame)
+      const frame = spriteFrameCache.getSpriteFrame(frameString)
+      if (frame) {
+        this.node.instance.setSpriteFrame(frame)
+      } else {
+        this.node.instance.setTexture(frameString)
+      }
     }
   }
+
   updateTiled() {
     // effect to native only
     // createTiledSprite()
@@ -47,9 +53,11 @@ export class GraphicsRender extends ComponentX<GraphicsRenderProps & BaseCompone
   drawDot(center: Vec2, r: number) {
     this.node.instance.drawDot(center, r, this.props.fillColor)
   }
+
   drawLine(origin: Vec2, destination: Vec2, thickness?: Float, color?: Color4B) {
     this.node.instance.drawSegment(origin, destination, thickness || this.props.lineWidth, color || this.props.strokeColor)
   }
+
   drawRect(origin: Vec2, destination: Vec2, color?: Color4B) {
     this.node.instance.drawRect(origin, destination, color || this.props.fillColor)
   }
