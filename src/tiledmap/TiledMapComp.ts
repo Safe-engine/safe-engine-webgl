@@ -6,13 +6,6 @@ interface TiledMapCompProps extends BaseComponentProps<TiledMapComp> {
 }
 
 export class TiledMapComp extends ComponentX<TiledMapCompProps, TMXTiledMap> {
-  getLayer(layerName: string) {
-    return this.node.instance.getLayer(layerName)
-  }
-  getObjectGroup(layerName: string) {
-    return this.node.instance.getObjectGroup(layerName)
-  }
-
   render() {
     const tiledMap = new TMXTiledMap(this.props.mapFile)
     const world = GameWorld.Instance

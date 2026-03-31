@@ -1,4 +1,4 @@
-# Safex = JSX Game Engine
+# Safex = JSX + Webgl Game Engine
 
 ## Introduction
 

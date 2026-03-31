@@ -13,9 +13,7 @@ interface MotionStreakProps {
   color?: Color4B
 }
 export class MotionStreakComp extends ComponentX<MotionStreakProps & { $ref?: MotionStreakComp }, MotionStreak> {
-  reset() {
-    this.node.instance.reset()
-  }
+
   render() {
     const { spriteFrame, fade, minSeg, stroke, color } = this.props
     const node = new MotionStreak(
