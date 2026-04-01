@@ -1,7 +1,8 @@
-import { Body, BodyType, Vec2 } from 'planck'
-import { BaseComponentProps, Point } from '..'
+import { Body, BodyType, BoxShape, ChainShape, CircleShape, EdgeShape, PolygonShape, Vec2 } from 'planck'
+import { Point } from '..'
 import { ComponentX } from '../core/decorator'
 import { PhysicsSprite } from './PhysicsSprite'
+import { PTM_RATIO } from './PhysicsSystem'
 
 interface RigidBodyProps {
   type?: BodyType
@@ -15,6 +16,8 @@ interface RigidBodyProps {
   onEndContact?: (other: RigidBody) => void
   onPreSolve?: (other: RigidBody, impulse?) => void
   onPostSolve?: (other: RigidBody, oldManifold?) => void
+
+  shapes: PhysicsShape | PhysicsShape[]
 }
 
 export class RigidBody extends ComponentX<RigidBodyProps> {
@@ -79,32 +82,82 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
   }
 
   get position() {
-    return Vec2(this.physicSprite.getBody().getPosition())
+    return this.physicSprite.getBody().getPosition()
   }
 }
 
-interface BoxColliderPhysicsProps {
-  width: number
-  height: number
-  offset?: [number, number]
+class _PhysicsBox {
+  constructor(public width: number, public height: number, public offset?: [number, number]) { }
 }
-export class PhysicsBoxCollider extends ComponentX<BoxColliderPhysicsProps & BaseComponentProps<PhysicsBoxCollider>> {
-  // set onCollisionEnter(val) {
-  //   const phys1 = this.getComponent(PhysicsCollider)
-  //   phys1._onCollisionEnter = val
-  // }
-  // get onCollisionEnter() {
-  //   const phys1 = this.getComponent(PhysicsCollider)
-  //   return phys1._onCollisionEnter
-  // }
+export type PhysicsBox = _PhysicsBox
+export function PhysicsBox(width: number, height: number, offset?: [number, number]) {
+  return new _PhysicsBox(width, height, offset)
 }
-interface CircleColliderPhysicsProps {
-  radius: number
-  offset?: [number, number]
+
+class _PhysicsCircle {
+  constructor(public radius: number, public offset?: [number, number]) { }
 }
-export class PhysicsCircleCollider extends ComponentX<CircleColliderPhysicsProps & BaseComponentProps<PhysicsCircleCollider>> {}
-interface PolygonColliderPhysicsProps {
-  points: Array<Vec2> | [number, number][]
-  offset?: [number, number]
+export type PhysicsCircle = _PhysicsCircle
+export function PhysicsCircle(radius: number, offset?: [number, number]) {
+  return new _PhysicsCircle(radius, offset)
 }
-export class PhysicsPolygonCollider extends ComponentX<PolygonColliderPhysicsProps & BaseComponentProps<PhysicsPolygonCollider>> {}
+class _PhysicsPolygon {
+  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+}
+export type PhysicsPolygon = _PhysicsPolygon
+export function PhysicsPolygon(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
+  return new _PhysicsPolygon(points, offset)
+}
+class _PhysicsEdge {
+  constructor(public start: Vec2, public end: Vec2, public offset?: [number, number]) { }
+}
+export type PhysicsEdge = _PhysicsEdge
+export function PhysicsEdge(start: Vec2, end: Vec2, offset?: [number, number]) {
+  return new _PhysicsEdge(start, end, offset)
+}
+class _PhysicsChain {
+  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+}
+export type PhysicsChain = _PhysicsChain
+export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
+  return new _PhysicsChain(points, offset)
+}
+export type PhysicsShape = PhysicsPolygon | PhysicsBox | PhysicsCircle | PhysicsEdge | PhysicsChain
+
+export function createShape(shape: PhysicsShape) {
+  const { offset = [] } = shape
+  const [ox = 0, oy = 0] = offset
+  const op = new Vec2(ox / PTM_RATIO, oy / PTM_RATIO)
+  if (shape instanceof _PhysicsBox) {
+    const { height, width } = shape
+    const hh = height * 0.5
+    const hw = width * 0.5
+    return new BoxShape(hh / PTM_RATIO, hw / PTM_RATIO, op, 0)
+  }
+  if (shape instanceof _PhysicsCircle) {
+    const { radius } = shape
+    return new CircleShape(op, radius / PTM_RATIO)
+  }
+  if (shape instanceof _PhysicsPolygon) {
+    const { points } = shape
+    const fixedPoints = points.map((p) => {
+      const px = p.x || p[0]
+      const py = p.y || p[1]
+      return new Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+    })
+    return new PolygonShape(fixedPoints)
+  }
+  if (shape instanceof _PhysicsEdge) {
+    const { start, end } = shape
+    return new EdgeShape(start, end)
+  }
+  if (shape instanceof _PhysicsChain) {
+    const { points } = shape
+    const fixedPoints = points.map((p) => {
+      const px = p.x || p[0]
+      const py = p.y || p[1]
+      return new Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+    })
+    return new ChainShape(fixedPoints)
+  }
+}

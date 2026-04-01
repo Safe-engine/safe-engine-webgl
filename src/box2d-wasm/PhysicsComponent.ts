@@ -1,7 +1,7 @@
-import { BaseComponentProps, Vec2 } from '..'
+import { Vec2 } from '..'
 import { ComponentX } from '../core/decorator'
 import { PhysicsSprite } from './PhysicsSprite'
-import { box2D } from './PhysicsSystem'
+import { box2D, PTM_RATIO } from './PhysicsSystem'
 
 interface RigidBodyProps {
   type?: 0 | 1 | 2 // 0: Static, 1: Kinematic, 2: Dynamic
@@ -15,6 +15,8 @@ interface RigidBodyProps {
   onEndContact?: (other: RigidBody) => void
   onPreSolve?: (other: RigidBody, impulse?) => void
   onPostSolve?: (other: RigidBody, oldManifold?) => void
+
+  shapes: PhysicsShape | PhysicsShape[]
 }
 
 export class RigidBody extends ComponentX<RigidBodyProps> {
@@ -83,28 +85,99 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
   }
 }
 
-interface BoxColliderPhysicsProps {
-  width: number
-  height: number
-  offset?: [number, number]
+
+class _PhysicsBox {
+  constructor(public width: number, public height: number, public offset?: [number, number]) { }
 }
-export class PhysicsBoxCollider extends ComponentX<BoxColliderPhysicsProps & BaseComponentProps<PhysicsBoxCollider>> {
-  // set onCollisionEnter(val) {
-  //   const phys1 = this.getComponent(PhysicsCollider)
-  //   phys1._onCollisionEnter = val
-  // }
-  // get onCollisionEnter() {
-  //   const phys1 = this.getComponent(PhysicsCollider)
-  //   return phys1._onCollisionEnter
-  // }
+export type PhysicsBox = _PhysicsBox
+export function PhysicsBox(width: number, height: number, offset?: [number, number]) {
+  return new _PhysicsBox(width, height, offset)
 }
-interface CircleColliderPhysicsProps {
-  radius: number
-  offset?: [number, number]
+
+class _PhysicsCircle {
+  constructor(public radius: number, public offset?: [number, number]) { }
 }
-export class PhysicsCircleCollider extends ComponentX<CircleColliderPhysicsProps & BaseComponentProps<PhysicsCircleCollider>> {}
-interface PolygonColliderPhysicsProps {
-  points: Array<Vec2> | [number, number][]
-  offset?: [number, number]
+export type PhysicsCircle = _PhysicsCircle
+export function PhysicsCircle(radius: number, offset?: [number, number]) {
+  return new _PhysicsCircle(radius, offset)
 }
-export class PhysicsPolygonCollider extends ComponentX<PolygonColliderPhysicsProps & BaseComponentProps<PhysicsPolygonCollider>> {}
+class _PhysicsPolygon {
+  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+}
+export type PhysicsPolygon = _PhysicsPolygon
+export function PhysicsPolygon(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
+  return new _PhysicsPolygon(points, offset)
+}
+class _PhysicsEdge {
+  constructor(public start: Vec2, public end: Vec2, public offset?: [number, number]) { }
+}
+export type PhysicsEdge = _PhysicsEdge
+export function PhysicsEdge(start: Vec2, end: Vec2, offset?: [number, number]) {
+  return new _PhysicsEdge(start, end, offset)
+}
+class _PhysicsChain {
+  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+}
+export type PhysicsChain = _PhysicsChain
+export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
+  return new _PhysicsChain(points, offset)
+}
+export type PhysicsShape = PhysicsPolygon | PhysicsBox | PhysicsCircle | PhysicsEdge | PhysicsChain
+
+export function createShape(shape: PhysicsShape) {
+  const { b2EdgeShape, b2ChainShape, b2PolygonShape, b2CircleShape, b2Vec2, pointsToVec2Array } = box2D as typeof Box2D
+  const { offset = [] } = shape
+  const [ox = 0, oy = 0] = offset
+  const op = new b2Vec2(ox / PTM_RATIO, oy / PTM_RATIO)
+  if (shape instanceof _PhysicsBox) {
+    const { height, width } = shape
+    const hh = height * 0.5
+    const hw = width * 0.5
+    const square = new b2PolygonShape()
+    square.SetAsBox(hh / PTM_RATIO, hw / PTM_RATIO, op, 0)
+    return square
+  }
+  if (shape instanceof _PhysicsCircle) {
+    const { radius } = shape
+    const circleShape = new b2CircleShape()
+    circleShape.set_m_radius(radius / PTM_RATIO)
+    circleShape.set_m_p(op)
+    return circleShape
+  }
+  if (shape instanceof _PhysicsPolygon) {
+    const { points } = shape
+    const fixedPoints = points.map((p) => {
+      const px = p.x || p[0]
+      const py = p.y || p[1]
+      return Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+    })
+    const polygonShape = new b2PolygonShape()
+    const [vecArr, destroyVecArr] = pointsToVec2Array(fixedPoints)
+    // console.log('vecArr', vecArr, vecArr.Length())
+    polygonShape.Set(vecArr, points.length)
+    destroyVecArr()
+    return polygonShape
+  }
+  if (shape instanceof _PhysicsEdge) {
+    const { start, end } = shape
+    const edge = new b2EdgeShape()
+    const v1 = new b2Vec2(start.x, start.y)
+    const v2 = new b2Vec2(end.x, end.y)
+    edge.SetTwoSided(v1, v2)
+    return edge
+  }
+  if (shape instanceof _PhysicsChain) {
+    const { points } = shape
+    const fixedPoints = points.map((p) => {
+      const px = p.x || p[0]
+      const py = p.y || p[1]
+      return Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+    })
+    const chainShape = new b2ChainShape()
+    const [vecArr, destroyVecArr] = pointsToVec2Array(fixedPoints)
+    // console.log('vecArr', vecArr, vecArr.Length())
+    chainShape.CreateLoop(vecArr, points.length)
+    destroyVecArr()
+    return chainShape
+  }
+}

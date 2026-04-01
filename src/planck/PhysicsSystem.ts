@@ -1,16 +1,19 @@
 import { EntityManager, EventManager, EventTypes, System } from 'entityx-ts'
-import { Body, BoxShape, CircleShape, Contact, Fixture, Manifold, PolygonShape, Vec2, World } from 'planck'
-import { DrawNode, color, director, p } from 'safex-webgl'
+import { Body, BoxShape, ChainShape, CircleShape, Contact, EdgeShape, Fixture, Manifold, PolygonShape, Vec2, World } from 'planck'
+import { color, director, DrawNode, p } from 'safex-webgl'
 import { NodeComp } from '../core/NodeComp'
 import { GameWorld } from '../gworld'
-import { instantiate } from '../helper'
-import { PhysicsBoxCollider, PhysicsCircleCollider, PhysicsPolygonCollider, RigidBody } from './PhysicsComponent'
+import { createShape, RigidBody } from './PhysicsComponent'
 import { PhysicsSprite } from './PhysicsSprite'
 
 export const DynamicBody = 'dynamic'
 export const KinematicBody = 'kinematic'
 export const StaticBody = 'static'
-export const PTM_RATIO = 64
+export const PTM_RATIO = 32
+
+function toPixels(vec) {
+  return p(vec.x * PTM_RATIO, vec.y * PTM_RATIO)
+}
 
 Fixture.prototype.shouldCollide = function (other: Fixture) {
   const nodeThis: NodeComp = this.getBody().getUserData()
@@ -48,99 +51,14 @@ export class PhysicsSystem implements System {
     const gravity = new Vec2(0, -10)
     this.world = new World(gravity)
     // console.log('configure PhysicsSystem world', this.world)
-    event_manager.subscribe(EventTypes.ComponentAdded, PhysicsBoxCollider, ({ entity, component: box }) => {
-      // console.log('ComponentAddedEvent PhysicsBoxCollider', box)
-      let rigidBody = entity.getComponent(RigidBody)
-      if (!rigidBody) {
-        rigidBody = instantiate(RigidBody)
-        entity.assign(rigidBody)
-      }
-      const { type = StaticBody, gravityScale = 1, density = 1, friction = 0.5, restitution = 0.3, isSensor } = rigidBody.props
-      const { width, height, offset = [] } = box.props
+    event_manager.subscribe(EventTypes.ComponentAdded, RigidBody, ({ entity, component: rigidBody }) => {
+      // console.log('ComponentAddedEvent RigidBody', rigidBody)
+      const { type = StaticBody, gravityScale = 1, density = 1, friction = 0.5, restitution = 0.3, isSensor, shapes } = rigidBody.props
       const node = entity.getComponent(NodeComp)
-      const zero = new Vec2(0, 0)
-      const [ox = 0, oy = 0] = offset
-      const body = this.world.createBody({
-        // position: { x: node.posX / PTM_RATIO, y: node.posY / PTM_RATIO }, // the body's origin position.
-        angle: 0.25 * Math.PI, // the body's angle in radians.
-        userData: node,
-        type,
-        gravityScale,
-      })
-      rigidBody.body = body
-      const physicsNode = new PhysicsSprite(node.instance, rigidBody.body)
-      // console.log('body', rigidBody.props, type)
-      // body.SetMassData(1)
-      const position = new Vec2((node.posX + ox) / PTM_RATIO, (node.posY + oy) / PTM_RATIO)
-      const shape = new BoxShape(width / PTM_RATIO, height / PTM_RATIO)
-      body.createFixture({
-        shape,
-        density,
-        isSensor,
-        friction,
-        restitution,
-      })
-      body.setTransform(position, node.rotation)
-      body.setLinearVelocity(zero)
-      body.setAwake(true)
-      rigidBody.physicSprite = physicsNode
-      rigidBody.node = node
-      box.node = node
-    })
-    event_manager.subscribe(EventTypes.ComponentAdded, PhysicsCircleCollider, ({ entity, component }) => {
-      console.log('ComponentAddedEvent PhysicsCircleCollider', component)
-      let rigidBody = entity.getComponent(RigidBody)
-      if (!rigidBody) {
-        rigidBody = instantiate(RigidBody)
-        entity.assign(rigidBody)
-      }
-      const { type = StaticBody, gravityScale = 1, density = 1, friction = 0.5, restitution = 0.3, isSensor } = rigidBody.props
-      const node = entity.getComponent(NodeComp)
-      const { radius, offset = [] } = component.props
-      const [ox = 0, oy = 0] = offset
       const zero = new Vec2(0, 0)
       const position = new Vec2(node.posX / PTM_RATIO, node.posY / PTM_RATIO)
-      const body = this.world.createBody({
-        // position: { x: node.position.x + x, y: node.position.y + y }, // the body's origin position.
-        angle: 0.25 * Math.PI, // the body's angle in radians.
-        userData: node,
-        type,
-        gravityScale,
-      })
-      // console.log('body', type, _dynamicBody, _staticBody, getPointer(body));
-      rigidBody.body = body
-      const physicsNode = new PhysicsSprite(node.instance, body)
-      const shape = new CircleShape(new Vec2(ox / PTM_RATIO, oy / PTM_RATIO), radius / PTM_RATIO)
-      body.createFixture({
-        shape,
-        density,
-        isSensor,
-        friction,
-        restitution,
-      })
-      // console.log(position instanceof Vec2, zero instanceof Vec2)
-      body.setTransform(position, node.rotation)
-      body.setLinearVelocity(zero)
-      body.setAwake(true)
-      rigidBody.physicSprite = physicsNode
-      rigidBody.node = node
-      component.node = node
-    })
-    event_manager.subscribe(EventTypes.ComponentAdded, PhysicsPolygonCollider, ({ entity, component }) => {
-      // console.log('ComponentAddedEvent PhysicsPolygonCollider', component)
-      let rigidBody = entity.getComponent(RigidBody)
-      if (!rigidBody) {
-        rigidBody = instantiate(RigidBody)
-        entity.assign(rigidBody)
-      }
-      const { type = StaticBody, gravityScale = 1, density = 1, friction = 0.5, restitution = 0.3, isSensor } = rigidBody.props
-      const node = entity.getComponent(NodeComp)
-      const { points, offset = [] } = component.props
-      const [ox = 0, oy = 0] = offset
-      const zero = new Vec2(0, 0)
-      const position = new Vec2(node.posX / PTM_RATIO, node.posY / PTM_RATIO)
-      const { width, height } = node.contentSize
-      const { scaleX, scaleY, anchorX, anchorY } = node
+      // const { width, height } = node.contentSize
+      // const { scaleX, scaleY, anchorX, anchorY } = node
       const body = this.world.createBody({
         // position: { x: node.position.x + x, y: node.position.y + y }, // the body's origin position.
         angle: 0.25 * Math.PI, // the body's angle in radians.
@@ -150,27 +68,24 @@ export class PhysicsSystem implements System {
       })
       // console.log('body', type, _dynamicBody, _staticBody, getPointer(body));
       // body.setMassData(1)
-      rigidBody.body = body
       const physicsNode = new PhysicsSprite(node.instance, body)
-      const fixedPoints = points.map((p) => {
-        const px = p.x || p[0]
-        const py = p.y || p[1]
-        return new Vec2((px + ox - width * anchorX * scaleX) / PTM_RATIO, (-py + oy + height * scaleY * anchorY) / PTM_RATIO)
-      })
-      const shape = new PolygonShape(fixedPoints)
-      body.createFixture({
-        shape,
-        density,
-        isSensor,
-        friction,
-        restitution,
+      const shapesArray = Array.isArray(shapes) ? shapes : [shapes]
+      shapesArray.forEach(physicsShape => {
+        const shape = createShape(physicsShape)
+        body.createFixture({
+          shape,
+          density,
+          isSensor,
+          friction,
+          restitution,
+        })
       })
       body.setTransform(position, node.rotation)
       body.setLinearVelocity(zero)
       body.setAwake(true)
       rigidBody.physicSprite = physicsNode
+      rigidBody.body = body
       rigidBody.node = node
-      component.node = node
     })
     event_manager.subscribe(EventTypes.ComponentRemoved, RigidBody, ({ component }) => {
       // console.log('ComponentRemovedEvent NodeComp', component)
@@ -191,35 +106,55 @@ export class PhysicsSystem implements System {
       this.debugNode?.clear()
       for (const entt of entities.entities_with_components(RigidBody)) {
         const comp = entt.getComponent(RigidBody)
-        if (comp.node.active && comp.enabled) {
+        if (comp.node?.active && comp.enabled) {
           comp.physicSprite.update(dt)
           if (this.debugNode) {
             const shape = comp.body.getFixtureList().getShape()
-            if (shape instanceof BoxShape) {
-              const { width, height, offset = [0, 0] } = comp.getComponent(PhysicsBoxCollider).props
-              const { x, y } = comp.node.position
-              const [ox, oy] = offset
-              // console.log('box', x, y, width, height)
-              const hw = width * 0.5
-              const hh = height * 0.5
-              this.debugNode.drawRect(p(x - hw + ox, y - hh + oy), p(x + hw + ox, y + hh + oy), color(255, 0, 0, 50))
-            } else if (shape instanceof CircleShape) {
-              const { radius, offset = [0, 0] } = comp.getComponent(PhysicsCircleCollider).props
-              const { x, y } = comp.node.position
-              const [ox, oy] = offset
-              // console.log('CircleShape', x, y, radius, ox, oy)
-              this.debugNode.drawCircle(p(x + ox, y + oy), radius, 0, 64, false, 1, color(255, 0, 0, 150))
-              this.debugNode.drawDot(p(x + ox, y + oy), radius, color(255, 0, 0, 50))
-            } else if (shape instanceof PolygonShape) {
-              const { points, offset = [0, 0] } = comp.getComponent(PhysicsPolygonCollider).props
-              const { x, y } = comp.node.position
-              const [ox, oy] = offset
-              const fixedPoints = points.map((p) => {
-                const px = p.x || p[0]
-                const py = p.y || p[1]
-                return new Vec2((px + x + ox), (-py + y + oy))
+            if (shape instanceof BoxShape || shape instanceof PolygonShape) {
+              const verts = shape.m_vertices.map(v => {
+                const worldPoint = comp.body.getWorldPoint(v)
+                return p(worldPoint.x * PTM_RATIO, worldPoint.y * PTM_RATIO)
               })
-              this.debugNode.drawPoly(fixedPoints, color(255, 0, 0, 50))
+              this.debugNode.drawPoly(
+                verts,
+                color(0, 255, 0, 100),   // fill
+                1,                          // line width
+                color(0, 255, 0, 255)    // stroke
+              )
+            } else if (shape instanceof CircleShape) {
+              const pos = comp.body.getWorldPoint(shape.m_p)
+              const radius = shape.m_radius * PTM_RATIO
+              this.debugNode.drawCircle(
+                toPixels(pos),
+                radius,
+                0,
+                20,
+                false,
+                1,
+                color(255, 0, 0, 255)
+              )
+              this.debugNode.drawDot(toPixels(pos), radius, color(255, 0, 0, 50))
+            } else if (shape instanceof EdgeShape) {
+              const v1 = comp.body.getWorldPoint(shape.m_vertex1)
+              const v2 = comp.body.getWorldPoint(shape.m_vertex2)
+              this.debugNode.drawSegment(
+                toPixels(v1),
+                toPixels(v2),
+                1,
+                color(255, 255, 255, 255)
+              )
+            } else if (shape instanceof ChainShape) {
+              const vertices = shape.m_vertices
+              for (let i = 0; i < vertices.length - 1; i++) {
+                const v1 = comp.body.getWorldPoint(vertices[i])
+                const v2 = comp.body.getWorldPoint(vertices[i + 1])
+                this.debugNode.drawSegment(
+                  toPixels(v1),
+                  toPixels(v2),
+                  1,
+                  color(200, 200, 200, 255)
+                )
+              }
             }
           }
         }
