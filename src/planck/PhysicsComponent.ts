@@ -149,7 +149,8 @@ export function createShape(shape: PhysicsShape) {
   }
   if (shape instanceof _PhysicsEdge) {
     const { start, end } = shape
-    return new EdgeShape(start, end)
+    return new EdgeShape(new Vec2((start.x + ox) / PTM_RATIO, (start.y + oy) / PTM_RATIO),
+    new Vec2((end.x + ox) / PTM_RATIO, (end.y + oy) / PTM_RATIO))
   }
   if (shape instanceof _PhysicsChain) {
     const { points } = shape

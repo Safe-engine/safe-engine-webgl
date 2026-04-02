@@ -11,7 +11,7 @@ import { PhysicsSprite } from './PhysicsSprite'
 export const DynamicBody = 2
 export const KinematicBody = 1
 export const StaticBody = 0
-export const PTM_RATIO = 64
+export const PTM_RATIO = 32
 export let box2D: typeof Box2D
 
 export async function initBox2d(wasmUrl?: string) {
@@ -91,7 +91,6 @@ export class PhysicsSystem implements System {
         fixtureDef.set_friction(friction)
         fixtureDef.set_restitution(restitution)
         body.CreateFixture(fixtureDef)
-        body.ResetMassData()
       })
       body.SetTransform(position, node.rotation)
       body.SetLinearVelocity(zero)
