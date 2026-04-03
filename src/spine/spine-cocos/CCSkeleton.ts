@@ -12,8 +12,7 @@ import {
   Utils,
 } from '@esotericsoftware/spine-core'
 
-import { isString } from 'lodash-es'
-import { director, FLT_MAX, FLT_MIN, loader, Node, OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA, Rect } from 'safex-webgl'
+import { director, FLT_MAX, FLT_MIN, isString, loader, Node, OPTIMIZE_BLEND_FUNC_FOR_PREMULTIPLIED_ALPHA, Rect } from 'safex-webgl'
 import { _atlasLoader } from './CCSkeletonAnimation'
 import { WebGLRenderCmd } from './CCSkeletonWebGLRenderCmd'
 
