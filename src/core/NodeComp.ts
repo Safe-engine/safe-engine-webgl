@@ -1,6 +1,7 @@
 import { Constructor, Entity } from 'entityx-ts'
 import { ClippingNode, Color, DrawNode, Node, p, Point, Size, sys, Vec2 } from 'safex-webgl'
 import { ActionInterval } from 'safex-webgl/actions'
+import { CameraFlag } from 'safex-webgl/camera'
 import { instantiate } from '../helper/utils'
 import { EventRegister, ExtraDataComp } from '../norender'
 import { ComponentType, EnhancedComponent } from './EnhancedComponent'
@@ -185,6 +186,14 @@ export class NodeComp<C extends Node = Node> {
 
   set tag(val) {
     this.instance.setTag(val)
+  }
+
+  get cameraMask() {
+    return this.instance.getCameraMask()
+  }
+
+  set cameraMask(mask: CameraFlag) {
+    this.instance.setCameraMask(mask)
   }
 
   get childrenCount() {

@@ -1,10 +1,13 @@
-import { director } from 'safex-webgl'
+import { director, Scene } from 'safex-webgl'
 import { GameWorld } from '../gworld'
 import { EnhancedComponent } from './EnhancedComponent'
 import { NodeComp } from './NodeComp'
 
-export class SceneComponent extends EnhancedComponent {
+export class SceneComponent extends EnhancedComponent<{}, NodeComp<Scene>> {
   preLoad: () => Promise<void>
+  get defaultCamera() {
+    return this.node.instance.getDefaultCamera()
+  }
   render() {
     const world = GameWorld.Instance
     world.entities.reset()

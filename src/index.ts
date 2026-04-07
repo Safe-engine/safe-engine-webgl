@@ -1,5 +1,6 @@
 import { Color4B, NodeComp } from '.'
 export * from 'safex-webgl'
+export * from 'safex-webgl/camera'
 export * from './app'
 export * from './collider'
 export * from './core/decorator'
