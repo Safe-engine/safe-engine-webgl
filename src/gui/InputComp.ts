@@ -1,5 +1,5 @@
 import { TextField } from "safex-webgl/ui"
-import { BaseComponentProps, color, GameWorld, GUISystem, NodeComp } from ".."
+import { BaseComponentProps, color, GameWorld, GUISystem, NodeComp, registerSystem } from ".."
 import { ComponentX } from "../core/decorator"
 
 interface InputCompProps {
@@ -32,3 +32,4 @@ export class InputComp extends ComponentX<InputCompProps & BaseComponentProps<In
     return comp
   }
 }
+registerSystem(InputComp)

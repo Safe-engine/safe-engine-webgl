@@ -317,21 +317,19 @@ export class NodeComp<C extends Node = Node> {
     this.active = false
     if (this.parent) {
       this.parent.children = this.parent.children.filter(({ entity }) => entity.id !== this.entity.id)
+      this.parent = null
     }
     if (cleanup) {
       this.children.forEach((child) => {
         child.destroy()
       })
-      this.parent = null
       this.entity.destroy()
-      this.stopAllActions()
-      this.instance.removeFromParent(cleanup)
-    } else {
-      this.stopAllActions()
-      this.instance.removeFromParent()
     }
+    this.stopAllActions()
+    this.instance.removeFromParent(cleanup)
   }
   addChild(child: NodeComp, zOrder?: number, tag?: number) {
+    console.log('add child', child)
     child._active = true
     child.parent = this
     this.children.push(child)

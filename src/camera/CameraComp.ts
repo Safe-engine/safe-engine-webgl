@@ -1,5 +1,5 @@
 import { Camera, CameraFlag } from 'safex-webgl/camera'
-import { BaseComponentProps, ComponentX, GameWorld, NodeComp } from '..'
+import { BaseComponentProps, ComponentX, GameWorld, NodeComp, registerSystem } from '..'
 
 interface CameraCompProps extends BaseComponentProps<CameraComp> {
   flag: CameraFlag
@@ -15,3 +15,5 @@ export class CameraComp extends ComponentX<CameraCompProps, Camera> {
     return comp
   }
 }
+
+registerSystem(CameraComp)
