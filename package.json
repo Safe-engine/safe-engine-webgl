@@ -25,8 +25,8 @@
     "@esotericsoftware/spine-core": "^4.2.109",
     "box2d-wasm": "^7.0.0",
     "entityx-ts": "^2.3.1",
-    "planck": "^1.4.3",
-    "safex-webgl": "^1.1.0"
+    "planck": "^1.5.0",
+    "safex-webgl": "*"
   },
   "author": "",
   "license": "ISC"

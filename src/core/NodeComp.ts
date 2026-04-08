@@ -329,7 +329,6 @@ export class NodeComp<C extends Node = Node> {
     this.instance.removeFromParent(cleanup)
   }
   addChild(child: NodeComp, zOrder?: number, tag?: number) {
-    console.log('add child', child)
     child._active = true
     child.parent = this
     this.children.push(child)
