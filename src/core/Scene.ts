@@ -16,6 +16,8 @@ export class SceneComponent extends EnhancedComponent<{}, NodeComp<Scene>> {
     scene.unscheduleAllCallbacks()
     scene.stopAllActions()
     scene.scheduleUpdate()
+    scene.getDefaultCamera().isCenterDraw = false
+    scene.getDefaultCamera().setPosition(0, 0)
     const node = root.assign(new NodeComp(scene, root))
     const sceneComponent = root.assign(this)
     sceneComponent.node = node
