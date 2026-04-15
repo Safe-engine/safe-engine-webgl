@@ -7,10 +7,10 @@ interface CameraCompProps extends BaseComponentProps<CameraComp> {
 
 export class CameraComp extends ComponentX<CameraCompProps, Camera> {
   render() {
-    const tiledMap = new Camera(this.props.flag)
+    const camera = new Camera(this.props.flag)
     const world = GameWorld.Instance
     const entity = world.entities.create()
-    entity.assign(new NodeComp(tiledMap, entity))
+    entity.assign(new NodeComp(camera, entity))
     const comp = entity.assign(this)
     return comp
   }
