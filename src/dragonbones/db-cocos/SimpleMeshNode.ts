@@ -1,5 +1,5 @@
 // SimpleMesh as a Node for Cocos2d-html5 (WebGL primary).
-import { Sprite, Texture2D } from 'safex-webgl'
+import { Sprite, SpriteFrame, Texture2D } from 'safex-webgl'
 import { SimpleMeshWebGLRenderCmd } from './SimpleMeshWebGLRenderCmd'
 
 // ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ export class SimpleMeshNode extends Sprite {
     this._texture = tex
   }
 
-  setSpriteFrame(spriteFrame: any): void {
+  setSpriteFrame(spriteFrame: SpriteFrame): void {
     if (!spriteFrame) return
     // spriteFrame may be a SpriteFrame with ._texture or a raw Texture2D
     if (spriteFrame._texture) {

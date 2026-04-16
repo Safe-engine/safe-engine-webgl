@@ -1,20 +1,18 @@
 import { BaseObject, BinaryOffset, BoneType, Slot, Transform } from '@cocos/dragonbones-js'
-import { color, Node, Rect, Size, Sprite } from 'safex-webgl'
+import { color, Node, Sprite } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
 import { CocosTextureAtlasData, CocosTextureData } from './CocosTextureAtlasData'
 import { SimpleMeshNode } from './SimpleMeshNode'
 
 export class CocosSlot extends Slot {
-  _updateGlueMesh(): void {}
+  _updateGlueMesh(): void { }
   public static toString(): string {
     return '[class dragonBones.CocosSlot]'
   }
 
-  private _ccMeshDirty = false
   private _textureScale: number
   private _renderDisplay: Node
-  _geometryData
-  _geometryBones
+  declare _displayData
 
   protected _onClear(): void {
     super._onClear()
@@ -24,7 +22,7 @@ export class CocosSlot extends Slot {
     // this._updateTransform = cc[0] === '3' ? this._updateTransformV3 : this._updateTransformV4;
   }
 
-  protected _initDisplay(): void {}
+  protected _initDisplay(): void { }
 
   protected _disposeDisplay(value: Node, isRelease: boolean): void {
     if (!isRelease) {
@@ -44,15 +42,18 @@ export class CocosSlot extends Slot {
     const container = this._armature.display as Node
     const prevDisplay = value
 
-    if (this._renderDisplay.getParent() !== container) {
-      container.addChild(this._renderDisplay, prevDisplay.getLocalZOrder())
+    if (this._renderDisplay && this._renderDisplay.getParent() !== container) {
+      container.addChild(this._renderDisplay, prevDisplay ? prevDisplay.getLocalZOrder() : this._zOrder)
     }
 
-    // container.removeChild(prevDisplay, false);
-    // this._renderDisplay.active = true
-    // prevDisplay.active = false
+    if (prevDisplay && prevDisplay !== this._renderDisplay) {
+      prevDisplay.setVisible(false)
+    }
 
-    this._textureScale = 1.0
+    if (this._renderDisplay) {
+      this._textureScale = 1.0
+      this._renderDisplay.setVisible(true)
+    }
   }
 
   protected _removeDisplay(): void {
@@ -116,14 +117,14 @@ export class CocosSlot extends Slot {
 
       const renderTexture = currentTextureData.spriteFrame
       if (renderTexture !== null) {
-        if (this._geometryData) {
+        if (this._displayData.vertices) {
           // Mesh.
-          const data = this._geometryData.data
+          const data = this._displayData.vertices.data
           const intArray = data.intArray
           const floatArray = data.floatArray
-          const vertexCount = intArray[this._geometryData.offset + BinaryOffset.MeshVertexCount]
-          const triangleCount = intArray[this._geometryData.offset + BinaryOffset.MeshTriangleCount]
-          let vertexOffset = intArray[this._geometryData.offset + BinaryOffset.MeshFloatOffset]
+          const vertexCount = intArray[this._displayData.vertices.offset + BinaryOffset.MeshVertexCount]
+          const triangleCount = intArray[this._displayData.vertices.offset + BinaryOffset.MeshTriangleCount]
+          let vertexOffset = intArray[this._displayData.vertices.offset + BinaryOffset.MeshFloatOffset]
 
           if (vertexOffset < 0) {
             vertexOffset += 65536 // Fixed out of bouds bug.
@@ -142,7 +143,7 @@ export class CocosSlot extends Slot {
           }
 
           for (let i = 0; i < triangleCount * 3; ++i) {
-            indices[i] = intArray[this._geometryData.offset + BinaryOffset.MeshVertexIndices + i]
+            indices[i] = intArray[this._displayData.vertices.offset + BinaryOffset.MeshVertexIndices + i]
           }
 
           for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
@@ -159,12 +160,12 @@ export class CocosSlot extends Slot {
           }
 
           this._textureScale = 1.0
-          meshDisplay.setTexture(renderTexture as any)
+          meshDisplay.setTexture(renderTexture._texture)
           meshDisplay.setVertices(vertices)
           meshDisplay.setUVs(uvs)
           meshDisplay.setIndices(indices)
 
-          const isSkinned = this._geometryData.weight !== null
+          const isSkinned = this._displayData.vertices.weight !== null
           const isSurface = this._parent._boneData.type !== BoneType.Bone
           if (isSkinned || isSurface) {
             this._identityTransform()
@@ -183,27 +184,18 @@ export class CocosSlot extends Slot {
       }
     }
 
-    // if (this._geometryData) {
-    //   const meshDisplay = this._renderDisplay as SimpleMeshNode
-    //   meshDisplay.setTexture(null)
-    //   meshDisplay.setPositionX(0)
-    //   meshDisplay.setPositionY(0)
-    //   meshDisplay.setVisible(false)
-    // } else {
-      const normalDisplay = this._renderDisplay as Sprite
-      normalDisplay.setTexture(null)
-      normalDisplay.setPositionX(0)
-      normalDisplay.setPositionY(0)
-      normalDisplay.setVisible(false)
-    // }
-    // this._renderDisplay.setPosition(0.0, 0.0)
+    const normalDisplay = this._renderDisplay as Sprite
+    normalDisplay.setTexture(null)
+    normalDisplay.setPositionX(0)
+    normalDisplay.setPositionY(0)
+    normalDisplay.setVisible(false)
   }
 
   protected _updateMesh(): void {
     const scale = this._armature._armatureData.scale
     const deformVertices = this._deformVertices
-    const bones = this._geometryBones
-    const geometryData = this._geometryData
+    const bones = this._deformVertices.bones
+    const geometryData = this._displayData.vertices
 
     if (!geometryData) {
       return
@@ -348,7 +340,7 @@ export class CocosSlot extends Slot {
     // helpMatrix.ty = 0.0;
     // (this._renderDisplay as any)._renderCmd.setNodeToParentTransform(helpMatrix);
 
-    this._renderDisplay.setPosition(0,0)
+    this._renderDisplay.setPosition(0, 0)
     this._renderDisplay.setRotationX(0)
     this._renderDisplay.setRotationY(0)
     this._renderDisplay.setScaleX(1)
