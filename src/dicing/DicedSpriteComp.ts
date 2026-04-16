@@ -1,4 +1,4 @@
-import { Color, Color4B } from "safex-webgl"
+import { textureCache } from "safex-webgl"
 import { ComponentX } from "../core/decorator"
 import { NodeComp } from "../core/NodeComp"
 import { GameWorld } from "../gworld"
@@ -6,23 +6,15 @@ import { registerSystem } from "../helper"
 import { DicedSprite } from "./DicedSprite"
 
 interface DicedSpriteProps {
-  spriteFrame: string
-  fade?: number
-  minSeg?: number
-  stroke?: number
-  color?: Color4B
+  texture: string
+  data?: any
 }
 export class DicedSpriteComp extends ComponentX<DicedSpriteProps & { $ref?: DicedSpriteComp }, DicedSprite> {
 
   render() {
-    const { spriteFrame, fade, minSeg, stroke, color } = this.props
-    const node = new DicedSprite(
-      fade || 0.4, // fade (vệt tồn tại 0.4s)
-      minSeg || 1, // minSeg
-      stroke || 20, // stroke (độ rộng vệt)
-      color || Color.WHITE,
-      spriteFrame,
-    )
+    const { data, texture } = this.props
+    const tex = textureCache.getTextureForKey(texture)
+    const node = new DicedSprite(data, tex)
 
     const world = GameWorld.Instance
     const entity = world.entities.create()

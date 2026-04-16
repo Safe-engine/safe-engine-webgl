@@ -161,8 +161,8 @@ export class CocosSlot extends Slot {
           this._textureScale = 1.0
           meshDisplay.setTexture(renderTexture as any)
           meshDisplay.setVertices(vertices)
-          // meshDisplay.uvBuffer.update(uvs)
-          // meshDisplay.geometry.addIndex(indices)
+          meshDisplay.setUVs(uvs)
+          meshDisplay.setIndices(indices)
 
           const isSkinned = this._geometryData.weight !== null
           const isSurface = this._parent._boneData.type !== BoneType.Bone
@@ -201,151 +201,93 @@ export class CocosSlot extends Slot {
 
   protected _updateMesh(): void {
     const scale = this._armature._armatureData.scale
-    // console.log(this._renderDisplay)
     const deformVertices = this._deformVertices
     const bones = this._geometryBones
     const geometryData = this._geometryData
-    const weightData = deformVertices.verticesData.weight
 
-    const hasDeform = deformVertices.vertices.length > 0 && deformVertices.verticesData.inheritDeform
-    // const meshDisplay = (this._renderDisplay.getComponent(Sprite) as any)._sgNode; // as Scale9Sprite;
-    const polygonInfo = this._meshDisplay._polygonInfo
-    if (!polygonInfo) {
+    if (!geometryData) {
       return
     }
 
-    const verticesAndUVs = polygonInfo.triangles.verts as { x: number; y: number; u: number; v: number }[]
-    const boundsRect = Rect(999999.0, 999999.0, -999999.0, -999999.0)
+    const weightData = deformVertices.verticesData.weight
+    const hasDeform = deformVertices.vertices.length > 0 && deformVertices.verticesData.inheritDeform
+
+    const meshDisplay = this._renderDisplay as SimpleMeshNode
+
+    const data = geometryData.data
+    const intArray = data.intArray
+    const floatArray = data.floatArray
+    const vertexCount = intArray[geometryData.offset + BinaryOffset.MeshVertexCount]
+
+    // Build updated vertex positions
+    const newVertices = new Float32Array(vertexCount * 2)
 
     if (weightData !== null) {
-      const data = geometryData.data
-      const intArray = data.intArray
-      const floatArray = data.floatArray
-      const vertexCount = intArray[geometryData.offset + BinaryOffset.MeshVertexCount]
+      // Skinned mesh: compute weighted bone-space positions
       let weightFloatOffset = intArray[weightData.offset + BinaryOffset.WeigthFloatOffset]
+      if (weightFloatOffset < 0) weightFloatOffset += 65536
 
-      if (weightFloatOffset < 0) {
-        weightFloatOffset += 65536 // Fixed out of bouds bug.
-      }
+      let iB = weightData.offset + BinaryOffset.WeigthBoneIndices + bones.length
+      let iV = weightFloatOffset
+      let iF = 0
 
-      for (
-        let i = 0, iB = weightData.offset + BinaryOffset.WeigthBoneIndices + bones.length, iV = weightFloatOffset, iF = 0;
-        i < vertexCount;
-        ++i
-      ) {
+      for (let i = 0; i < vertexCount; ++i) {
         const boneCount = intArray[iB++]
-        let xG = 0.0,
-          yG = 0.0
+        let xG = 0.0, yG = 0.0
 
         for (let j = 0; j < boneCount; ++j) {
           const boneIndex = intArray[iB++]
           const bone = bones[boneIndex]
-
           if (bone !== null) {
             const matrix = bone.globalTransformMatrix
             const weight = floatArray[iV++]
             let xL = floatArray[iV++] * scale
             let yL = floatArray[iV++] * scale
-
             if (hasDeform) {
               xL += deformVertices[iF++]
               yL += deformVertices[iF++]
             }
-
             xG += (matrix.a * xL + matrix.c * yL + matrix.tx) * weight
             yG += (matrix.b * xL + matrix.d * yL + matrix.ty) * weight
           }
         }
-
-        const vertex = verticesAndUVs[i]
-        vertex.x = xG
-        vertex.y = yG
-
-        if (boundsRect.x > xG) {
-          boundsRect.x = xG
-        }
-
-        if (boundsRect.width < xG) {
-          boundsRect.width = xG
-        }
-
-        if (boundsRect.y > yG) {
-          boundsRect.y = yG
-        }
-
-        if (boundsRect.height < yG) {
-          boundsRect.height = yG
-        }
+        newVertices[i * 2] = xG
+        newVertices[i * 2 + 1] = yG
       }
+
+      meshDisplay.setVertices(newVertices)
+      this._identityTransform()
     } else {
+      // Non-skinned: may be surface or plain bone
       const isSurface = this._parent._boneData.type !== BoneType.Bone
-      const data = geometryData.data
-      const intArray = data.intArray
-      const floatArray = data.floatArray
-      const vertexCount = intArray[geometryData.offset + BinaryOffset.MeshVertexCount]
       let vertexOffset = intArray[geometryData.offset + BinaryOffset.MeshFloatOffset]
-
-      if (vertexOffset < 0) {
-        vertexOffset += 65536 // Fixed out of bouds bug.
-      }
+      if (vertexOffset < 0) vertexOffset += 65536
 
       for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
-        const iH = i / 2 // int.
         let x = floatArray[vertexOffset + i] * scale
         let y = floatArray[vertexOffset + i + 1] * scale
-
         if (hasDeform) {
           x += deformVertices[i]
           y += deformVertices[i + 1]
         }
-
-        const vertex = verticesAndUVs[iH]
-
         if (isSurface) {
           const matrix = this._parent._getGlobalTransformMatrix(x, y)
-          vertex.x = matrix.a * x + matrix.c * y + matrix.tx
-          vertex.y = matrix.b * x + matrix.d * y + matrix.ty
-          //
-          x = vertex.x
-          y = vertex.y
+          x = matrix.a * x + matrix.c * y + matrix.tx
+          y = matrix.b * x + matrix.d * y + matrix.ty
         } else {
-          vertex.x = x
-          y = vertex.y = -y
+          y = -y
         }
-
-        if (boundsRect.x > x) {
-          boundsRect.x = x
-        }
-
-        if (boundsRect.width < x) {
-          boundsRect.width = x
-        }
-
-        if (boundsRect.y > y) {
-          boundsRect.y = y
-        }
-
-        if (boundsRect.height < y) {
-          boundsRect.height = y
-        }
+        newVertices[i] = x
+        newVertices[i + 1] = y
       }
-    }
 
-    boundsRect.width -= boundsRect.x
-    boundsRect.height -= boundsRect.y
+      meshDisplay.setVertices(newVertices)
 
-    polygonInfo.rect = boundsRect
-    this.meshDisplay.setContentSize(Size(boundsRect.width, boundsRect.height))
-    this.meshDisplay.setMeshPolygonInfo(polygonInfo)
-
-    if (weightData !== null) {
-      this._identityTransform()
-    } else {
       const transform = this.global
       const globalTransformMatrix = this.globalTransformMatrix
-     const x = transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY)
-     const y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY)
-     this._renderDisplay.setPosition(x,y)
+      const x = transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY)
+      const y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY)
+      this._renderDisplay.setPosition(x, y)
       this._renderDisplay.setRotationX(-(transform.rotation + transform.skew) * Transform.RAD_DEG)
       this._renderDisplay.setRotationY(-transform.rotation * Transform.RAD_DEG)
       this._renderDisplay.setScaleX(transform.scaleX * this._textureScale)

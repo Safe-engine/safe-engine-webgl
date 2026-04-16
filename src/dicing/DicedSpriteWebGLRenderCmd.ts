@@ -17,16 +17,16 @@ export class DicedSpriteWebGLRenderCmd extends NodeWebGLRenderCmd {
     gl.enableVertexAttribArray(1)
 
     // vertices
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, node._vertices)
+    // gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, node._vertices)
 
     // uvs
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, node._uvs)
+    // gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, node._uvs)
 
-    gl.drawElements(
-      gl.TRIANGLES,
-      node._indices.length,
-      gl.UNSIGNED_SHORT,
-      node._indices
-    )
+    // gl.drawElements(
+    //   gl.TRIANGLES,
+    //   node._indices.length,
+    //   gl.UNSIGNED_SHORT,
+    //   node._indices
+    // )
   }
 }
