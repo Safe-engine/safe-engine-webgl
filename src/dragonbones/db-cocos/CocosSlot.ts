@@ -126,19 +126,24 @@ export class CocosSlot extends Slot {
           let vertexOffset = intArray[this._displayData.vertices.offset + BinaryOffset.MeshFloatOffset]
 
           if (vertexOffset < 0) {
-            vertexOffset += 65536 // Fixed out of bouds bug.
+            vertexOffset += 65536 // Fixed out of bounds bug.
           }
 
           const uvOffset = vertexOffset + vertexCount * 2
           const scale = this._armature._armatureData.scale
 
+          const textureAtlasSize = renderTexture.getTexture().getContentSizeInPixels();
+          const textureAtlasWidth = currentTextureAtlasData.width > 0.0 ? currentTextureAtlasData.width : textureAtlasSize.width;
+          const textureAtlasHeight = currentTextureAtlasData.height > 0.0 ? currentTextureAtlasData.height : textureAtlasSize.height;
+          const region = currentTextureData.region;
           const meshDisplay = this._renderDisplay as MeshNode
 
-          const vertices = new Float32Array(vertexCount * 2) as any
-          const uvs = new Float32Array(vertexCount * 2) as any
-          const indices = new Uint16Array(triangleCount * 3) as any
-          for (let i = 0, l = vertexCount * 2; i < l; ++i) {
+          const vertices = new Float32Array(vertexCount * 2)
+          const uvs = new Float32Array(vertexCount * 2)
+          const indices = new Uint16Array(triangleCount * 3)
+          for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
             vertices[i] = floatArray[vertexOffset + i] * scale
+            vertices[i + 1] = -floatArray[vertexOffset + i] * scale
           }
 
           for (let i = 0; i < triangleCount * 3; ++i) {
@@ -150,17 +155,18 @@ export class CocosSlot extends Slot {
             const v = floatArray[uvOffset + i + 1]
 
             if (currentTextureData.rotated) {
-              uvs[i] = 1 - v
-              uvs[i + 1] = u
+              const backU = u;
+              uvs[i] = (region.x + (1.0 - v) * region.width) / textureAtlasWidth;
+              uvs[i + 1] = (region.y + backU * region.height) / textureAtlasHeight;
             } else {
-              uvs[i] = u
-              uvs[i + 1] = v
+              uvs[i] = (region.x + u * region.width) / textureAtlasWidth;
+              uvs[i + 1] = (region.y + v * region.height) / textureAtlasHeight;
             }
           }
 
           this._textureScale = 1.0
-          // console.log('meshDisplay.initMesh(', renderTexture._texture.isLoaded(), meshVertices, meshUVs)
-          meshDisplay.initMesh(renderTexture._texture.url, vertices, uvs)
+          // console.log('meshDisplay.initMesh(', renderTexture._texture.url, vertices, uvs, indices.join(), this._displayData)
+          meshDisplay.initMesh(renderTexture._texture.url, vertices, uvs, indices)
 
           const isSkinned = this._displayData.vertices.weight !== null
           const isSurface = this._parent._boneData.type !== BoneType.Bone
@@ -190,7 +196,7 @@ export class CocosSlot extends Slot {
 
   protected _updateMesh(): void {
     const scale = this._armature._armatureData.scale
-    const deformVertices = this._deformVertices
+    const deformVertices = this._deformVertices.vertices
     const bones = this._deformVertices.bones
     const geometryData = this._displayData.vertices
 
@@ -198,8 +204,8 @@ export class CocosSlot extends Slot {
       return
     }
 
-    const weightData = deformVertices.verticesData.weight
-    const hasDeform = deformVertices.vertices.length > 0 && deformVertices.verticesData.inheritDeform
+    const weightData = this._deformVertices.verticesData.weight
+    const hasDeform = deformVertices.length > 0 && this._deformVertices.verticesData.inheritDeform
 
     const meshDisplay = this._renderDisplay as MeshNode
 
