@@ -1,8 +1,7 @@
 import { BaseObject, BinaryOffset, BoneType, Slot, Transform } from '@cocos/dragonbones-js'
-import { color, Node, Sprite } from 'safex-webgl'
+import { color, MeshNode, Node, Sprite } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
 import { CocosTextureAtlasData, CocosTextureData } from './CocosTextureAtlasData'
-import { SimpleMeshNode } from './SimpleMeshNode'
 
 export class CocosSlot extends Slot {
   _updateGlueMesh(): void { }
@@ -133,7 +132,7 @@ export class CocosSlot extends Slot {
           const uvOffset = vertexOffset + vertexCount * 2
           const scale = this._armature._armatureData.scale
 
-          const meshDisplay = this._renderDisplay as SimpleMeshNode
+          const meshDisplay = this._renderDisplay as MeshNode
 
           const vertices = new Float32Array(vertexCount * 2) as any
           const uvs = new Float32Array(vertexCount * 2) as any
@@ -160,10 +159,8 @@ export class CocosSlot extends Slot {
           }
 
           this._textureScale = 1.0
-          meshDisplay.setTexture(renderTexture._texture)
-          meshDisplay.setVertices(vertices)
-          meshDisplay.setUVs(uvs)
-          meshDisplay.setIndices(indices)
+          // console.log('meshDisplay.initMesh(', renderTexture._texture.isLoaded(), meshVertices, meshUVs)
+          meshDisplay.initMesh(renderTexture._texture.url, vertices, uvs)
 
           const isSkinned = this._displayData.vertices.weight !== null
           const isSurface = this._parent._boneData.type !== BoneType.Bone
@@ -204,7 +201,7 @@ export class CocosSlot extends Slot {
     const weightData = deformVertices.verticesData.weight
     const hasDeform = deformVertices.vertices.length > 0 && deformVertices.verticesData.inheritDeform
 
-    const meshDisplay = this._renderDisplay as SimpleMeshNode
+    const meshDisplay = this._renderDisplay as MeshNode
 
     const data = geometryData.data
     const intArray = data.intArray
@@ -247,7 +244,7 @@ export class CocosSlot extends Slot {
         newVertices[i * 2 + 1] = yG
       }
 
-      meshDisplay.setVertices(newVertices)
+      meshDisplay.updateVertices(newVertices)
       this._identityTransform()
     } else {
       // Non-skinned: may be surface or plain bone
@@ -273,7 +270,7 @@ export class CocosSlot extends Slot {
         newVertices[i + 1] = y
       }
 
-      meshDisplay.setVertices(newVertices)
+      meshDisplay.updateVertices(newVertices)
 
       const transform = this.global
       const globalTransformMatrix = this.globalTransformMatrix

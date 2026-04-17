@@ -10,11 +10,10 @@ import {
   SlotData,
 } from '@cocos/dragonbones-js'
 
-import { director, Sprite, Texture2D } from 'safex-webgl'
+import { director, MeshNode, Sprite, Texture2D } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
 import { CocosSlot } from './CocosSlot'
 import { CocosTextureAtlasData, CocosTextureData } from './CocosTextureAtlasData'
-import { SimpleMeshNode } from './SimpleMeshNode'
 
 /**
  * - The Cocos factory.
@@ -111,7 +110,7 @@ export class CocosFactory extends BaseFactory {
 
   protected _buildSlot(_dataPackage: BuildArmaturePackage, slotData: SlotData, armature: DisplayData[]): Slot {
     const slot = BaseObject.borrowObject(CocosSlot)
-    slot.init(slotData, armature, new Sprite(), new SimpleMeshNode())
+    slot.init(slotData, armature, new Sprite(), new MeshNode())
 
     return slot
   }

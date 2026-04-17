@@ -1,6 +1,6 @@
 {
   "name": "@safe-engine/webgl",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "safe-engine with webgl renderer support",
   "type": "module",
   "main": "dist/index.js",
@@ -26,7 +26,7 @@
     "box2d-wasm": "^7.0.0",
     "entityx-ts": "^2.3.1",
     "planck": "^1.5.0",
-    "safex-webgl": "*"
+    "safex-webgl": "^1.2.0"
   },
   "author": "",
   "license": "ISC"
