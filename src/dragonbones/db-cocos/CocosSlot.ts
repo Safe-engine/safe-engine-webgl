@@ -143,7 +143,7 @@ export class CocosSlot extends Slot {
           const indices = new Uint16Array(triangleCount * 3)
           for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
             vertices[i] = floatArray[vertexOffset + i] * scale
-            vertices[i + 1] = -floatArray[vertexOffset + i] * scale
+            vertices[i + 1] = -floatArray[vertexOffset + i + 1] * scale
           }
 
           for (let i = 0; i < triangleCount * 3; ++i) {
