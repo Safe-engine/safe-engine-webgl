@@ -18,7 +18,6 @@ export class CocosSlot extends Slot {
 
     this._textureScale = 1.0
     this._renderDisplay = null as any
-    // this._updateTransform = cc[0] === '3' ? this._updateTransformV3 : this._updateTransformV4;
   }
 
   protected _initDisplay(): void { }
@@ -308,29 +307,6 @@ export class CocosSlot extends Slot {
     this._renderDisplay.setRotationY(-transform.rotation * Transform.RAD_DEG)
     this._renderDisplay.setScaleX(transform.scaleX * this._textureScale)
     this._renderDisplay.setScaleY(-transform.scaleY * this._textureScale)
-  }
-
-  protected _updateTransformV3(): void {
-    this.updateGlobalTransform() // Update transform.
-
-    const transform = this.global
-
-    if (this._renderDisplay === this._rawDisplay || this._renderDisplay === this._meshDisplay) {
-      const x = transform.x - (this.globalTransformMatrix.a * this._pivotX + this.globalTransformMatrix.c * this._pivotY)
-      const y = transform.y - (this.globalTransformMatrix.b * this._pivotX + this.globalTransformMatrix.d * this._pivotY)
-      // this._renderDisplay.transform = new AffineTransform(
-      //   x, y,
-      //   transform.scaleX * this._textureScale, transform.scaleY * this._textureScale,
-      //   transform.rotation,
-      //   transform.skew, 0.0,
-      // );
-      this._renderDisplay.setPosition(x, y)
-    } else {
-      this._renderDisplay.setPosition(transform.x, transform.y)
-      this._renderDisplay.setRotation(transform.rotation)
-      this._renderDisplay.setSkewX(transform.skew)
-      this._renderDisplay.setScale(transform.scaleX, transform.scaleY)
-    }
   }
 
   protected _identityTransform(): void {
