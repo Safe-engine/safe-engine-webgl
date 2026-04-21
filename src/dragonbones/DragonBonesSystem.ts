@@ -1,6 +1,6 @@
 import { EntityManager, EventManager, EventTypes, System } from 'entityx-ts'
 
-import { EventObject } from '@cocos/dragonbones-js'
+import { EventObject } from 'dragonbones-es'
 import { loader, textureCache } from 'safex-webgl'
 import { NodeComp } from '../core/NodeComp'
 import { DragonBonesComp } from './DragonBonesComp'

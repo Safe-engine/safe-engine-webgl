@@ -1,13 +1,13 @@
 import {
-  Animation,
-  Armature,
-  BoundingBoxType,
-  DragonBones,
-  EventObject,
-  EventStringType,
-  IArmatureProxy,
-  PolygonBoundingBoxData,
-} from '@cocos/dragonbones-js'
+    Animation,
+    Armature,
+    BoundingBoxType,
+    DragonBones,
+    EventObject,
+    EventStringType,
+    IArmatureProxy,
+    PolygonBoundingBoxData,
+} from 'dragonbones-es'
 import { DrawNode, Sprite, color, p } from 'safex-webgl'
 import { EventCustom } from 'safex-webgl/core/event-manager'
 

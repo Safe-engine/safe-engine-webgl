@@ -1,4 +1,4 @@
-import { BaseObject, TextureAtlasData, TextureData } from '@cocos/dragonbones-js'
+import { BaseObject, TextureAtlasData, TextureData } from 'dragonbones-es'
 import { p, Rect, Size, SpriteFrame, Texture2D } from 'safex-webgl'
 
 export class CocosTextureAtlasData extends TextureAtlasData {
@@ -11,9 +11,9 @@ export class CocosTextureAtlasData extends TextureAtlasData {
   protected _onClear(): void {
     super._onClear()
 
-    if (this._renderTexture !== null) {
-      // this._renderTexture.dispose();
-    }
+    // if (this._renderTexture !== null) {
+    // this._renderTexture.dispose();
+    // }
 
     this._renderTexture = null
   }

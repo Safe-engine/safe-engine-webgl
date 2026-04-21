@@ -4,11 +4,10 @@ import {
   BaseObject,
   BuildArmaturePackage,
   DataParser,
-  DisplayData,
   DragonBones,
   Slot,
-  SlotData,
-} from '@cocos/dragonbones-js'
+  SlotData
+} from 'dragonbones-es'
 
 import { director, MeshNode, Sprite, Texture2D } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
@@ -78,6 +77,7 @@ export class CocosFactory extends BaseFactory {
     if (CocosFactory._dragonBonesInstance === null) {
       const eventManager = new CocosArmatureDisplay()
       CocosFactory._dragonBonesInstance = new DragonBones(eventManager)
+      DragonBones.yDown = false;
     }
 
     this._dragonBones = CocosFactory._dragonBonesInstance
@@ -108,7 +108,7 @@ export class CocosFactory extends BaseFactory {
     return armature
   }
 
-  protected _buildSlot(_dataPackage: BuildArmaturePackage, slotData: SlotData, armature: DisplayData[]): Slot {
+  protected _buildSlot(_dataPackage: BuildArmaturePackage, slotData: SlotData, armature: Armature): Slot {
     const slot = BaseObject.borrowObject(CocosSlot)
     slot.init(slotData, armature, new Sprite(), new MeshNode())
 

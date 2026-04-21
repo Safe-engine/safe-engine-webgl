@@ -1,4 +1,4 @@
-import { BaseObject, BinaryOffset, BoneType, Slot, Transform } from '@cocos/dragonbones-js'
+import { BaseObject, BinaryOffset, BoneType, GeometryData, Slot, Surface, Transform } from 'dragonbones-es'
 import { color, MeshNode, Node, Sprite } from 'safex-webgl'
 import { CocosArmatureDisplay } from './CocosArmatureDisplay'
 import { CocosTextureAtlasData, CocosTextureData } from './CocosTextureAtlasData'
@@ -115,14 +115,14 @@ export class CocosSlot extends Slot {
 
       const renderTexture = currentTextureData.spriteFrame
       if (renderTexture !== null) {
-        if (this._displayData.vertices) {
+        if (this._geometryData) {
           // Mesh.
-          const data = this._displayData.vertices.data
+          const data = this._geometryData.data
           const intArray = data.intArray
           const floatArray = data.floatArray
-          const vertexCount = intArray[this._displayData.vertices.offset + BinaryOffset.MeshVertexCount]
-          const triangleCount = intArray[this._displayData.vertices.offset + BinaryOffset.MeshTriangleCount]
-          let vertexOffset = intArray[this._displayData.vertices.offset + BinaryOffset.MeshFloatOffset]
+          const vertexCount = intArray[this._geometryData.offset + BinaryOffset.GeometryVertexCount]
+          const triangleCount = intArray[this._geometryData.offset + BinaryOffset.GeometryTriangleCount]
+          let vertexOffset = intArray[this._geometryData.offset + BinaryOffset.GeometryFloatOffset]
 
           if (vertexOffset < 0) {
             vertexOffset += 65536 // Fixed out of bounds bug.
@@ -146,7 +146,7 @@ export class CocosSlot extends Slot {
           }
 
           for (let i = 0; i < triangleCount * 3; ++i) {
-            indices[i] = intArray[this._displayData.vertices.offset + BinaryOffset.MeshVertexIndices + i]
+            indices[i] = intArray[this._geometryData.offset + BinaryOffset.GeometryVertexIndices + i]
           }
 
           for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
@@ -167,7 +167,7 @@ export class CocosSlot extends Slot {
           // console.log('meshDisplay.initMesh(', renderTexture._texture.url, vertices, uvs, indices.join(), this._displayData)
           meshDisplay.initMesh(renderTexture._texture.url, vertices, uvs, indices)
 
-          const isSkinned = this._displayData.vertices.weight !== null
+          const isSkinned = this._geometryData.weight !== null
           const isSurface = this._parent._boneData.type !== BoneType.Bone
           if (isSkinned || isSurface) {
             this._identityTransform()
@@ -195,23 +195,23 @@ export class CocosSlot extends Slot {
 
   protected _updateMesh(): void {
     const scale = this._armature._armatureData.scale
-    const deformVertices = this._deformVertices.vertices
-    const bones = this._deformVertices.bones
-    const geometryData = this._displayData.vertices
+    const deformVertices = this._displayFrame.deformVertices
+    const bones = this._geometryBones
+    const geometryData = this._geometryData as GeometryData;
 
     if (!geometryData) {
       return
     }
 
-    const weightData = this._deformVertices.verticesData.weight
-    const hasDeform = deformVertices.length > 0 && this._deformVertices.verticesData.inheritDeform
+    const weightData = geometryData.weight
+    const hasDeform = deformVertices.length > 0 && geometryData.inheritDeform
 
     const meshDisplay = this._renderDisplay as MeshNode
 
     const data = geometryData.data
     const intArray = data.intArray
     const floatArray = data.floatArray
-    const vertexCount = intArray[geometryData.offset + BinaryOffset.MeshVertexCount]
+    const vertexCount = intArray[geometryData.offset + BinaryOffset.GeometryVertexCount]
 
     // Build updated vertex positions
     const newVertices = new Float32Array(vertexCount * 2)
@@ -254,7 +254,7 @@ export class CocosSlot extends Slot {
     } else {
       // Non-skinned: may be surface or plain bone
       const isSurface = this._parent._boneData.type !== BoneType.Bone
-      let vertexOffset = intArray[geometryData.offset + BinaryOffset.MeshFloatOffset]
+      let vertexOffset = intArray[geometryData.offset + BinaryOffset.GeometryFloatOffset]
       if (vertexOffset < 0) vertexOffset += 65536
 
       for (let i = 0, l = vertexCount * 2; i < l; i += 2) {
@@ -265,7 +265,7 @@ export class CocosSlot extends Slot {
           y += deformVertices[i + 1]
         }
         if (isSurface) {
-          const matrix = this._parent._getGlobalTransformMatrix(x, y)
+          const matrix = (this._parent as Surface)._getGlobalTransformMatrix(x, y)
           x = matrix.a * x + matrix.c * y + matrix.tx
           y = matrix.b * x + matrix.d * y + matrix.ty
         } else {
@@ -296,8 +296,8 @@ export class CocosSlot extends Slot {
     // const globalTransformMatrix = this.globalTransformMatrix;
 
     // if (this._renderDisplay === this._rawDisplay || this._renderDisplay === this._meshDisplay) {
-    //   this._renderDisplay.x = transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY);
-    //   this._renderDisplay.y = transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY);
+    // this._renderDisplay.setPositionX(transform.x - (globalTransformMatrix.a * this._pivotX - globalTransformMatrix.c * this._pivotY));
+    // this._renderDisplay.setPositionY(transform.y - (globalTransformMatrix.b * this._pivotX - globalTransformMatrix.d * this._pivotY));
     // }
     // else {
     this._renderDisplay.setPosition(transform.x, transform.y)

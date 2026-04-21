@@ -21,12 +21,12 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@cocos/dragonbones-js": "^1.0.2",
-    "@esotericsoftware/spine-core": "^4.2.110",
+    "dragonbones-es": "^1.0.0",
+    "@esotericsoftware/spine-core": "^4.2.111",
     "box2d-wasm": "^7.0.0",
     "entityx-ts": "^2.3.1",
     "planck": "^1.5.0",
-    "safex-webgl": "^1.2.4"
+    "safex-webgl": "^1.2.5"
   },
   "author": "",
   "license": "ISC"
