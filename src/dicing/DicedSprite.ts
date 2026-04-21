@@ -1,5 +1,6 @@
 import { _renderContext, Node, SHADER_POSITION_TEXTURE, Texture2D } from "safex-webgl";
 import { GLProgram, shaderCache } from "safex-webgl/shaders";
+import { Meta } from "./DicedSpriteComp";
 import { DicedSpriteWebGLRenderCmd } from "./DicedSpriteWebGLRenderCmd";
 
 type DicedAnimationFrame = {
@@ -15,7 +16,7 @@ type DicedAnimation = DicedAnimationFrame[]
 // }
 
 type DicedSpriteAsset = {
-  meta: { name: string, cellW: number; cellH: number; width: number; height: number }[]
+  meta: Meta
   animations: DicedAnimation[]
 }
 

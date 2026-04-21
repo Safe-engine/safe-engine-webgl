@@ -5,7 +5,27 @@ import { GameWorld } from "../gworld"
 import { registerSystem } from "../helper"
 import { DicedSprite } from "./DicedSprite"
 
-function buildMeshFromGrid(json) {
+export type Meta = {
+  name: string;
+  rawWidth: number;
+  rawHeight: number;
+  cellW: number;
+  cellH: number;
+  atlasCols: number;
+  atlasRows: number;
+};
+type Animation = {
+  name: string;
+  fps: number;
+  frames: number[][][]; // grid 2D
+};
+
+type DicedJSON = {
+  meta: Meta;
+  animations: any;
+};
+
+function buildMeshFromGrid(json: DicedJSON) {
   const { meta } = json;
 
   const atlasW = meta.rawWidth;
@@ -14,7 +34,7 @@ function buildMeshFromGrid(json) {
   const cellW = meta.cellW;
   const cellH = meta.cellH;
 
-  const cols = Math.floor(atlasW / cellW);
+  const cols = meta.atlasCols;
 
   const result = {};
 
@@ -87,7 +107,7 @@ export class DicedSpriteComp extends ComponentX<DicedSpriteProps & { $ref?: Dice
     const { data, texture, animation } = this.props
     const tex = textureCache.getTextureForKey(texture)
     const json = loader.getRes(data)
-     const meshData = buildMeshFromGrid(json);
+    const meshData = buildMeshFromGrid(json);
     const node = new DicedSprite(meshData, tex)
     node.play(animation)
 
