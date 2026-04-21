@@ -1,32 +1,86 @@
-import { _renderContext, NodeWebGLRenderCmd } from "safex-webgl"
+import { incrementGLDraws, NodeWebGLRenderCmd, UNIFORM_MVMATRIX_S, UNIFORM_MVPMATRIX_S } from "safex-webgl"
+import { KM_GL_MODELVIEW, KM_GL_PROJECTION, kmGLGetMatrix, kmMat4Multiply, Matrix4 } from "safex-webgl/core/kazmath"
 import { DicedSprite } from "./DicedSprite"
 
 export class DicedSpriteWebGLRenderCmd extends NodeWebGLRenderCmd {
   declare _node: DicedSprite
 
-  rendering(ctx) {
+  constructor(node: DicedSprite) {
+    super(node)
+    this._node = node
+    this._needDraw = true
+  }
+
+  public rendering(ctx: WebGLRenderingContext) {
+    const gl = ctx
     const node = this._node
-    const gl = _renderContext
 
-    if (!node._vertices) return
+    if (!node.texture || !node.texture.isLoaded()) return
 
-    gl.bindTexture(0, node._texture)
+    const program = node.shaderProgram
+    program.use()
 
-    // enable attrib
-    gl.enableVertexAttribArray(0)
-    gl.enableVertexAttribArray(1)
+    const matrixP = new Matrix4()
+    const matrixMV = new Matrix4()
+    const matrixMVP = new Matrix4()
 
-    // vertices
-    // gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, node._vertices)
+    kmGLGetMatrix(KM_GL_PROJECTION, matrixP)
+    kmGLGetMatrix(KM_GL_MODELVIEW, matrixMV)
 
-    // uvs
-    // gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, node._uvs)
+    // Calculate node's world transform matrix
+    const wt = this._worldTransform
+    const wtMatrix = new Matrix4()
+    wtMatrix.mat[0] = wt.a
+    wtMatrix.mat[4] = wt.c
+    wtMatrix.mat[8] = 0
+    wtMatrix.mat[12] = wt.tx
+    wtMatrix.mat[1] = wt.b
+    wtMatrix.mat[5] = wt.d
+    wtMatrix.mat[9] = 0
+    wtMatrix.mat[13] = wt.ty
+    wtMatrix.mat[2] = 0
+    wtMatrix.mat[6] = 0
+    wtMatrix.mat[10] = 1
+    wtMatrix.mat[14] = 0
+    wtMatrix.mat[3] = 0
+    wtMatrix.mat[7] = 0
+    wtMatrix.mat[11] = 0
+    wtMatrix.mat[15] = 1
 
-    // gl.drawElements(
-    //   gl.TRIANGLES,
-    //   node._indices.length,
-    //   gl.UNSIGNED_SHORT,
-    //   node._indices
-    // )
+    const finalMV = new Matrix4()
+    kmMat4Multiply(finalMV, matrixMV, wtMatrix)
+    kmMat4Multiply(matrixMVP, matrixP, finalMV)
+
+    // Set engine built-in uniforms FIRST (this sets time, random, identity MV, identity MVP, etc.)
+    program.setUniformsForBuiltins()
+
+    // Override MVP and MV with our custom derived matrices
+    program.setUniformLocationWithMatrix4fv(UNIFORM_MVMATRIX_S, finalMV.mat)
+    program.setUniformLocationWithMatrix4fv(UNIFORM_MVPMATRIX_S, matrixMVP.mat)
+
+    // texture
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, node.texture._webTextureObj)
+
+    const glProgram = program.getProgram()
+
+    // position
+    const posLoc = gl.getAttribLocation(glProgram, 'a_position')
+    gl.bindBuffer(gl.ARRAY_BUFFER, node.vertexBuffer)
+    gl.enableVertexAttribArray(posLoc)
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0)
+
+    // uv
+    const uvLoc = gl.getAttribLocation(glProgram, 'a_texCoord')
+    gl.bindBuffer(gl.ARRAY_BUFFER, node.uvBuffer)
+    gl.enableVertexAttribArray(uvLoc)
+    gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 0, 0)
+
+    // draw
+    // Bind index buffer and draw
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, node.indexBuffer)
+    gl.drawElements(gl.TRIANGLES, node.indices.length, gl.UNSIGNED_SHORT, 0)
+
+    incrementGLDraws(1)
   }
 }

@@ -1,48 +1,83 @@
-import { Node, Texture2D } from "safex-webgl"
+import { _renderContext, Node, SHADER_POSITION_TEXTURE, Texture2D } from "safex-webgl";
+import { GLProgram, shaderCache } from "safex-webgl/shaders";
+import { DicedSpriteWebGLRenderCmd } from "./DicedSpriteWebGLRenderCmd";
 
 type DicedAnimationFrame = {
-  chunks: {
-    frameIndex: number
-    x: number
-    y: number
-  }[]
+  vertices: number[]
+  uvs: number[]
+  indices: number[]
 }
 
-type DicedAnimation = {
-  name: string
-  fps: number
-  frames: DicedAnimationFrame[]
-}
+type DicedAnimation = DicedAnimationFrame[]
+//   name: string
+//   fps: number
+//   frames: { [key: string]: DicedAnimationFrame }
+// }
 
 type DicedSpriteAsset = {
-  atlas: string
-  atlasFrames: { x: number; y: number; w: number; h: number }[]
+  meta: { name: string, cellW: number; cellH: number; width: number; height: number }[]
   animations: DicedAnimation[]
 }
 
 export class DicedSprite extends Node {
   private _data: DicedSpriteAsset = null!
-  _texture: Texture2D = null!
 
   private _currentAnim: DicedAnimation | null = null
   private _frameIndex = 0
   private _time = 0
-  private _speed = 1
+  private _speed = 0.2
   private _loop = true
   private _playing = false
 
-  _vertices: Float32Array = null!
-  _uvs: Float32Array = null!
-  _indices: Uint16Array = null!
+  declare vertices: Float32Array
+  declare uvs: Float32Array
+  declare indices: Uint16Array
+
+  declare texture: Texture2D
+  declare vertexBuffer: WebGLBuffer
+  declare uvBuffer: WebGLBuffer
+  declare indexBuffer: WebGLBuffer
+
+  declare shaderProgram: GLProgram
 
   constructor(data: DicedSpriteAsset, texture: Texture2D) {
     super()
     this._data = data
-    this._texture = texture
+    this.texture = texture
+    this.initGL()
+    this.updateMesh()
+    this.scheduleUpdate()
+  }
+
+  private initGL() {
+    const gl: WebGLRenderingContext = _renderContext
+
+    // buffers
+    this.vertexBuffer = gl.createBuffer()
+    this.uvBuffer = gl.createBuffer()
+    this.indexBuffer = gl.createBuffer()
+
+    this.updateBuffers()
+
+    this.shaderProgram = shaderCache.programForKey(SHADER_POSITION_TEXTURE)
+  }
+
+  public updateBuffers() {
+    const gl: WebGLRenderingContext = _renderContext
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW)
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.DYNAMIC_DRAW)
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer)
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW)
   }
 
   play(name: string, loop = true) {
-    const anim = this._data.animations.find(a => a.name === name)
+    console.log('play animation', name, this._data)
+    const anim = this._data.animations[name]
     if (!anim) return
 
     this._currentAnim = anim
@@ -66,7 +101,7 @@ export class DicedSprite extends Node {
     if (!this._playing || !this._currentAnim) return
 
     const anim = this._currentAnim
-    const frameTime = 1 / anim.fps
+    const frameTime = 1 / 30
 
     this._time += dt * this._speed
 
@@ -74,11 +109,11 @@ export class DicedSprite extends Node {
       this._time -= frameTime
       this._frameIndex++
 
-      if (this._frameIndex >= anim.frames.length) {
+      if (this._frameIndex >= anim.length) {
         if (this._loop) {
           this._frameIndex = 0
         } else {
-          this._frameIndex = anim.frames.length - 1
+          this._frameIndex = anim.length - 1
           this.stop()
         }
       }
@@ -88,57 +123,15 @@ export class DicedSprite extends Node {
   }
   private updateMesh() {
     if (!this._currentAnim) return
+    // console.log('update mesh', this._currentAnim, this._frameIndex)
+    const frame = this._currentAnim[this._frameIndex]
+    this.vertices = new Float32Array(frame.vertices)
+    this.uvs = new Float32Array(frame.uvs)
+    this.indices = new Uint16Array(frame.indices)
+    this.updateBuffers()
+  }
 
-    const frame = this._currentAnim.frames[this._frameIndex]
-    const atlasFrames = this._data.atlasFrames
-    const texW = this._texture._getWidth()
-    const texH = this._texture._getHeight()
-
-    const verts = []
-    const uvs = []
-    const indices = []
-
-    let idx = 0
-
-    for (const chunk of frame.chunks) {
-      const f = atlasFrames[chunk.frameIndex]
-
-      const x = chunk.x
-      const y = chunk.y
-      const w = f.w
-      const h = f.h
-
-      // vertex
-      verts.push(
-        x, y,
-        x + w, y,
-        x + w, y + h,
-        x, y + h
-      )
-
-      // UV
-      const u0 = f.x / texW
-      const v0 = f.y / texH
-      const u1 = (f.x + f.w) / texW
-      const v1 = (f.y + f.h) / texH
-
-      uvs.push(
-        u0, v0,
-        u1, v0,
-        u1, v1,
-        u0, v1
-      )
-
-      indices.push(
-        idx, idx + 1, idx + 2,
-        idx, idx + 2, idx + 3
-      )
-
-      idx += 4
-    }
-
-    this._vertices = new Float32Array(verts)
-    this._uvs = new Float32Array(uvs)
-    this._indices = new Uint16Array(indices)
+  _createRenderCmd() {
+    return new DicedSpriteWebGLRenderCmd(this)
   }
 }
