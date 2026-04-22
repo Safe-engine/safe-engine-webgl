@@ -28,8 +28,8 @@ type DicedJSON = {
 function buildMeshFromGrid(json: DicedJSON) {
   const { meta } = json;
 
-  const atlasW = meta.rawWidth;
-  const atlasH = meta.rawHeight;
+  const atlasW = meta.cellW * meta.atlasCols;
+  const atlasH = meta.cellH * meta.atlasRows;
 
   const cellW = meta.cellW;
   const cellH = meta.cellH;
@@ -59,14 +59,21 @@ function buildMeshFromGrid(json: DicedJSON) {
           const u1 = ((col + 1) * cellW) / atlasW;
           const v1 = ((row + 1) * cellH) / atlasH;
 
+          const shrink = Math.max(0.5, cellW * 0.01);
+
           const px = x * cellW;
-          const py = y * cellH;
+          const py = (grid.length - 1 - y) * cellH;
+
+          const x0 = px - shrink;
+          const x1 = px + cellW + shrink;
+          const y0 = py + shrink;
+          const y1 = py - cellH - shrink;
 
           vertices.push(
-            px, py,
-            px + cellW, py,
-            px + cellW, py + cellH,
-            px, py + cellH
+            x0, y0,
+            x1, y0,
+            x1, y1,
+            x0, y1
           );
 
           uvs.push(

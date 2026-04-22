@@ -26,7 +26,7 @@ export class DicedSprite extends Node {
   private _currentAnim: DicedAnimation | null = null
   private _frameIndex = 0
   private _time = 0
-  private _speed = 0.2
+  private _speed = 0.5
   private _loop = true
   private _playing = false
 
@@ -57,9 +57,6 @@ export class DicedSprite extends Node {
     this.vertexBuffer = gl.createBuffer()
     this.uvBuffer = gl.createBuffer()
     this.indexBuffer = gl.createBuffer()
-
-    this.updateBuffers()
-
     this.shaderProgram = shaderCache.programForKey(SHADER_POSITION_TEXTURE)
   }
 
@@ -77,7 +74,7 @@ export class DicedSprite extends Node {
   }
 
   play(name: string, loop = true) {
-    console.log('play animation', name, this._data)
+    // console.log('play animation', name, this._data)
     const anim = this._data.animations[name]
     if (!anim) return
 
@@ -86,6 +83,7 @@ export class DicedSprite extends Node {
     this._time = 0
     this._loop = loop
     this._playing = true
+    // this._speed = anim.fps / 60
 
     this.updateMesh()
   }
