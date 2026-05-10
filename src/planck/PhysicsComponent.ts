@@ -1,5 +1,5 @@
-import { Body, BodyType, BoxShape, ChainShape, CircleShape, EdgeShape, PolygonShape, Vec2 } from 'planck'
-import { Point } from '..'
+import { Body, BodyType, BoxShape, ChainShape, CircleShape, EdgeShape, PolygonShape } from 'planck'
+import { Point, Vec2 } from '..'
 import { ComponentX } from '../core/decorator'
 import { PhysicsSprite } from './PhysicsSprite'
 import { PTM_RATIO } from './PhysicsSystem'
@@ -28,12 +28,12 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
     if (!this.node) {
       return
     }
-    this.body.setLinearVelocity(new Vec2(vel.x, vel.y))
+    this.body.setLinearVelocity(Vec2(vel.x, vel.y))
   }
 
   get linearVelocity() {
     if (!this.node) {
-      return Vec2.zero()
+      return Vec2.ZERO
     }
     const vel = this.body.getLinearVelocity()
     return Vec2(vel)
@@ -44,9 +44,9 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
       return
     }
     if (pos) {
-      this.body.applyForce(new Vec2(vel.x, vel.y), new Vec2(pos.x, pos.y), true)
+      this.body.applyForce(Vec2(vel.x, vel.y), Vec2(pos.x, pos.y), true)
     } else {
-      this.body.applyForceToCenter(new Vec2(vel.x, vel.y), true)
+      this.body.applyForceToCenter(Vec2(vel.x, vel.y), true)
     }
   }
 
@@ -57,9 +57,9 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
     // console.log('applyLinearImpulse', vel, pos)
     this.body.setAwake(true)
     if (pos) {
-      this.body.applyLinearImpulse(new Vec2(vel.x, vel.y), new Vec2(pos.x, pos.y), true)
+      this.body.applyLinearImpulse(Vec2(vel.x, vel.y), Vec2(pos.x, pos.y), true)
     } else {
-      this.body.applyLinearImpulse(new Vec2(vel.x, vel.y), this.body.getLocalCenter(), true)
+      this.body.applyLinearImpulse(Vec2(vel.x, vel.y), this.body.getLocalCenter(), true)
     }
   }
 
@@ -72,17 +72,17 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
 
   set position(pos: Vec2) {
     this.physicSprite.node.setPosition(pos.x, pos.y)
-    const physicsPos = new Vec2(pos.x, pos.y)
+    const physicsPos = Vec2(pos.x, pos.y)
     // console.log('SetTransform', pos, physicsPos)
     const body = this.body
-    body.setLinearVelocity(new Vec2(0, 0))
+    body.setLinearVelocity(Vec2(0, 0))
     body.setAngularVelocity(0)
     body.setAwake(true)
     body.setTransform(physicsPos, this.node.rotation)
   }
 
   get position() {
-    return this.physicSprite.getBody().getPosition()
+    return Vec2(this.physicSprite.getBody().getPosition())
   }
 }
 
@@ -125,9 +125,10 @@ export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: 
 export type PhysicsShape = PhysicsPolygon | PhysicsBox | PhysicsCircle | PhysicsEdge | PhysicsChain
 
 export function createShape(shape: PhysicsShape) {
+  console.log('createShape', shape, shape instanceof _PhysicsBox);
   const { offset = [] } = shape
   const [ox = 0, oy = 0] = offset
-  const op = new Vec2(ox / PTM_RATIO, oy / PTM_RATIO)
+  const op = Vec2(ox / PTM_RATIO, oy / PTM_RATIO)
   if (shape instanceof _PhysicsBox) {
     const { height, width } = shape
     const hh = height * 0.5
@@ -143,22 +144,23 @@ export function createShape(shape: PhysicsShape) {
     const fixedPoints = points.map((p) => {
       const px = p.x || p[0]
       const py = p.y || p[1]
-      return new Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+      return Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
     })
     return new PolygonShape(fixedPoints)
   }
   if (shape instanceof _PhysicsEdge) {
     const { start, end } = shape
-    return new EdgeShape(new Vec2((start.x + ox) / PTM_RATIO, (start.y + oy) / PTM_RATIO),
-    new Vec2((end.x + ox) / PTM_RATIO, (end.y + oy) / PTM_RATIO))
+    return new EdgeShape(Vec2((start.x + ox) / PTM_RATIO, (start.y + oy) / PTM_RATIO),
+      Vec2((end.x + ox) / PTM_RATIO, (end.y + oy) / PTM_RATIO))
   }
   if (shape instanceof _PhysicsChain) {
     const { points } = shape
     const fixedPoints = points.map((p) => {
       const px = p.x || p[0]
       const py = p.y || p[1]
-      return new Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
+      return Vec2((px + ox) / PTM_RATIO, (py + oy) / PTM_RATIO)
     })
     return new ChainShape(fixedPoints)
   }
+  throw new Error('Invalid shape')
 }
