@@ -67,11 +67,11 @@ export const makeContactListener = (world: Box2D.b2World, metadata: Meta, box2D:
       const phys2 = ett2.getComponent(RigidBody)
       // const event2 = ett2.getComponent(NodeComp)
       if (phys1 && phys2) {
-        if (Object.prototype.hasOwnProperty.call(phys1.props, 'onPostSolve')) {
-          phys1.props.onPostSolve(phys2, oldManifold)
+        if (Object.prototype.hasOwnProperty.call(phys1.props, 'onPreSolve')) {
+          phys1.props.onPreSolve(phys2, oldManifold)
         }
-        if (Object.prototype.hasOwnProperty.call(phys2.props, 'onPostSolve')) {
-          phys2.props.onPostSolve(phys1, oldManifold)
+        if (Object.prototype.hasOwnProperty.call(phys2.props, 'onPreSolve')) {
+          phys2.props.onPreSolve(phys1, oldManifold)
         }
       }
     },

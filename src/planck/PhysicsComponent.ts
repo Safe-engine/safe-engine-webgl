@@ -1,4 +1,4 @@
-import { Body, BodyType, BoxShape, ChainShape, CircleShape, EdgeShape, PolygonShape } from 'planck'
+import { Body, BodyType, BoxShape, ChainShape, CircleShape, Contact, EdgeShape, PolygonShape } from 'planck'
 import { Point, Vec2 } from '..'
 import { ComponentX } from '../core/decorator'
 import { PhysicsSprite } from './PhysicsSprite'
@@ -12,7 +12,7 @@ interface RigidBodyProps {
   gravityScale?: Float
   isSensor?: boolean
   tag?: number
-  onBeginContact?: (other: RigidBody) => void
+  onBeginContact?: (other: RigidBody, contact?: Contact) => void
   onEndContact?: (other: RigidBody) => void
   onPreSolve?: (other: RigidBody, impulse?) => void
   onPostSolve?: (other: RigidBody, oldManifold?) => void
@@ -87,7 +87,11 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
 }
 
 class _PhysicsBox {
-  constructor(public width: number, public height: number, public offset?: [number, number]) { }
+  constructor(
+    public width: number,
+    public height: number,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsBox = _PhysicsBox
 export function PhysicsBox(width: number, height: number, offset?: [number, number]) {
@@ -95,28 +99,41 @@ export function PhysicsBox(width: number, height: number, offset?: [number, numb
 }
 
 class _PhysicsCircle {
-  constructor(public radius: number, public offset?: [number, number]) { }
+  constructor(
+    public radius: number,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsCircle = _PhysicsCircle
 export function PhysicsCircle(radius: number, offset?: [number, number]) {
   return new _PhysicsCircle(radius, offset)
 }
 class _PhysicsPolygon {
-  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+  constructor(
+    public points: Array<Vec2> | [number, number][],
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsPolygon = _PhysicsPolygon
 export function PhysicsPolygon(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
   return new _PhysicsPolygon(points, offset)
 }
 class _PhysicsEdge {
-  constructor(public start: Vec2, public end: Vec2, public offset?: [number, number]) { }
+  constructor(
+    public start: Vec2,
+    public end: Vec2,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsEdge = _PhysicsEdge
 export function PhysicsEdge(start: Vec2, end: Vec2, offset?: [number, number]) {
   return new _PhysicsEdge(start, end, offset)
 }
 class _PhysicsChain {
-  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+  constructor(
+    public points: Array<Vec2> | [number, number][],
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsChain = _PhysicsChain
 export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
@@ -125,7 +142,7 @@ export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: 
 export type PhysicsShape = PhysicsPolygon | PhysicsBox | PhysicsCircle | PhysicsEdge | PhysicsChain
 
 export function createShape(shape: PhysicsShape) {
-  console.log('createShape', shape, shape instanceof _PhysicsBox);
+  // console.log('createShape', shape, shape instanceof _PhysicsBox)
   const { offset = [] } = shape
   const [ox = 0, oy = 0] = offset
   const op = Vec2(ox / PTM_RATIO, oy / PTM_RATIO)
@@ -150,8 +167,10 @@ export function createShape(shape: PhysicsShape) {
   }
   if (shape instanceof _PhysicsEdge) {
     const { start, end } = shape
-    return new EdgeShape(Vec2((start.x + ox) / PTM_RATIO, (start.y + oy) / PTM_RATIO),
-      Vec2((end.x + ox) / PTM_RATIO, (end.y + oy) / PTM_RATIO))
+    return new EdgeShape(
+      Vec2((start.x + ox) / PTM_RATIO, (start.y + oy) / PTM_RATIO),
+      Vec2((end.x + ox) / PTM_RATIO, (end.y + oy) / PTM_RATIO),
+    )
   }
   if (shape instanceof _PhysicsChain) {
     const { points } = shape

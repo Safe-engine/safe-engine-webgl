@@ -16,10 +16,7 @@ export class PhysicsSprite {
       return
     }
     const pPos = this.physicsBody.getPosition()
-    const pos = Vec2(
-      pPos.x * PTM_RATIO,
-      pPos.y * PTM_RATIO,
-    )
+    const pos = Vec2(pPos.x * PTM_RATIO, pPos.y * PTM_RATIO)
     this.node.setPosition(pos.x, pos.y)
     //  the rotation
     this.node.setRotation(radiansToDegrees(-this.physicsBody.getAngle()))
@@ -32,8 +29,8 @@ export class PhysicsSprite {
     return this.physicsBody
   }
 
-  set position(val: Box2D.b2Vec2) {
-    this.physicsBody.setTransform(val, this.node.getRotation())
+  set position(val: Vec2) {
+    this.physicsBody.setTransform(val.mul(1 / PTM_RATIO), this.node.getRotation())
   }
 
   // set x(val) {
