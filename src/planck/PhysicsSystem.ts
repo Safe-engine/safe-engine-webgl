@@ -117,7 +117,7 @@ export class PhysicsSystem implements System {
               })
               this.debugNode.drawPoly(
                 verts,
-                color(0, 255, 0, 100), // fill
+                color(0, 255, 0, 60), // fill
                 1, // line width
                 color(0, 255, 0, 255), // stroke
               )

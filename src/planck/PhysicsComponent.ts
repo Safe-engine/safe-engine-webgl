@@ -59,7 +59,7 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
     if (pos) {
       this.body.applyLinearImpulse(Vec2(vel.x, vel.y), Vec2(pos.x, pos.y), true)
     } else {
-      this.body.applyLinearImpulse(Vec2(vel.x, vel.y), this.body.getLocalCenter(), true)
+      this.body.applyLinearImpulse(Vec2(vel.x, vel.y), this.body.getWorldCenter(), true)
     }
   }
 
