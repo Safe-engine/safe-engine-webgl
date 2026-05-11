@@ -1,5 +1,5 @@
 import { Node, radiansToDegrees, Vec2 } from 'safex-webgl'
-import { PTM_RATIO } from './PhysicsSystem'
+import { box2D, PTM_RATIO } from './PhysicsSystem'
 
 export class PhysicsSprite {
   node: Node
@@ -15,10 +15,7 @@ export class PhysicsSprite {
       return
     }
     const pPos = this.physicsBody.GetPosition()
-    const pos = Vec2(
-      pPos.x * PTM_RATIO,
-      pPos.y * PTM_RATIO,
-    )
+    const pos = Vec2(pPos.x * PTM_RATIO, pPos.y * PTM_RATIO)
     this.node.setPosition(pos.x, pos.y)
     //  the rotation
     this.node.setRotation(radiansToDegrees(-this.physicsBody.GetAngle()))
@@ -31,8 +28,9 @@ export class PhysicsSprite {
     return this.physicsBody
   }
 
-  set position(val: Box2D.b2Vec2) {
-    this.physicsBody.SetTransform(val, this.node.getRotation())
+  set position(val: Vec2) {
+    const pos = new box2D.b2Vec2(val.x / PTM_RATIO, val.y / PTM_RATIO)
+    this.physicsBody.SetTransform(pos, this.node.getRotation())
   }
 
   // set x(val) {

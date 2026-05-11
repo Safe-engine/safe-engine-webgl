@@ -26,12 +26,19 @@ export async function initBox2d(wasmUrl?: string) {
   box2D = await Box2DFactory()
 }
 
-// Box2D.b2Fixture.prototype.shouldCollide = function (other) {
-//   const nodeThis: NodeComp = this.getBody().getUserData()
-//   const nodeOther = other.getBody().getUserData() as NodeComp
-//   const { colliderMatrix } = GameWorld.Instance.systems.get(PhysicsSystem)
-//   return colliderMatrix[nodeOther.group][nodeThis.group]
-// }
+class MyContactFilter extends Box2D.JSContactFilter {
+  ShouldCollide(fixtureA, fixtureB) {
+    const bodyA = fixtureA.GetBody()
+    const bodyB = fixtureB.GetBody()
+    const nodeThis: NodeComp = metadata[box2D.getPointer(bodyA)]
+    const nodeOther = metadata[box2D.getPointer(bodyB)] as NodeComp
+    const { colliderMatrix } = GameWorld.Instance.systems.get(PhysicsSystem)
+    const a = nodeThis.getComponent(RigidBody).props.tag ?? 0
+    const b = nodeOther.getComponent(RigidBody).props.tag ?? 0
+    // console.log('shouldCollide', a, b, colliderMatrix)
+    return !!colliderMatrix[a][b]
+  }
+}
 
 export function setColliderMatrix(colliderMatrix = [[true]]) {
   const physicsSystem = GameWorld.Instance.systems.get(PhysicsSystem)
@@ -56,10 +63,12 @@ export class PhysicsSystem implements System {
   }
 
   configure(event_manager: EventManager) {
-    const { b2BodyDef, b2FixtureDef, b2PolygonShape, b2CircleShape, b2Vec2, b2World, pointsToVec2Array, getPointer } = box2D as typeof Box2D
+    const { b2BodyDef, b2FixtureDef, b2Vec2, b2World, getPointer } = box2D as typeof Box2D
     const gravity = new b2Vec2(0, -10)
     this.world = new b2World(gravity)
     // console.log('configure PhysicsSystem world', this.world)
+    const filter = new MyContactFilter()
+    this.world.SetContactFilter(filter)
     const graphics = new DrawNode()
     this.graphics = graphics
     graphics.setLocalZOrder(1000)
@@ -82,7 +91,7 @@ export class PhysicsSystem implements System {
       // body.setMassData(1)
       const physicsNode = new PhysicsSprite(node.instance, body)
       const shapesArray = Array.isArray(shapes) ? shapes : [shapes]
-      shapesArray.forEach(physicsShape => {
+      shapesArray.forEach((physicsShape) => {
         const shape = createShape(physicsShape)
         const fixtureDef = new b2FixtureDef()
         fixtureDef.set_shape(shape)

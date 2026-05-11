@@ -85,9 +85,12 @@ export class RigidBody extends ComponentX<RigidBodyProps> {
   }
 }
 
-
 class _PhysicsBox {
-  constructor(public width: number, public height: number, public offset?: [number, number]) { }
+  constructor(
+    public width: number,
+    public height: number,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsBox = _PhysicsBox
 export function PhysicsBox(width: number, height: number, offset?: [number, number]) {
@@ -95,28 +98,41 @@ export function PhysicsBox(width: number, height: number, offset?: [number, numb
 }
 
 class _PhysicsCircle {
-  constructor(public radius: number, public offset?: [number, number]) { }
+  constructor(
+    public radius: number,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsCircle = _PhysicsCircle
 export function PhysicsCircle(radius: number, offset?: [number, number]) {
   return new _PhysicsCircle(radius, offset)
 }
 class _PhysicsPolygon {
-  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+  constructor(
+    public points: Array<Vec2> | [number, number][],
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsPolygon = _PhysicsPolygon
 export function PhysicsPolygon(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
   return new _PhysicsPolygon(points, offset)
 }
 class _PhysicsEdge {
-  constructor(public start: Vec2, public end: Vec2, public offset?: [number, number]) { }
+  constructor(
+    public start: Vec2,
+    public end: Vec2,
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsEdge = _PhysicsEdge
 export function PhysicsEdge(start: Vec2, end: Vec2, offset?: [number, number]) {
   return new _PhysicsEdge(start, end, offset)
 }
 class _PhysicsChain {
-  constructor(public points: Array<Vec2> | [number, number][], public offset?: [number, number]) { }
+  constructor(
+    public points: Array<Vec2> | [number, number][],
+    public offset?: [number, number],
+  ) {}
 }
 export type PhysicsChain = _PhysicsChain
 export function PhysicsChain(points: Array<Vec2> | [number, number][], offset?: [number, number]) {
